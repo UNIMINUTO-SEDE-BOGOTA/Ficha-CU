@@ -2,6 +2,7 @@ import { motion } from "motion/react";
 import { DashboardCard } from "./dashboard-card";
 import { EnrollmentDashboard } from "./enrollment-dashboard";
 import { PerformanceDashboard } from "./performance-dashboard";
+import { UniversityProfileDashboard } from "./university-profile-dashboard"; // <-- Línea agregada
 
 export function DashboardGrid() {
   return (
@@ -32,6 +33,20 @@ export function DashboardGrid() {
             id="performance-dashboard"
           >
             <PerformanceDashboard />
+          </DashboardCard>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6, delay: 0.6 }}
+        >
+          <DashboardCard
+            title="Ficha y Contexto del Centro Universitario"
+            id="university-profile"
+          >
+            <UniversityProfileDashboard /> {/* Ahora sí está definido */}
           </DashboardCard>
         </motion.div>
       </div>
