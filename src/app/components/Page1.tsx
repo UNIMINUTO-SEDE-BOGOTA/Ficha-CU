@@ -1,36 +1,54 @@
 import React from 'react';
-import { FinancialRow, GrayBanner, SectionHeader } from './shared';
+import { GrayBanner, SectionHeader } from './shared';
+import { useObservatorio } from '../../hooks/useObservatorio';
+import { transformarPage1 } from '../../models/proyeccionPage1Model';
 
-const financialData: FinancialRow[] = [
-  { año: "LB 2024", ingresos: "136,53", costos: "119,65", pctCostos: "87,6",  ebitda: "21,31", pctEbitda: "15,61" },
-  { año: "2025",    ingresos: "138,45", costos: "115,82", pctCostos: "83,7",  ebitda: "23,50", pctEbitda: "16,97" },
-  { año: "2026",    ingresos: "142,45", costos: "118,79", pctCostos: "83,4",  ebitda: "24,94", pctEbitda: "17,51" },
-  { año: "2027",    ingresos: "150,64", costos: "127,29", pctCostos: "84,5",  ebitda: "29,62", pctEbitda: "19,66" },
-  { año: "2028",    ingresos: "164,70", costos: "135,88", pctCostos: "82,5",  ebitda: "36,56", pctEbitda: "22,20" },
-  { año: "2029",    ingresos: "179,45", costos: "145,71", pctCostos: "81,2",  ebitda: "42,79", pctEbitda: "23,85" },
-  { año: "2030",    ingresos: "195,55", costos: "156,44", pctCostos: "80,0",  ebitda: "48,84", pctEbitda: "24,98" },
-];
+// Mapeo de IDs de centro a nombres (según la lista CENTROS)
+const CENTRO_NOMBRES: Record<string, string> = {
+  'centro-engativa': 'Engativá',
+  'centro-kennedy': 'Kennedy',
+  'centro-santa-fe-las-cruces': 'Las Cruces Santa Fé',
+  'centro-perdomo-ciudad-bolivar': 'Perdomo - Ciudad Bolívar',
+  'centro-san-cristobal-usaquen': 'San Cristóbal Norte - Usaquén',
+};
 
-const indicadores = [
-  ["Deserción Distancia",           "10%",   "12,1%",  "10%",   "10%",   "10%",   "10%",   "11%"  ],
-  ["Deserción Presencial",          "8%",    "10,04%", "8%",    "8%",    "8%",    "8%",    "8%"   ],
-  ["Diversificación de Ingresos",   "5%",    "6%",     "6%",    "7%",    "8%",    "9%",    "10%"  ],
-  ["EBITDA",                        "17%",   "16,97%", "15,5%", "19,7%", "22,2%", "23,8%", "25%"  ],
-  ["Educación Continua",            "4615",  "",       "5896",  "7404",  "9021",  "10706", "12430"],
-  ["Estudiantes Centro Universitario","18244","205",   "19038", "19592", "20245", "20847", "21372"],
-  ["Matrícula Nuevos",              "7700",  "0",      "8195",  "8560",  "8730",  "8770",  "8775" ],
-  ["Saber PRO Presencial",          "135",   "",       "136",   "137",   "137",   "138",   "138"  ],
-  ["Tasa de Conversión",            "58%",   "",       "60%",   "62%",   "64%",   "66%",   "68%"  ],
-  ["Tipología Centro Universitario","A",     "A",      "A",     "A",     "A",     "A",     "A"    ],
-];
+// Mapeo de imágenes de mapa
+const MAPA_IMAGENES: Record<string, string> = {
+  'centro-engativa': '/engativa.png',
+  'centro-kennedy': '/Kennedy.png',
+  'centro-santa-fe-las-cruces': '/cruces.png',
+  'centro-perdomo-ciudad-bolivar': '/perdomo.png',
+  'centro-san-cristobal-usaquen': '/sancristobal.png',
+};
 
-const SUBTITLE = "Centro Universitario Especial Minuto de Dios - Engativá";
+// NUEVO: Mapeo de imágenes de contexto para cada centro
+const CONTEXTO_IMAGENES: Record<string, string> = {
+  'centro-engativa': '/contexto-engativa.png',
+  'centro-kennedy': '/contexto-kennedy.png',
+  'centro-santa-fe-las-cruces': '/contexto-cruces.png',
+  'centro-perdomo-ciudad-bolivar': '/contexto-perdomo.png',
+  'centro-san-cristobal-usaquen': '/contexto-sancristobal.png',
+};
 
 interface Props {
   innerRef?: React.Ref<HTMLDivElement>;
+  centroId?: string;
 }
 
-export function Page1({ innerRef }: Props) {
+export function Page1({ innerRef, centroId = 'centro-engativa' }: Props) {
+  const { data, loading } = useObservatorio(centroId, {});
+  const pageData = transformarPage1(data);
+
+  const centroNombre = CENTRO_NOMBRES[centroId] || 'Desconocido';
+  const subtitle = `Centro Universitario ${centroNombre}`;
+  const mapaSrc = MAPA_IMAGENES[centroId] || '/mapa-engativa.png';
+  // NUEVO: Ruta de la imagen de contexto, con fallback por si falta
+  const contextoSrc = CONTEXTO_IMAGENES[centroId] || '/contexto-cu.png';
+
+  if (loading) {
+    return <div>Cargando...</div>;
+  }
+
   return (
     <div
       ref={innerRef}
@@ -39,7 +57,7 @@ export function Page1({ innerRef }: Props) {
     >
       {/* ── IZQUIERDA ── */}
       <div className="flex flex-col h-full border-r pr-3" style={{ width: "50%", borderColor: "#e0e0e0" }}>
-        <SectionHeader subtitle={SUBTITLE} />
+        <SectionHeader subtitle={subtitle} />
         <GrayBanner text="Proyección INGRESOS - COSTOS Y GASTOS - EBITDA" />
 
         <div className="border shadow-sm mt-1">
@@ -55,18 +73,18 @@ export function Page1({ innerRef }: Props) {
               </tr>
             </thead>
             <tbody>
-              {financialData.map((row, i) => (
+              {pageData.financialRows.map((row, i) => (
                 <tr
                   key={i}
                   style={row.año.includes("LB") ? { backgroundColor: "#F0E199" } : {}}
                   className={!row.año.includes("LB") && i % 2 === 0 ? "bg-gray-50" : ""}
                 >
                   <td className="border px-1 py-[2px] font-semibold">{row.año}</td>
-                  <td className="border px-1 py-[2px] text-right">{row.ingresos} mil M</td>
-                  <td className="border px-1 py-[2px] text-right">{row.costos} mil M</td>
-                  <td className="border px-1 py-[2px] text-right">{row.pctCostos} %</td>
-                  <td className="border px-1 py-[2px] text-right font-semibold">{row.ebitda} mil M</td>
-                  <td className="border px-1 py-[2px] text-right font-semibold">{row.pctEbitda} %</td>
+                  <td className="border px-1 py-[2px] text-right">{row.ingresos} {row.ingresos !== '-' ? 'mil M' : ''}</td>
+                  <td className="border px-1 py-[2px] text-right">{row.costos} {row.costos !== '-' ? 'mil M' : ''}</td>
+                  <td className="border px-1 py-[2px] text-right">{row.pctCostos} {row.pctCostos !== '-' ? '%' : ''}</td>
+                  <td className="border px-1 py-[2px] text-right font-semibold">{row.ebitda} {row.ebitda !== '-' ? 'mil M' : ''}</td>
+                  <td className="border px-1 py-[2px] text-right font-semibold">{row.pctEbitda} {row.pctEbitda !== '-' ? '%' : ''}</td>
                 </tr>
               ))}
             </tbody>
@@ -88,7 +106,7 @@ export function Page1({ innerRef }: Props) {
               </tr>
             </thead>
             <tbody>
-              {indicadores.map((row, i) => (
+              {pageData.indicatorsRows.map((row, i) => (
                 <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}>
                   {row.map((cell, j) => (
                     <td
@@ -108,7 +126,7 @@ export function Page1({ innerRef }: Props) {
 
       {/* ── DERECHA ── */}
       <div className="flex flex-col h-full bg-white pl-3" style={{ width: "50%" }}>
-        <SectionHeader showFecha subtitle={SUBTITLE} />
+        <SectionHeader showFecha subtitle={subtitle} />
 
         <h2 className="text-[13px] font-semibold text-gray-800 text-center -mt-1 mb-0">
           Ficha Centro Universitario
@@ -117,8 +135,7 @@ export function Page1({ innerRef }: Props) {
 
         <div className="w-full flex justify-center items-center -mt-10" style={{ height: "80mm" }}>
           <img
-            src="/engativa.png"
-            alt="Mapa Engativá"
+            src={mapaSrc}
             style={{ height: "100%", maxWidth: "85%", objectFit: "contain", display: "block" }}
           />
         </div>
@@ -153,21 +170,21 @@ export function Page1({ innerRef }: Props) {
               <tbody>
                 <tr>
                   <td className="border px-2 py-0.5">1. Pregrado</td>
-                  <td className="border px-2 py-0.5 text-right">4.643</td>
-                  <td className="border px-2 py-0.5 text-right">12.669</td>
-                  <td className="border px-2 py-0.5 text-right font-bold bg-[#C7B8E7]">17.312</td>
+                  <td className="border px-2 py-0.5 text-right">{pageData.studentSummary.pregradoDistancia}</td>
+                  <td className="border px-2 py-0.5 text-right">{pageData.studentSummary.pregradoPresencial}</td>
+                  <td className="border px-2 py-0.5 text-right font-bold bg-[#C7B8E7]">{pageData.studentSummary.pregradoTotal}</td>
                 </tr>
                 <tr>
                   <td className="border px-2 py-0.5">2. Posgrado</td>
-                  <td className="border px-2 py-0.5 text-right">617</td>
-                  <td className="border px-2 py-0.5 text-right">412</td>
-                  <td className="border px-2 py-0.5 text-right font-bold bg-[#C7B8E7]">1.029</td>
+                  <td className="border px-2 py-0.5 text-right">{pageData.studentSummary.posgradoDistancia}</td>
+                  <td className="border px-2 py-0.5 text-right">{pageData.studentSummary.posgradoPresencial}</td>
+                  <td className="border px-2 py-0.5 text-right font-bold bg-[#C7B8E7]">{pageData.studentSummary.posgradoTotal}</td>
                 </tr>
                 <tr className="bg-[#C7B8E7] font-semibold">
                   <td className="border px-2 py-0.5">Total</td>
-                  <td className="border px-2 py-0.5 text-right">5.260</td>
-                  <td className="border px-2 py-0.5 text-right">13.081</td>
-                  <td className="border px-2 py-0.5 text-right">18.341</td>
+                  <td className="border px-2 py-0.5 text-right">{pageData.studentSummary.totalGeneralDistancia}</td>
+                  <td className="border px-2 py-0.5 text-right">{pageData.studentSummary.totalGeneralPresencial}</td>
+                  <td className="border px-2 py-0.5 text-right">{pageData.studentSummary.totalGeneral}</td>
                 </tr>
               </tbody>
             </table>
@@ -175,9 +192,9 @@ export function Page1({ innerRef }: Props) {
 
           <div style={{ width: "45%" }} className="flex flex-row items-center justify-evenly px-2 border-l border-gray-200">
             {[
-              { label: "Total población", src: "/poblacion.png", value: "18.341" },
-              { label: "Hombres",         src: "/hombre.png",    value: "7.986"  },
-              { label: "Mujeres",         src: "/mujer.png",     value: "10.355" },
+              { label: "Total población", src: "/poblacion.png", value: pageData.studentSummary.totalGeneral },
+              { label: "Hombres",         src: "/hombre.png",    value: pageData.studentSummary.hombres },
+              { label: "Mujeres",         src: "/mujer.png",     value: pageData.studentSummary.mujeres },
             ].map((item, idx, arr) => (
               <React.Fragment key={item.label}>
                 <div className="flex flex-col items-center gap-0.5">
@@ -207,8 +224,9 @@ export function Page1({ innerRef }: Props) {
         </div>
 
         <div className="w-full flex-1 mt-0.5 flex items-start justify-center overflow-hidden">
+          {/* NUEVO: imagen de contexto dinámica */}
           <img
-            src="/contextoCU.png"
+            src={contextoSrc}
             alt="Contexto Centro Universitario"
             style={{ width: "100%", height: "100%", objectFit: "contain", objectPosition: "center", display: "block" }}
           />
