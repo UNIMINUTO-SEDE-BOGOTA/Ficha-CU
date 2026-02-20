@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
   # AI Chat Agent Website
 
@@ -9,3 +10,7 @@
 
   Run `npm run dev` to start the development server.
   
+=======
+# Ficha-CU
+Entorno de desarrollo de Migracion de Fichas CU
+>>>>>>> 5a53a9e7e81f7449d24167b36f5aa9988ccdae92
