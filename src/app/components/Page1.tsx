@@ -1,7 +1,7 @@
 import React from 'react';
 import { GrayBanner, SectionHeader } from './shared';
 import { useObservatorio } from '../../hooks/useObservatorio';
-import { transformarPage1 } from '../../models/proyeccionPage1Model';
+import { transformarPage1 } from '../../models/proyeccionPage1Model' ;
 
 // Mapeo de IDs de centro a nombres (según la lista CENTROS)
 const CENTRO_NOMBRES: Record<string, string> = {
