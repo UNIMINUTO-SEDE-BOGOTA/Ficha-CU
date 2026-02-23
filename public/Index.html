@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Under construction · Better service coming</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #0B1A33;       /* dark blue background */
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 1.5rem;
+        }
+
+        .construction-card {
+            max-width: 700px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03); /* very subtle contrast for depth */
+            backdrop-filter: blur(2px);
+            border-radius: 3rem 1.5rem 3rem 1.5rem;
+            padding: 3rem 2rem 3.5rem 2rem;
+            box-shadow: 0 25px 40px -10px rgba(0,0,0,0.6);
+            border: 1px solid rgba(255, 215, 0, 0.15);
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        /* logo container – expects logo.png inside /public */
+        .logo-wrapper {
+            margin-bottom: 2.2rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .logo-wrapper img {
+            max-width: 240px;
+            width: auto;
+            height: auto;
+            filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.5));
+            transition: transform 0.3s ease;
+        }
+
+        .logo-wrapper img:hover {
+            transform: scale(1.02);
+        }
+
+        /* main heading "under construction" */
+        h1 {
+            font-size: 2.8rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            word-spacing: 6px;
+            text-transform: uppercase;
+            color: white;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 4px 10px #00000055;
+            line-height: 1.2;
+        }
+
+        /* bilingual line / english message */
+        .message-line {
+            font-size: 2rem;
+            font-weight: 500;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 0.45rem 0.7rem;
+            margin: 1.8rem 0 1rem 0;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 1rem 1.8rem;
+            border-radius: 60px;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .white-part {
+            color: white;
+            font-weight: 400;
+            text-shadow: 0 2px 6px #00000070;
+        }
+
+        .yellow-part {
+            color: #FFD966;      /* warm amarillo elegante */
+            font-weight: 600;
+            text-shadow: 0 2px 8px #ffd96655, 0 0 8px #ffb34730;
+        }
+
+        /* small decorative bar with amarillo/blanco accent */
+        .bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 2.2rem 0 1.3rem 0;
+        }
+
+        .bar span {
+            display: inline-block;
+            width: 50px;
+            height: 3px;
+            background: #FFD966;
+            border-radius: 10px;
+            opacity: 0.7;
+        }
+
+        .bar span:first-child, .bar span:last-child {
+            background: white;
+            width: 25px;
+            opacity: 0.5;
+        }
+
+        /* additional hint */
+        .foot-note {
+            color: rgba(255,255,240,0.7);
+            font-size: 1.1rem;
+            border-top: 1px dashed #FFD96655;
+            padding-top: 2rem;
+            margin-top: 1.8rem;
+            letter-spacing: 0.5px;
+            font-weight: 300;
+        }
+
+        .foot-note a {
+            color: #FFD966;
+            text-decoration: none;
+            border-bottom: 1px dotted currentColor;
+        }
+
+        .foot-note a:hover {
+            color: white;
+        }
+
+        /* responsive adjustments */
+        @media (max-width: 480px) {
+            .construction-card {
+                padding: 2rem 1.2rem;
+                border-radius: 2rem 1rem;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+            .message-line {
+                font-size: 1.5rem;
+                flex-direction: column;
+                gap: 0.2rem;
+                padding: 0.8rem 1rem;
+            }
+            .logo-wrapper img {
+                max-width: 180px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="construction-card">
+        <!-- logo from public folder (logo.png) -->
+        <div class="logo-wrapper">
+            <img src="./public/logo.png" alt="Company logo" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22240%22%20height%3D%22120%22%20viewBox%3D%220%200%20240%20120%22%3E%3Crect%20width%3D%22240%22%20height%3D%22120%22%20fill%3D%22%230B1A33%22%2F%3E%3Ctext%20x%3D%2230%22%20y%3D%2270%22%20font-family%3D%22monospace%22%20font-size%3D%2222%22%20fill%3D%22%23FFD966%22%3Elogo.png%3C%2Ftext%3E%3C%2Fsvg%3E';">
+            <!-- if logo.png is missing, a subtle placeholder appears (keeps layout) -->
+        </div>
+
+        <!-- main title: under construction (bilingual vibe but primarily english) -->
+        <h1>🚧 UNDER CONSTRUCTION 🚧</h1>
+
+        <!-- english phrase with yellow + white parts exactly as requested -->
+        <div class="message-line">
+            <span class="white-part">Working to give you</span>
+            <span class="yellow-part">a better service</span>
+        </div>
+
+        <!-- decorative yellow/white bars (optional but lindo) -->
+        <div class="bar">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <!-- tiny extra text to complete the feeling -->
+        <div class="foot-note">
+            ✦ we’ll be back soon ✦ <br style="display: none;"> 
+            <span style="color:#FFD966;">✨</span> <span style="color: rgba(255,255,255,0.5);">something fresh is coming</span> <span style="color:#FFD966;">✨</span>
+        </div>
+
+        <!-- subtle note about the logo path: /public/logo.png -->
+        <div style="margin-top: 1.5rem; font-size: 0.8rem; color: rgba(255,255,240,0.3); border: none;">
+            <!-- just to confirm: public/logo.png is being used -->
+        </div>
+    </div>
+
+    <!-- small script to handle possible image path variations (keep logo visible) -->
+    <script>
+        (function() {
+            // if image fails to load because of nested public folder, try alternate path
+            const logoImg = document.querySelector('.logo-wrapper img');
+            if (logoImg) {
+                // if image already errored and was replaced by the inline dataURI, do nothing
+                // but also we can try to fix common 'public' nesting (just in case)
+                logoImg.addEventListener('error', function(e) {
+                    // prevent infinite loop if both fail
+                    if (e.target.src.includes('data:image')) return;
+                    // attempt to load from root ./logo.png (maybe public is not needed)
+                    e.target.src = './logo.png';
+                    // if that fails again, keep the placeholder from onerror attribute
+                });
+            }
+        })();
+    </script>
+</body>
+</html>
