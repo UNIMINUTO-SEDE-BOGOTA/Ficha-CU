@@ -134,7 +134,9 @@ npm run dev
 La aplicación estará disponible en:
 
 http://localhost:5173
+
 🛠️ Scripts Disponibles
+
 npm run dev        # Entorno de desarrollo
 
 npm run build      # Build para producción
