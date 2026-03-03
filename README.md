@@ -72,14 +72,23 @@ Modelo estructurado para análisis institucional
 # 🏗️ Arquitectura General
 
 Frontend (React + Vite)
+
         │
+
         │  Peticiones HTTP
+
         ▼
+
 API REST (Cloud)
+
         │
+
         │  Conexión segura
+
         ▼
+
 SQL Server (Base de Datos en la Nube)
+
 
 ## 🔐 Seguridad
 
@@ -112,15 +121,27 @@ Esto garantiza mayor seguridad en el intercambio de datos entre cliente y servid
 ## 📂 Estructura del Proyecto
 
 📦 observatorio-ficha-cu
+
  ┣ 📂 src
+
  ┃ ┣ 📂 components
+
  ┃ ┣ 📂 pages
+
  ┃ ┣ 📂 services
+
  ┃ ┣ 📂 hooks
+
+  ┃ ┣ 📂 models
+
  ┃ ┗ 📜 main.jsx
+
  ┣ 📜 package.json
+
  ┣ 📜 vite.config.js
+
  ┗ 📜 README.md
+
 
 ## ⚙️ Instalación
 1️⃣ Clonar el repositorio
