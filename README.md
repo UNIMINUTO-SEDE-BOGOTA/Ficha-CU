@@ -136,8 +136,11 @@ La aplicación estará disponible en:
 http://localhost:5173
 🛠️ Scripts Disponibles
 npm run dev        # Entorno de desarrollo
+
 npm run build      # Build para producción
+
 npm run preview    # Previsualización del build
+
 🌎 Variables de Entorno (Frontend)
 
 Crear un archivo .env en la raíz del proyecto:
