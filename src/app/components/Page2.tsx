@@ -151,76 +151,7 @@ export function Page2({ innerRef, centroId = 'centro-engativa' }: Props) {
 
   return (
     <>
-     <style>{`
-  @media print {
-    /* Ajustes generales para hoja A4 */
-    .print-page {
-      padding: 1mm 2mm !important;
-      width: 297mm !important;
-      height: 210mm !important;
-      min-height: 210mm !important;
-      max-height: 210mm !important;
-      overflow: hidden !important;
-      box-sizing: border-box !important;
-    }
-
-    /* Compactar tablas para ahorrar espacio */
-    table, td, th {
-      font-size: 6px !important;
-      padding: 0 !important;
-      border-width: 0.5px !important;
-    }
-
-    /* Reducir banners y separadores */
-    .banner, [class*="Banner"], [style*="background-color: #D9D9D9"] {
-      padding: 0 !important;
-      font-size: 5px !important;
-      line-height: 1 !important;
-      height: auto !important;
-      min-height: 0 !important;
-    }
-
-    /* Eliminar separadores innecesarios */
-    div[style*="height: 1px"] {
-      display: none !important;
-    }
-
-    /* Contenedor de gráficas con altura fija para igualar la tabla de oferta */
-    .graph-container {
-      height: 70mm !important; /* Ajusta este valor según necesites */
-      margin: 0 !important;
-      padding: 0 !important;
-      gap: 1px !important;
-    }
-
-    /* Textos SVG legibles dentro del espacio */
-    .graph-container svg text {
-      font-size: 8px !important;
-      font-weight: 400 !important;
-    }
-
-    /* Ajustes específicos para el panel de líneas (textos más grandes) */
-    .graph-container svg text[font-size="18"],
-    .graph-container svg text[font-size="15"] {
-      font-size: 9px !important;
-    }
-
-    /* Reducir grosor de líneas y puntos */
-    .graph-container svg polyline {
-      stroke-width: 1.2px !important;
-    }
-    .graph-container svg circle {
-      r: 2 !important;
-      stroke-width: 0.8px !important;
-    }
-
-    /* Evitar que las tablas se partan */
-    table {
-      page-break-inside: avoid;
-    }
-  }
-`}</style>
-      <div ref={innerRef} className="bg-white print-page" style={{ width: "297mm", minHeight: "210mm", padding: "1mm 4mm", display: "flex", flexDirection: "column", overflow: "visible", pageBreakInside: "avoid" }}>
+      <div ref={innerRef} className="bg-white" style={{ width: "297mm", height: "210mm", overflow: "hidden", pageBreakInside: "avoid" }}>
 
         {/* HEADER */}
         <div className="flex flex-col w-full" style={{ marginBottom: 1 }}>

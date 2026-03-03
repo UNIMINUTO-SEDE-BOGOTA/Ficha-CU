@@ -24,53 +24,79 @@ export function UniversityProfileDashboard() {
   const ref1 = useRef<HTMLDivElement>(null);
   const ref2 = useRef<HTMLDivElement>(null);
 
-  /* ── Impresión ── */
-  const handlePrint = () => {
-    const el1 = ref1.current;
-    const el2 = ref2.current;
-    if (!el1 || !el2) return;
+const handlePrint = () => {
+  const el1 = ref1.current;
+  const el2 = ref2.current;
+  if (!el1 || !el2) return;
 
-    const styles = Array.from(document.styleSheets)
-      .map(sheet => {
-        try { return Array.from(sheet.cssRules).map(r => r.cssText).join('\n'); }
-        catch { return ''; }
-      })
-      .join('\n');
+  const styles = Array.from(document.styleSheets)
+    .map(sheet => {
+      try { return Array.from(sheet.cssRules).map(r => r.cssText).join('\n'); }
+      catch { return ''; }
+    })
+    .join('\n');
 
-    const iframe = document.createElement('iframe');
-    Object.assign(iframe.style, {
-      position: 'fixed', top: '-9999px', left: '-9999px',
-      width: '297mm', height: '210mm', border: 'none',
-    });
-    document.body.appendChild(iframe);
+  const iframe = document.createElement('iframe');
+  Object.assign(iframe.style, {
+    position: 'fixed',
+    top: '0', left: '0',
+    width: '297mm', height: '210mm',
+    border: 'none',
+    visibility: 'hidden',
+    zIndex: '-1',
+  });
+  document.body.appendChild(iframe);
 
-    const doc = iframe.contentDocument || iframe.contentWindow?.document;
-    if (!doc) return;
+  const doc = iframe.contentDocument || iframe.contentWindow?.document;
+  if (!doc) return;
 
-    doc.open();
-    doc.write(`
-      <!DOCTYPE html><html><head><title></title>
-      <style>
-        @page { size: A4 landscape; margin: 0; }
-        * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; box-sizing: border-box; }
-        html, body { margin: 0; padding: 0; background: white; }
-        .page-break { page-break-after: always; }
-        ${styles}
-      </style>
-      <link rel="stylesheet" href="/index.css" />
-      </head><body>
-        <div class="page-break">${el1.outerHTML}</div>
-        <div>${el2.outerHTML}</div>
-      </body></html>
-    `);
-    doc.close();
+  doc.open();
+  doc.write(`
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Impresión Ficha</title>
+        <style>
+          @page { size: A4 landscape; margin: 0; }
+          * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
+            box-sizing: border-box;
+          }
+          html, body { margin: 0; padding: 0; width: 297mm; background: white; }
+          .sheet {
+            width: 297mm !important;
+            height: 210mm !important;
+            overflow: hidden !important;
+            display: block;
+            page-break-after: always;
+          }
+          .sheet:last-child { page-break-after: avoid; }
+          .sheet > * { transform: none !important; }
+          @media print {
+            html { zoom: 1 !important; -webkit-text-size-adjust: 100% !important; }
+          }
+          ${styles}
+        </style>
+        <link rel="stylesheet" href="/index.css" />
+      </head>
+      <body>
+        <div class="sheet">${el1.outerHTML}</div>
+        <div class="sheet">${el2.outerHTML}</div>
+      </body>
+    </html>
+  `);
+  doc.close();
 
+  setTimeout(() => {
+    iframe.contentWindow?.focus();
+    iframe.contentWindow?.print();
     setTimeout(() => {
-      iframe.contentWindow?.focus();
-      iframe.contentWindow?.print();
-      setTimeout(() => document.body.removeChild(iframe), 1500);
-    }, 600);
-  };
+      if (document.body.contains(iframe)) document.body.removeChild(iframe);
+    }, 2000);
+  }, 800);
+};
 
   /* ── Zoom ── */
   const ZOOM_MIN  = 0.4;
