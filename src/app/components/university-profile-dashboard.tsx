@@ -6,9 +6,9 @@ const TOTAL_PAGES = 2;
 
 // Lista de centros disponibles
 const CENTROS = [
-  { id: 'centro-engativa', nombre: 'Engativá' },
+  { id: 'centro-engativa', nombre: 'Especial Minuto de Dios - Engativá' },
   { id: 'centro-kennedy', nombre: 'Kennedy' },
-  { id: 'centro-santa-fe-las-cruces', nombre: 'Las Cruces Santa Fé' },
+  { id: 'centro-santa-fe-las-cruces', nombre: 'Las Cruces- Santa Fe' },
   { id: 'centro-perdomo-ciudad-bolivar', nombre: 'Perdomo - Ciudad Bolívar' },
   { id: 'centro-san-cristobal-usaquen', nombre: 'San Cristóbal Norte - Usaquén' },
 ];

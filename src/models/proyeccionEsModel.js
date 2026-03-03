@@ -1,16 +1,4 @@
-/**
- * proyeccionEsModel.js
- *
- * TABLA 3 — fuentes de datos:
- *   Proyectado     ← Proyecciones_cu (tipo_informacion='Meta', año=2026, Q1/S1)
- *   Nuevos Matric. ← Poblacion Estudiantil SUM([Estudiantes Nuevos])
- *   Continuos/Tot. ← Sin dato real → matriculado = 0, variación = -proyectado
- *   Variación / %  ← Calculado sin decimales, color verde/rojo según esPositivo/esExito
- */
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Utilidades
-// ─────────────────────────────────────────────────────────────────────────────
 const fmt = (val) => {
   if (val === undefined || val === null || val === "") return "-";
   const num = parseFloat(String(val).replace(",", "."));
@@ -147,8 +135,6 @@ const getMatric2026 = (campo, nivel = null, modalidad = null) => {
     if (modalidad && String(d.modalidad       ?? "").trim().toLowerCase() !== modalidad.toLowerCase()) return false;
     return true;
   });
-
-  console.log("OBJETO COMPLETO:", JSON.stringify(matriculados2026[0], null, 2));
   
   if (filtrados.length === 0) return null;
   return filtrados.reduce((acc, d) => {
@@ -227,20 +213,25 @@ const getComp2026 = (nivel = null, modalidad = null) => ({
   };
 
   // ── GRÁFICA 2: Deserción ──────────────────────────────────────────────────
-  const getDesercionPorcentaje = (modalidad) =>
-    YEARS.map((año) => {
-      const item = desercion.find(
-        (d) =>
-          String(d.año) === String(año) &&
-          String(d.modalidad ?? "").trim().toLowerCase() === modalidad.toLowerCase()
-      );
-      return item ? Number(item.porcentaje).toFixed(1) : "0.0";
-    });
+  // ── GRÁFICA 2: Deserción ──────────────────────────────────────────────────
+const getDesercionPorcentaje = (modalidad) =>
+  YEARS.map((año) => {
+    const item = desercion.find(
+      (d) =>
+        String(d.año) === String(año) &&
+        String(d.modalidad ?? "").trim().toLowerCase() === modalidad.toLowerCase()
+    );
+    if (!item) return 0;
+    // Convertir a número, manejando coma decimal
+    const valStr = String(item.porcentaje).replace(',', '.').trim();
+    const num = parseFloat(valStr);
+    return isNaN(num) ? 0 : num;
+  });
 
-  const graficaDesercion = {
-    presencial: getDesercionPorcentaje("Presencial"),
-    distancia:  getDesercionPorcentaje("Distancia"),
-  };
+const graficaDesercion = {
+  presencial: getDesercionPorcentaje("Presencial"),
+  distancia:  getDesercionPorcentaje("Distancia"),
+};
 
   // ── GRÁFICA 3: Líneas por Nivel de Formación ─────────────────────────────
   const getValoresLinea = (nivelFormacion) =>
