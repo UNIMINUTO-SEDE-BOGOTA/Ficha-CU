@@ -57,33 +57,53 @@ const handlePrint = () => {
       <head>
         <title>Impresión Ficha</title>
         <style>
-          @page { size: A4 landscape; margin: 0; }
+          @page {
+            size: 297mm 210mm;
+            margin: 0;
+          }
           * {
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
             color-adjust: exact !important;
             box-sizing: border-box;
           }
-          html, body { margin: 0; padding: 0; width: 297mm; background: white; }
-          .sheet {
-            width: 297mm !important;
-            height: 210mm !important;
-            overflow: hidden !important;
-            display: block;
-            page-break-after: always;
+          html, body {
+            margin: 0;
+            padding: 0;
+            background: white;
           }
-          .sheet:last-child { page-break-after: avoid; }
-          .sheet > * { transform: none !important; }
-          @media print {
-            html { zoom: 1 !important; -webkit-text-size-adjust: 100% !important; }
+          .sheet {
+            width: 297mm;
+            height: 210mm;
+            overflow: hidden;
+            page-break-after: always;
+            page-break-inside: avoid;
+            display: flex;
+            align-items: flex-start;
+            justify-content: flex-start;
+          }
+          .sheet:last-child {
+            page-break-after: avoid;
+          }
+          /* El truco: el componente mide 297mm x 210mm exacto,
+             solo necesitamos que no haya ningún zoom del browser */
+          .sheet-inner {
+            width: 297mm;
+            height: 210mm;
+            transform-origin: top left;
+            flex-shrink: 0;
           }
           ${styles}
         </style>
         <link rel="stylesheet" href="/index.css" />
       </head>
       <body>
-        <div class="sheet">${el1.outerHTML}</div>
-        <div class="sheet">${el2.outerHTML}</div>
+        <div class="sheet">
+          <div class="sheet-inner">${el1.outerHTML}</div>
+        </div>
+        <div class="sheet">
+          <div class="sheet-inner">${el2.outerHTML}</div>
+        </div>
       </body>
     </html>
   `);
