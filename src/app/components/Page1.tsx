@@ -148,9 +148,9 @@ export function Page1({ innerRef, centroId = 'centro-engativa' }: Props) {
               <tbody>
                 <tr>
                   <td className="border px-2 py-0.5">1. Pregrado</td>
-                  <td className="border px-2 py-0.5 text-right">{studentSummary.pregradoDistancia}</td>
-                  <td className="border px-2 py-0.5 text-right">{studentSummary.pregradoPresencial}</td>
-                  <td className="border px-2 py-0.5 text-right font-bold bg-[#C7B8E7]">{studentSummary.pregradoTotal}</td>
+                  <td className="border px-2 py-0.5 text-right">{formatNumber(studentSummary.pregradoPresencial)}</td>
+                  <td className="border px-2 py-0.5 text-right">{formatNumber(studentSummary.pregradoPresencial)}</td>
+                  <td className="border px-2 py-0.5 text-right font-bold bg-[#C7B8E7]">{formatNumber(studentSummary.pregradoTotal)}</td>
                 </tr>
                 <tr>
                   <td className="border px-2 py-0.5">2. Posgrado</td>
