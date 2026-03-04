@@ -81,7 +81,7 @@ export function Page1({ innerRef, centroId = 'centro-engativa' }: Props) {
         </div>
  
         <div className="border shadow-sm mt-0.5">
-          <table className="w-full text-[7.5px] border-collapse leading-tight">
+          <table className="w-full text-[9px] border-collapse leading-tight">
             <thead>
               <tr className="bg-[#C3E0FB] text-black">
                 <th className="border px-1 py-[3px] text-left">Nombre Corto</th>
