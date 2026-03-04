@@ -1,71 +1,138 @@
-// proyeccionPage1Model.js
-const fmt = (val) => (val !== undefined && val !== null ? val.toLocaleString() : "-");
-
-// Función para generar valores por año con formato
-const generarValoresAnio = (data, nombreFila, años) => {
-  // data sería un objeto con los valores por año para esa fila
-  // Por ahora, mientras no hay API, devolvemos "-" para todos
-  return años.map(() => "-");
+// models/proyeccionPage1Model.js
+ 
+const ANIOS = [2025, 2026, 2027, 2028, 2029, 2030];
+ 
+const obtenerValorAnio = (item, anio) => {
+  const anioStr = String(anio);
+  const claveEncontrada = Object.keys(item).find(
+    (k) => String(k).trim() === anioStr
+  );
+  return claveEncontrada !== undefined ? item[claveEncontrada] : undefined;
 };
-
-export const transformarPage1 = (bases) => {
-  // Si no hay bases, devolver estructura con guiones
-  if (!bases) {
-    // Definir años
-    const añosFinancial = ["LB 2025", "2026", "2027", "2028", "2029", "2030"];
-    const añosIndicadores = ["2025", "2025 Real", "2026", "2027", "2028", "2029", "2030"];
-
-    // Tabla financiera
-    const financialRows = añosFinancial.map(año => ({
-      año,
-      ingresos: "-",
-      costos: "-",
-      pctCostos: "-",
-      ebitda: "-",
-      pctEbitda: "-"
-    }));
-
-    // Indicadores (lista fija de nombres)
-    const nombresIndicadores = [
-      "Deserción Distancia",
-      "Deserción Presencial",
-      "Diversificación de Ingresos",
-      "EBITDA",
-      "Educación Continua",
-      "Estudiantes Centro Universitario",
-      "Matrícula Nuevos",
-      "Saber PRO Presencial",
-      "Tasa de Conversión",
-      "Tipología Centro Universitario"
-    ];
-
-    const indicatorsRows = nombresIndicadores.map(nombre => {
-      // Para Tipología Centro Universitario, el valor puede ser texto (ej. "A")
-      // Por ahora devolvemos "-" para todos los años
-      return [nombre, ...añosIndicadores.map(() => "-")];
-    });
-
-    // Resumen de estudiantes para la derecha (valores de ejemplo, pero con guiones)
-    const studentSummary = {
-      pregradoDistancia: "-",
-      pregradoPresencial: "-",
-      pregradoTotal: "-",
-      posgradoDistancia: "-",
-      posgradoPresencial: "-",
-      posgradoTotal: "-",
-      totalGeneral: "-",
-      hombres: "-",
-      mujeres: "-"
-    };
-
-    return {
-      financialRows,
-      indicatorsRows,
-      studentSummary
-    };
+ 
+const mostrarValor = (valor) => {
+  if (valor === null || valor === undefined || String(valor).trim() === '') {
+    return '-';
   }
-
-  // Aquí iría la lógica real cuando haya API
-  // Por ahora retornamos lo mismo que el caso sin datos
-  return transformarPage1(null);
+  return String(valor).trim();
 };
+ 
+export function transformarPage1(apiData) {
+
+ 
+  if (!apiData) return generarEstructurasVacias();
+ 
+  const indicators = apiData.indicators || [];
+ 
+  // Filtrar items con Nombre Corto válido
+  const itemsValidos = indicators.filter((item) => {
+    const nombre = item['Nombre Corto'];
+    return nombre && String(nombre).trim() !== '';
+  });
+ 
+ 
+  // ==========================================
+  // TODOS los indicadores de la BD, sin lista fija, sin exclusiones
+  // ==========================================
+  const indicatorsRows = itemsValidos.map((item) => {
+    const nombre = String(item['Nombre Corto']).trim();
+    return [
+      nombre,
+      ...ANIOS.map((anio) => mostrarValor(obtenerValorAnio(item, anio)))
+    ];
+  });
+ 
+  // Filas financieras
+  const financialRows = generarFinancialRows(apiData.proyecciones || []);
+ 
+  // Resumen de estudiantes
+  const studentSummary = generarStudentSummary(apiData.studentSummary);
+ 
+  return {
+    financialRows,
+    indicatorsRows,
+    studentSummary
+  };
+}
+ 
+function generarFinancialRows(proyecciones) {
+  const proyeccionMap = {};
+ 
+  proyecciones.forEach((p) => {
+    const nivelAcademico = p['Nivel Académico'] || p['Nivel academico'] || '';
+    const tipoInfo = p['Tipo de Información'] || p['Tipo de Informacion'] || '';
+    const anio = p['Año'] || p['Anio'] || p['año'] || '';
+    const key = `${nivelAcademico}_${tipoInfo}_${anio}`;
+    proyeccionMap[key] = p.Valor;
+  });
+ 
+  return ANIOS.map((anio, index) => {
+    const anioTexto = index === 0 ? 'LB 2025' : String(anio);
+ 
+    const ingresosPregrado = Number(proyeccionMap[`Pregrado_Ingresos Matrícula_${anio}`] || 0);
+    const ingresosPosgrado = Number(proyeccionMap[`Posgrado_Ingresos Matrícula_${anio}`] || 0);
+    const ingresos = ingresosPregrado + ingresosPosgrado;
+ 
+    const costosPregrado = Number(proyeccionMap[`Pregrado_Costos y Gastos_${anio}`] || 0);
+    const costosPosgrado = Number(proyeccionMap[`Posgrado_Costos y Gastos_${anio}`] || 0);
+    const costos = costosPregrado + costosPosgrado;
+ 
+    const pctCostos = ingresos > 0 ? (costos / ingresos) * 100 : 0;
+    const ebitda = ingresos - costos;
+    const pctEbitda = ingresos > 0 ? (ebitda / ingresos) * 100 : 0;
+ 
+    return {
+      año: anioTexto,
+      ingresos: mostrarValor(ingresos || null),
+      costos: mostrarValor(costos || null),
+      pctCostos: mostrarValor(pctCostos ? pctCostos.toFixed(1) + '%' : null),
+      ebitda: mostrarValor(ebitda || null),
+      pctEbitda: mostrarValor(pctEbitda ? pctEbitda.toFixed(1) + '%' : null)
+    };
+  });
+}
+ 
+function generarStudentSummary(studentData) {
+  if (!studentData) return generarStudentSummaryVacio();
+
+  const campos = [
+    'pregradoDistancia', 'pregradoPresencial', 'pregradoTotal',
+    'posgradoDistancia', 'posgradoPresencial', 'posgradoTotal',
+    'totalGeneralDistancia', 'totalGeneralPresencial', 'totalGeneral',
+    'hombres', 'mujeres'
+  ];
+
+  const resultado = {};
+  campos.forEach((campo) => {
+    resultado[campo] = formatearMiles(studentData[campo]);
+  });
+  return resultado;
+}
+
+function formatearMiles(valor) {
+  if (valor === null || valor === undefined || String(valor).trim() === '') return '-';
+  const num = parseFloat(String(valor).replace(/\./g, '').replace(',', '.'));
+  if (isNaN(num)) return '-';
+  return Math.trunc(num).toLocaleString('es-CO');
+}
+ 
+function generarEstructurasVacias() {
+  return {
+    financialRows: ANIOS.map((anio, i) => ({
+      año: i === 0 ? 'LB 2025' : String(anio),
+      ingresos: '-', costos: '-', pctCostos: '-', ebitda: '-', pctEbitda: '-'
+    })),
+    indicatorsRows: [],
+    studentSummary: generarStudentSummaryVacio()
+  };
+}
+ 
+function generarStudentSummaryVacio() {
+  return {
+    pregradoDistancia: '-', pregradoPresencial: '-', pregradoTotal: '-',
+    posgradoDistancia: '-', posgradoPresencial: '-', posgradoTotal: '-',
+    totalGeneralDistancia: '-', totalGeneralPresencial: '-', totalGeneral: '-',
+    hombres: '-', mujeres: '-'
+  };
+  
+}

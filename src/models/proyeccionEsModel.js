@@ -1,243 +1,275 @@
-const fmt = (val) => (val !== undefined && val !== null ? val.toLocaleString() : "-");
 
-const calcularMetricasMatricula = (proyectado, historico) => {
-  if (proyectado === null && historico === null) {
-    return { proyectado: "-", matriculado: "-", variacion: "-", porcentaje: "-", esPositivo: false, esExito: false };
-  }
-  const p = proyectado || 0;
-  const h = historico || 0;
-  const variacion = h - p;
-  const porcentaje = p > 0 ? (h / p) * 100 : 0;
+const fmt = (val) => {
+  if (val === undefined || val === null || val === "") return "-";
+  const num = parseFloat(String(val).replace(",", "."));
+  if (isNaN(num)) return "-";
+  return Math.trunc(num).toLocaleString("es-CO");
+};
+
+const toNum = (fmtVal) =>
+  parseInt(String(fmtVal).replace(/\./g, "").replace(/,/g, ""), 10) || 0;
+
+const sumarFmt = (a, b) => fmt(toNum(a) + toNum(b));
+
+/**
+ * Calcula métricas comparando proyectado (Meta) vs matriculado real.
+ * Si matriculado es null → se trata como 0 (sin dato real aún).
+ * Variación y % sin decimales.
+ * esPositivo controla color verde/rojo en variación Y porcentaje.
+ */
+const calcularMetricasMatricula = (proyectado, matriculado) => {
+  const p = Number(proyectado)  || 0;
+  const m = Number(matriculado) || 0;  // null → 0
+
+  const variacion  = m - p;
+  const porcentaje = p > 0 ? (m / p) * 100 : 0;
+
+  // Sin decimales, sin coma en número entero
+  const varAbs = Math.round(Math.abs(variacion));
+  const varStr = variacion >= 0
+    ? `+${varAbs.toLocaleString("es-CO")}`
+    : `-${varAbs.toLocaleString("es-CO")}`;
+
+  const pctStr = p > 0 ? `${Math.round(porcentaje)} %` : "0 %";
 
   return {
-    proyectado: fmt(p),
-    matriculado: fmt(h),
-    variacion: variacion >= 0 ? `+${variacion}` : `${variacion}`,
-    porcentaje: p > 0 ? porcentaje.toFixed(2) + " %" : "0 %",
-    esPositivo: variacion >= 0,
-    esExito: porcentaje >= 100
+    proyectado:  fmt(p),
+    matriculado: fmt(m),
+    variacion:   varStr,
+    porcentaje:  pctStr,
+    esPositivo:  variacion >= 0,    // verde si real ≥ meta
+    esExito:     porcentaje >= 100, // verde en % si cumplió meta
   };
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Constantes
+// ─────────────────────────────────────────────────────────────────────────────
+const YEARS = ["2026", "2027", "2028", "2029", "2030"];
+const TIPO_PROYECCION = "Meta";
+
+// ─────────────────────────────────────────────────────────────────────────────
+// getValor: SUMA todos los valores de las filas que cumplan los filtros
+// ─────────────────────────────────────────────────────────────────────────────
+const getValor = (filtros, fuente) => {
+  const coinciden = fuente.filter((d) =>
+    Object.keys(filtros).every((k) => {
+      const vFila   = String(d[k]       ?? "").trim().toLowerCase();
+      const vFiltro = String(filtros[k] ?? "").trim().toLowerCase();
+      return vFila === vFiltro;
+    })
+  );
+  if (coinciden.length === 0) return null;
+  return coinciden.reduce((acc, d) => {
+    const v = parseFloat(String(d.valor ?? "0").replace(",", "."));
+    return acc + (isNaN(v) ? 0 : v);
+  }, 0);
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// procEst: genera el array de 5 años (tipo_informacion siempre = 'Meta')
+// ─────────────────────────────────────────────────────────────────────────────
+const procEst = (filtrosBase, fuente) =>
+  YEARS.map((año) => {
+    const base = {
+      ...filtrosBase,
+      año:              String(año),
+      tipo_informacion: TIPO_PROYECCION,
+    };
+    return {
+      nuevos:    fmt(getValor({ ...base, tipo_estudiante: "Nuevos"    }, fuente)),
+      continuos: fmt(getValor({ ...base, tipo_estudiante: "Continuos" }, fuente)),
+      totales:   fmt(getValor({ ...base, tipo_estudiante: "Totales"   }, fuente)),
+    };
+  });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Transformador principal
+// ─────────────────────────────────────────────────────────────────────────────
 export const transformarPage2 = (bases) => {
-  if (!bases || !bases.proyecciones) return null;
+  if (!bases) return null;
 
-  const { proyecciones, oferta, desercion } = bases;
-  const anios = ["2026", "2027", "2028", "2029", "2030"];
+  const {
+    proyecciones     = [],
+    matriculados2026 = [],
+    desercion        = [],
+    oferta           = [],
+  } = bases;
 
-  // Filtrar por años 2026+ y periodo S1/Q1
-  const fEst = proyecciones.filter(d => parseInt(d.anio) >= 2026 && (d.periodo === "S1" || d.periodo === "Q1"));
-  const fOf = oferta?.filter(d => parseInt(d.anio) >= 2026 && (d.periodo === "S1" || d.periodo === "Q1")) || [];
-  const fDes = desercion?.filter(d => parseInt(d.anio) >= 2026 && (d.periodo === "S1" || d.periodo === "Q1")) || [];
+  // ── TABLA 1 ───────────────────────────────────────────────────────────────
+  const t1_pregPresencial = procEst({ nivel_academico: "Pregrado", modalidad: "Presencial" }, proyecciones);
+  const t1_pregDistancia  = procEst({ nivel_academico: "Pregrado", modalidad: "Distancia"  }, proyecciones);
+  const t1_pregTotal      = procEst({ nivel_academico: "Pregrado"                           }, proyecciones);
+  const t1_posPresencial  = procEst({ nivel_academico: "Posgrado", modalidad: "Presencial" }, proyecciones);
+  const t1_posDistancia   = procEst({ nivel_academico: "Posgrado", modalidad: "Distancia"  }, proyecciones);
+  const t1_posTotal       = procEst({ nivel_academico: "Posgrado"                           }, proyecciones);
 
-  const getEst = (filtros) => fEst.find(d => Object.keys(filtros).every(k => d[k] === filtros[k]))?.valor || null;
-  const getOf = (filtros) => fOf.find(d => Object.keys(filtros).every(k => d[k] === filtros[k]))?.valor || 0;
-  const getDes = (filtros) => fDes.find(d => Object.keys(filtros).every(k => d[k] === filtros[k]))?.valor || 0;
-
-  const procEst = (nivel, key, val) => anios.map(anio => ({
-    nuevos: fmt(getEst({ nivel_academico: nivel, [key]: val, anio, tipo_estudiante: "Nuevos" })),
-    continuos: fmt(getEst({ nivel_academico: nivel, [key]: val, anio, tipo_estudiante: "Continuos" })),
-    totales: fmt(getEst({ nivel_academico: nivel, [key]: val, anio, tipo_estudiante: "Totales" }))
+  const t1_grandTotal = YEARS.map((_, i) => ({
+    nuevos:    sumarFmt(t1_pregTotal[i].nuevos,    t1_posTotal[i].nuevos),
+    continuos: sumarFmt(t1_pregTotal[i].continuos, t1_posTotal[i].continuos),
+    totales:   sumarFmt(t1_pregTotal[i].totales,   t1_posTotal[i].totales),
   }));
 
-  // Totales por nivel
-  const totalPregrado = anios.map(anio => {
-    const nuevos = getEst({ nivel_academico: "Pregrado", anio, tipo_estudiante: "Nuevos" }) || 0;
-    const continuos = getEst({ nivel_academico: "Pregrado", anio, tipo_estudiante: "Continuos" }) || 0;
-    return {
-      nuevos: fmt(nuevos),
-      continuos: fmt(continuos),
-      totales: fmt(nuevos + continuos)
-    };
-  });
+  // ── TABLA 2 ───────────────────────────────────────────────────────────────
+  const t2_modPresencial = procEst({ modalidad: "Presencial" }, proyecciones);
+  const t2_modDistancia  = procEst({ modalidad: "Distancia"  }, proyecciones);
+  const t2_modTotal      = procEst({                          }, proyecciones);
 
-  const totalPosgrado = anios.map(anio => {
-    const nuevos = getEst({ nivel_academico: "Posgrado", anio, tipo_estudiante: "Nuevos" }) || 0;
-    const continuos = getEst({ nivel_academico: "Posgrado", anio, tipo_estudiante: "Continuos" }) || 0;
-    return {
-      nuevos: fmt(nuevos),
-      continuos: fmt(continuos),
-      totales: fmt(nuevos + continuos)
-    };
-  });
+  // ── TABLA 3: Comparativa 2026 ─────────────────────────────────────────────
+  const data2026proy = proyecciones.filter((d) => String(d.año) === "2026");
 
-  const totalGeneral = anios.map(anio => {
-    const nuevos = (getEst({ nivel_academico: "Pregrado", anio, tipo_estudiante: "Nuevos" }) || 0) +
-                   (getEst({ nivel_academico: "Posgrado", anio, tipo_estudiante: "Nuevos" }) || 0);
-    const continuos = (getEst({ nivel_academico: "Pregrado", anio, tipo_estudiante: "Continuos" }) || 0) +
-                      (getEst({ nivel_academico: "Posgrado", anio, tipo_estudiante: "Continuos" }) || 0);
-    return {
-      nuevos: fmt(nuevos),
-      continuos: fmt(continuos),
-      totales: fmt(nuevos + continuos)
-    };
-  });
-
-  // Tabla 3: Matrículas 2026 (ejemplo con datos fijos mientras no hay API)
-  const matriculas2026 = {
-    pregradoPresencial: {
-      nuevos: calcularMetricasMatricula(
-        getEst({ nivel_academico: "Pregrado", modalidad: "Presencial", anio: "2026", tipo_estudiante: "Nuevos", tipo_informacion: "Proyectado" }),
-        getEst({ nivel_academico: "Pregrado", modalidad: "Presencial", anio: "2026", tipo_estudiante: "Nuevos", tipo_informacion: "Historico" })
-      ),
-      continuos: calcularMetricasMatricula(
-        getEst({ nivel_academico: "Pregrado", modalidad: "Presencial", anio: "2026", tipo_estudiante: "Continuos", tipo_informacion: "Proyectado" }),
-        getEst({ nivel_academico: "Pregrado", modalidad: "Presencial", anio: "2026", tipo_estudiante: "Continuos", tipo_informacion: "Historico" })
-      ),
-      totales: calcularMetricasMatricula(
-        getEst({ nivel_academico: "Pregrado", modalidad: "Presencial", anio: "2026", tipo_estudiante: "Totales", tipo_informacion: "Proyectado" }),
-        getEst({ nivel_academico: "Pregrado", modalidad: "Presencial", anio: "2026", tipo_estudiante: "Totales", tipo_informacion: "Historico" })
-      )
-    },
-    pregradoDistancia: {
-      nuevos: calcularMetricasMatricula(
-        getEst({ nivel_academico: "Pregrado", modalidad: "Distancia", anio: "2026", tipo_estudiante: "Nuevos", tipo_informacion: "Proyectado" }),
-        getEst({ nivel_academico: "Pregrado", modalidad: "Distancia", anio: "2026", tipo_estudiante: "Nuevos", tipo_informacion: "Historico" })
-      ),
-      continuos: calcularMetricasMatricula(
-        getEst({ nivel_academico: "Pregrado", modalidad: "Distancia", anio: "2026", tipo_estudiante: "Continuos", tipo_informacion: "Proyectado" }),
-        getEst({ nivel_academico: "Pregrado", modalidad: "Distancia", anio: "2026", tipo_estudiante: "Continuos", tipo_informacion: "Historico" })
-      ),
-      totales: calcularMetricasMatricula(
-        getEst({ nivel_academico: "Pregrado", modalidad: "Distancia", anio: "2026", tipo_estudiante: "Totales", tipo_informacion: "Proyectado" }),
-        getEst({ nivel_academico: "Pregrado", modalidad: "Distancia", anio: "2026", tipo_estudiante: "Totales", tipo_informacion: "Historico" })
-      )
-    },
-    pregradoTotal: {
-      nuevos: calcularMetricasMatricula(
-        getEst({ nivel_academico: "Pregrado", anio: "2026", tipo_estudiante: "Nuevos", tipo_informacion: "Proyectado" }),
-        getEst({ nivel_academico: "Pregrado", anio: "2026", tipo_estudiante: "Nuevos", tipo_informacion: "Historico" })
-      ),
-      continuos: calcularMetricasMatricula(
-        getEst({ nivel_academico: "Pregrado", anio: "2026", tipo_estudiante: "Continuos", tipo_informacion: "Proyectado" }),
-        getEst({ nivel_academico: "Pregrado", anio: "2026", tipo_estudiante: "Continuos", tipo_informacion: "Historico" })
-      ),
-      totales: calcularMetricasMatricula(
-        getEst({ nivel_academico: "Pregrado", anio: "2026", tipo_estudiante: "Totales", tipo_informacion: "Proyectado" }),
-        getEst({ nivel_academico: "Pregrado", anio: "2026", tipo_estudiante: "Totales", tipo_informacion: "Historico" })
-      )
-    },
-    posgradoPresencial: {
-      nuevos: calcularMetricasMatricula(
-        getEst({ nivel_academico: "Posgrado", modalidad: "Presencial", anio: "2026", tipo_estudiante: "Nuevos", tipo_informacion: "Proyectado" }),
-        getEst({ nivel_academico: "Posgrado", modalidad: "Presencial", anio: "2026", tipo_estudiante: "Nuevos", tipo_informacion: "Historico" })
-      ),
-      continuos: calcularMetricasMatricula(
-        getEst({ nivel_academico: "Posgrado", modalidad: "Presencial", anio: "2026", tipo_estudiante: "Continuos", tipo_informacion: "Proyectado" }),
-        getEst({ nivel_academico: "Posgrado", modalidad: "Presencial", anio: "2026", tipo_estudiante: "Continuos", tipo_informacion: "Historico" })
-      ),
-      totales: calcularMetricasMatricula(
-        getEst({ nivel_academico: "Posgrado", modalidad: "Presencial", anio: "2026", tipo_estudiante: "Totales", tipo_informacion: "Proyectado" }),
-        getEst({ nivel_academico: "Posgrado", modalidad: "Presencial", anio: "2026", tipo_estudiante: "Totales", tipo_informacion: "Historico" })
-      )
-    },
-    posgradoDistancia: {
-      nuevos: calcularMetricasMatricula(
-        getEst({ nivel_academico: "Posgrado", modalidad: "Distancia", anio: "2026", tipo_estudiante: "Nuevos", tipo_informacion: "Proyectado" }),
-        getEst({ nivel_academico: "Posgrado", modalidad: "Distancia", anio: "2026", tipo_estudiante: "Nuevos", tipo_informacion: "Historico" })
-      ),
-      continuos: calcularMetricasMatricula(
-        getEst({ nivel_academico: "Posgrado", modalidad: "Distancia", anio: "2026", tipo_estudiante: "Continuos", tipo_informacion: "Proyectado" }),
-        getEst({ nivel_academico: "Posgrado", modalidad: "Distancia", anio: "2026", tipo_estudiante: "Continuos", tipo_informacion: "Historico" })
-      ),
-      totales: calcularMetricasMatricula(
-        getEst({ nivel_academico: "Posgrado", modalidad: "Distancia", anio: "2026", tipo_estudiante: "Totales", tipo_informacion: "Proyectado" }),
-        getEst({ nivel_academico: "Posgrado", modalidad: "Distancia", anio: "2026", tipo_estudiante: "Totales", tipo_informacion: "Historico" })
-      )
-    },
-    posgradoTotal: {
-      nuevos: calcularMetricasMatricula(
-        getEst({ nivel_academico: "Posgrado", anio: "2026", tipo_estudiante: "Nuevos", tipo_informacion: "Proyectado" }),
-        getEst({ nivel_academico: "Posgrado", anio: "2026", tipo_estudiante: "Nuevos", tipo_informacion: "Historico" })
-      ),
-      continuos: calcularMetricasMatricula(
-        getEst({ nivel_academico: "Posgrado", anio: "2026", tipo_estudiante: "Continuos", tipo_informacion: "Proyectado" }),
-        getEst({ nivel_academico: "Posgrado", anio: "2026", tipo_estudiante: "Continuos", tipo_informacion: "Historico" })
-      ),
-      totales: calcularMetricasMatricula(
-        getEst({ nivel_academico: "Posgrado", anio: "2026", tipo_estudiante: "Totales", tipo_informacion: "Proyectado" }),
-        getEst({ nivel_academico: "Posgrado", anio: "2026", tipo_estudiante: "Totales", tipo_informacion: "Historico" })
-      )
-    },
-    totalGeneral: {
-      nuevos: calcularMetricasMatricula(
-        (getEst({ nivel_academico: "Pregrado", anio: "2026", tipo_estudiante: "Nuevos", tipo_informacion: "Proyectado" }) || 0) +
-        (getEst({ nivel_academico: "Posgrado", anio: "2026", tipo_estudiante: "Nuevos", tipo_informacion: "Proyectado" }) || 0),
-        (getEst({ nivel_academico: "Pregrado", anio: "2026", tipo_estudiante: "Nuevos", tipo_informacion: "Historico" }) || 0) +
-        (getEst({ nivel_academico: "Posgrado", anio: "2026", tipo_estudiante: "Nuevos", tipo_informacion: "Historico" }) || 0)
-      ),
-      continuos: calcularMetricasMatricula(
-        (getEst({ nivel_academico: "Pregrado", anio: "2026", tipo_estudiante: "Continuos", tipo_informacion: "Proyectado" }) || 0) +
-        (getEst({ nivel_academico: "Posgrado", anio: "2026", tipo_estudiante: "Continuos", tipo_informacion: "Proyectado" }) || 0),
-        (getEst({ nivel_academico: "Pregrado", anio: "2026", tipo_estudiante: "Continuos", tipo_informacion: "Historico" }) || 0) +
-        (getEst({ nivel_academico: "Posgrado", anio: "2026", tipo_estudiante: "Continuos", tipo_informacion: "Historico" }) || 0)
-      ),
-      totales: calcularMetricasMatricula(
-        (getEst({ nivel_academico: "Pregrado", anio: "2026", tipo_estudiante: "Totales", tipo_informacion: "Proyectado" }) || 0) +
-        (getEst({ nivel_academico: "Posgrado", anio: "2026", tipo_estudiante: "Totales", tipo_informacion: "Proyectado" }) || 0),
-        (getEst({ nivel_academico: "Pregrado", anio: "2026", tipo_estudiante: "Totales", tipo_informacion: "Historico" }) || 0) +
-        (getEst({ nivel_academico: "Posgrado", anio: "2026", tipo_estudiante: "Totales", tipo_informacion: "Historico" }) || 0)
-      )
-    }
+  const getProy2026 = (tipoEst, nivel = null, modalidad = null) => {
+    const filtros = { tipo_informacion: "Meta", tipo_estudiante: tipoEst };
+    if (nivel)    filtros.nivel_academico = nivel;
+    if (modalidad) filtros.modalidad      = modalidad;
+    return getValor(filtros, data2026proy);
   };
 
-  // Datos para gráficas
+  // Solo existe nuevos_matriculados desde Poblacion Estudiantil
+// 1. calcularMetricasMatricula — esPositivo para variacion, esExito para %
+// 1.5 getMatric2026
+// ── getMatric2026 ──────────────────────────────────────────────────────────
+const getMatric2026 = (campo, nivel = null, modalidad = null) => {
+  const filtrados = matriculados2026.filter((d) => {
+    if (nivel     && String(d.nivel_academico ?? "").trim().toLowerCase() !== nivel.toLowerCase())     return false;
+    if (modalidad && String(d.modalidad       ?? "").trim().toLowerCase() !== modalidad.toLowerCase()) return false;
+    return true;
+  });
+  
+  if (filtrados.length === 0) return null;
+  return filtrados.reduce((acc, d) => {
+    const v = parseFloat(String(d[campo] ?? "0").replace(",", "."));
+    return acc + (isNaN(v) ? 0 : v);
+  }, 0);
+};
+
+// ── getComp2026 ────────────────────────────────────────────────────────────
+const getComp2026 = (nivel = null, modalidad = null) => ({
+  nuevos: calcularMetricasMatricula(
+    getProy2026("Nuevos", nivel, modalidad),
+    getMatric2026("nuevos_matriculados", nivel, modalidad)
+  ),
+  continuos: calcularMetricasMatricula(
+    getProy2026("Continuos", nivel, modalidad),
+    getMatric2026("continuos_matriculados", nivel, modalidad)
+  ),
+  totales: calcularMetricasMatricula(
+    getProy2026("Totales", nivel, modalidad),
+    getMatric2026("totales_matriculados", nivel, modalidad)
+  ),
+});
+
+  const t3_matriculas2026 = {
+    pregradoPresencial: getComp2026("Pregrado", "Presencial"),
+    pregradoDistancia:  getComp2026("Pregrado", "Distancia"),
+    pregradoTotal:      getComp2026("Pregrado"),
+    posgradoPresencial: getComp2026("Posgrado", "Presencial"),
+    posgradoDistancia:  getComp2026("Posgrado", "Distancia"),
+    posgradoTotal:      getComp2026("Posgrado"),
+    totalGeneral:       getComp2026(),
+  };
+
+  // ── TABLA 4 ───────────────────────────────────────────────────────────────
+  const t4_pregSemestral     = procEst({ nivel_academico: "Pregrado", periodicidad: "Semestral"     }, proyecciones);
+  const t4_pregCuatrimestral = procEst({ nivel_academico: "Pregrado", periodicidad: "Cuatrimestral" }, proyecciones);
+  const t4_pregTotal         = procEst({ nivel_academico: "Pregrado"                                 }, proyecciones);
+  const t4_posSemestral      = procEst({ nivel_academico: "Posgrado", periodicidad: "Semestral"     }, proyecciones);
+  const t4_posCuatrimestral  = procEst({ nivel_academico: "Posgrado", periodicidad: "Cuatrimestral" }, proyecciones);
+  const t4_posTotal          = procEst({ nivel_academico: "Posgrado"                                 }, proyecciones);
+
+  const t4_grandTotal = YEARS.map((_, i) => ({
+    nuevos:    sumarFmt(t4_pregTotal[i].nuevos,    t4_posTotal[i].nuevos),
+    continuos: sumarFmt(t4_pregTotal[i].continuos, t4_posTotal[i].continuos),
+    totales:   sumarFmt(t4_pregTotal[i].totales,   t4_posTotal[i].totales),
+  }));
+
+  // ── GRÁFICA 1: Oferta Académica ───────────────────────────────────────────
+  const ofertaPorAnio = (filtros) =>
+    YEARS.map((año) => {
+      const total = oferta
+        .filter((d) => {
+          if (String(d.año).trim() !== String(año)) return false;
+          return Object.keys(filtros).every(
+            (k) =>
+              String(d[k] ?? "").trim().toLowerCase() ===
+              String(filtros[k] ?? "").trim().toLowerCase()
+          );
+        })
+        .reduce((acc, cur) => acc + (Number(cur.snies_unico) || 0), 0);
+      return fmt(total);
+    });
+
   const graficaOferta = {
-    pregrado: anios.map(a => getOf({ nivel_academico: "Pregrado", anio: a })),
-    pregradoSemestral: anios.map(a => getOf({ nivel_academico: "Pregrado", periodicidad: "Semestral", anio: a })),
-    pregradoCuatrimestral: anios.map(a => getOf({ nivel_academico: "Pregrado", periodicidad: "Cuatrimestral", anio: a })),
-    posgrado: anios.map(a => getOf({ nivel_academico: "Posgrado", anio: a })),
-    posgradoSemestral: anios.map(a => getOf({ nivel_academico: "Posgrado", periodicidad: "Semestral", anio: a })),
-    posgradoCuatrimestral: anios.map(a => getOf({ nivel_academico: "Posgrado", periodicidad: "Cuatrimestral", anio: a })),
-    total: anios.map(a => getOf({ anio: a })),
-    presencial: anios.map(a => getOf({ modalidad: "Presencial", anio: a })),
-    distancia: anios.map(a => getOf({ modalidad: "Distancia", anio: a })),
-    totalModalidad: anios.map(a => getOf({ anio: a }))
+    pregrado:              ofertaPorAnio({ nivel_academico: "Pregrado" }),
+    pregradoSemestral:     ofertaPorAnio({ nivel_academico: "Pregrado", periodicidad: "Semestral"     }),
+    pregradoCuatrimestral: ofertaPorAnio({ nivel_academico: "Pregrado", periodicidad: "Cuatrimestral" }),
+    posgrado:              ofertaPorAnio({ nivel_academico: "Posgrado" }),
+    posgradoSemestral:     ofertaPorAnio({ nivel_academico: "Posgrado", periodicidad: "Semestral"     }),
+    posgradoCuatrimestral: ofertaPorAnio({ nivel_academico: "Posgrado", periodicidad: "Cuatrimestral" }),
+    total:                 ofertaPorAnio({}),
+    presencial:            ofertaPorAnio({ modalidad: "Presencial" }),
+    distancia:             ofertaPorAnio({ modalidad: "Distancia"  }),
+    totalModalidad:        ofertaPorAnio({}),
   };
 
-  const graficaDesercion = {
-    presencial: anios.map(a => getDes({ modalidad: "Presencial", anio: a })),
-    distancia: anios.map(a => getDes({ modalidad: "Distancia", anio: a }))
+  // ── GRÁFICA 2: Deserción ──────────────────────────────────────────────────
+  // ── GRÁFICA 2: Deserción ──────────────────────────────────────────────────
+const getDesercionPorcentaje = (modalidad) =>
+  YEARS.map((año) => {
+    const item = desercion.find(
+      (d) =>
+        String(d.año) === String(año) &&
+        String(d.modalidad ?? "").trim().toLowerCase() === modalidad.toLowerCase()
+    );
+    if (!item) return 0;
+    // Convertir a número, manejando coma decimal
+    const valStr = String(item.porcentaje).replace(',', '.').trim();
+    const num = parseFloat(valStr);
+    return isNaN(num) ? 0 : num;
+  });
+
+const graficaDesercion = {
+  presencial: getDesercionPorcentaje("Presencial"),
+  distancia:  getDesercionPorcentaje("Distancia"),
+};
+
+  // ── GRÁFICA 3: Líneas por Nivel de Formación ─────────────────────────────
+  const getValoresLinea = (nivelFormacion) =>
+    YEARS.map((año) => {
+      const val = getValor(
+        {
+          año:              String(año),
+          tipo_informacion: TIPO_PROYECCION,
+          tipo_estudiante:  "Totales",
+          nivel_formacion:  nivelFormacion,
+        },
+        proyecciones
+      );
+      return val != null ? Number(val) : 0;
+    });
+
+  const graficaLineas = {
+    profesional:     getValoresLinea("Profesional"),
+    maestria:        getValoresLinea("Maestría"),
+    especializacion: getValoresLinea("Especialización"),
+    doctorado:       getValoresLinea("Doctorado"),
   };
 
   return {
-    t1_pregPresencial: procEst("Pregrado", "modalidad", "Presencial"),
-    t1_pregDistancia: procEst("Pregrado", "modalidad", "Distancia"),
-    t1_pregTotal: totalPregrado,
-    t1_posPresencial: procEst("Posgrado", "modalidad", "Presencial"),
-    t1_posDistancia: procEst("Posgrado", "modalidad", "Distancia"),
-    t1_posTotal: totalPosgrado,
-    t1_grandTotal: totalGeneral,
+    t1_pregPresencial, t1_pregDistancia,  t1_pregTotal,
+    t1_posPresencial,  t1_posDistancia,   t1_posTotal,
+    t1_grandTotal,
 
-    t2_modPresencial: anios.map(anio => ({
-      nuevos: fmt(getEst({ modalidad: "Presencial", anio, tipo_estudiante: "Nuevos" })),
-      continuos: fmt(getEst({ modalidad: "Presencial", anio, tipo_estudiante: "Continuos" })),
-      totales: fmt(getEst({ modalidad: "Presencial", anio, tipo_estudiante: "Totales" }))
-    })),
-    t2_modDistancia: anios.map(anio => ({
-      nuevos: fmt(getEst({ modalidad: "Distancia", anio, tipo_estudiante: "Nuevos" })),
-      continuos: fmt(getEst({ modalidad: "Distancia", anio, tipo_estudiante: "Continuos" })),
-      totales: fmt(getEst({ modalidad: "Distancia", anio, tipo_estudiante: "Totales" }))
-    })),
-    t2_modTotal: totalGeneral,
+    t2_modPresencial, t2_modDistancia, t2_modTotal,
 
-    t3_matriculas2026: matriculas2026,
+    t3_matriculas2026,
 
-    t4_pregSemestral: procEst("Pregrado", "periodicidad", "Semestral"),
-    t4_pregCuatrimestral: procEst("Pregrado", "periodicidad", "Cuatrimestral"),
-    t4_pregTotal: totalPregrado,
-    t4_posSemestral: procEst("Posgrado", "periodicidad", "Semestral"),
-    t4_posCuatrimestral: procEst("Posgrado", "periodicidad", "Cuatrimestral"),
-    t4_posTotal: totalPosgrado,
-    t4_grandTotal: totalGeneral,
+    t4_pregSemestral, t4_pregCuatrimestral, t4_pregTotal,
+    t4_posSemestral,  t4_posCuatrimestral,  t4_posTotal,
+    t4_grandTotal,
 
     graficaOferta,
     graficaDesercion,
-    graficaLineas: {
-      profesional: anios.map(() => 0),
-      maestria: anios.map(() => 0),
-      especializacion: anios.map(() => 0),
-      doctorado: anios.map(() => 0)
-    }
+    graficaLineas,
   };
 };

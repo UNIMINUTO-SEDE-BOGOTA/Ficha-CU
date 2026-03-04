@@ -2,12 +2,6 @@ import React from 'react';
 import { useObservatorio } from '../../hooks/useObservatorio';
 import { transformarPage2 } from '../../models/proyeccionEsModel';
 
-// ============================================================================
-// CONSTANTES GLOBALES - VERSIÓN COMPACTA CON BORDES
-// ============================================================================
-// NUEVO: Eliminamos SUBTITLE fijo y lo definimos más abajo dinámicamente
-// const SUBTITLE = "Centro Universitario Especial Minuto de Dios - Engativá";
-
 const C = {
   navy:        "#012657",
   white:       "#ffffff",
@@ -23,69 +17,38 @@ const C = {
   matTotalBg:  "#FFFF99",
 };
 
-// Tamaños de fuente reducidos aún más en impresión
 const FONT = {
-  data:   "8px",
+  data:   "9px",
   header: "8px",
-  banner: "8px",
+  banner: "9px",
   graph:  "5px",
-  small:  "6px",
+  small:  "8.5px",
+  oferta: "7px",
 };
 
-// Espaciados mínimos
-const PAD = "1px 2px";
-const MPAD = "0px 1px";
+const PAD = "0px 1px";
 
-// ============================================================================
-// AÑOS (2026 - 2030)
-// ============================================================================
 const YEARS = ["2026", "2027", "2028", "2029", "2030"];
 
-// NUEVO: Mapeo de IDs de centro a nombres para mostrar en el título
 const CENTRO_NOMBRES: Record<string, string> = {
-  'centro-engativa': 'Engativá',
+  'centro-engativa': 'Especial Minuto de Dios - Engativá',
   'centro-kennedy': 'Kennedy',
-  'centro-santa-fe-las-cruces': 'Las Cruces Santa Fé',
+  'centro-santa-fe-las-cruces': 'Las Cruces - Santa Fe',
   'centro-perdomo-ciudad-bolivar': 'Perdomo - Ciudad Bolívar',
   'centro-san-cristobal-usaquen': 'San Cristóbal Norte - Usaquén',
 };
 
 // ============================================================================
-// COMPONENTES DE TABLA REUTILIZABLES
+// COMPONENTES REUTILIZABLES
 // ============================================================================
-const Th = ({
-  children, colSpan = 1,
-  bg = C.skyBlue, color = C.skyBlueTx,
-  align = "center" as "center" | "left",
-}) => (
-  <th colSpan={colSpan} style={{
-    border: "1px solid #e0e0e0",
-    backgroundColor: bg,
-    color,
-    fontSize: FONT.header,
-    fontWeight: 700,
-    textAlign: align,
-    padding: PAD,
-    whiteSpace: "nowrap"
-  }}>
+const Th = ({ children, colSpan = 1, bg = C.skyBlue, color = C.skyBlueTx, align = "center" as "center"|"left" }) => (
+  <th colSpan={colSpan} style={{ border: "1px solid #e0e0e0", backgroundColor: bg, color, fontSize: FONT.header, fontWeight: 700, textAlign: align, padding: PAD, whiteSpace: "nowrap" }}>
     {children}
   </th>
 );
 
-const Td = ({
-  children, align = "right" as "right"|"left"|"center",
-  bold = false, color = "inherit", bg = "transparent",
-}) => (
-  <td style={{
-    border: "1px solid #e0e0e0",
-    fontSize: FONT.data,
-    textAlign: align,
-    fontWeight: bold ? 700 : 400,
-    color,
-    backgroundColor: bg,
-    padding: PAD,
-    whiteSpace: "nowrap"
-  }}>
+const Td = ({ children, align = "right" as "right"|"left"|"center", bold = false, color = "inherit", bg = "transparent" }) => (
+  <td style={{ border: "1px solid #e0e0e0", fontSize: FONT.data, textAlign: align, fontWeight: bold ? 700 : 400, color, backgroundColor: bg, padding: PAD, whiteSpace: "nowrap" }}>
     {children}
   </td>
 );
@@ -116,155 +79,102 @@ const TableHeader = () => (
   </thead>
 );
 
-const tableStyle: React.CSSProperties = {
-  width: "100%",
-  borderCollapse: "collapse",
-  fontFamily: "Inter, sans-serif"
-};
-
-const rowSpanStyle: React.CSSProperties = {
-  border: "1px solid #e0e0e0",
-  fontSize: FONT.data,
-  fontWeight: 700,
-  padding: PAD,
-  verticalAlign: "middle",
-  whiteSpace: "nowrap"
-};
+const tableStyle: React.CSSProperties = { width: "95%", borderCollapse: "collapse", fontFamily: "Inter, sans-serif" };
+const rowSpanStyle: React.CSSProperties = { border: "1px solid #e0e0e0", fontSize: FONT.data, fontWeight: 700, padding: PAD, verticalAlign: "middle", whiteSpace: "nowrap" };
 
 const Banner = ({ text }: { text: string }) => (
-  <div style={{
-    backgroundColor: C.grayBanner,
-    clipPath: "polygon(1% 0%, 100% 0%, 99% 100%, 0% 100%)",
-    textAlign: "center",
-    padding: "1px 4px",
-    flexShrink: 0
-  }}>
-    <span style={{ fontSize: FONT.banner, fontWeight: 600, fontFamily: "Inter, sans-serif" }}>
-      {text}
-    </span>
+  <div style={{ backgroundColor: C.grayBanner, clipPath: "polygon(1% 0%, 100% 0%, 99% 100%, 0% 100%)", padding: "1px 60px", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", height: "10px", width: "fit-content", alignSelf: "center" }}>
+    <span style={{ fontSize: FONT.banner, fontWeight: 600, fontFamily: "Inter, sans-serif", lineHeight: 1 }}>{text}</span>
   </div>
+
 );
 
 // ============================================================================
-// ESTILOS PARA TABLA DE MATRÍCULAS (aún más compactos)
+// ESTILOS TABLA MATRÍCULAS
 // ============================================================================
-const mc = (align: "left"|"right"|"center" = "right", color = "inherit"): React.CSSProperties => ({
-  border: "1px solid #e0e0e0",
-  fontSize: FONT.small,
-  padding: "0px 1px",
-  textAlign: align,
-  fontWeight: 400,
-  color,
-  backgroundColor: "transparent",
-  overflow: "visible",
+const mc = (align: "left"|"right"|"center" = "right"): React.CSSProperties => ({
+  border: "1px solid #e0e0e0", fontSize: FONT.small, padding: "0px 1px",
+  textAlign: align, fontWeight: 400, backgroundColor: "transparent", overflow: "visible",
 });
 
-const mcY = (color = "inherit"): React.CSSProperties => ({
-  border: "1px solid #e0e0e0",
-  fontSize: FONT.small,
-  padding: "0px 1px",
-  textAlign: "right",
-  fontWeight: 400,
-  color,
-  backgroundColor: C.matTotalBg,
-  overflow: "visible",
+const mcY = (): React.CSSProperties => ({
+  border: "1px solid #e0e0e0", fontSize: FONT.small, padding: "0px 1px",
+  textAlign: "right", fontWeight: 400, backgroundColor: C.matTotalBg, overflow: "visible",
 });
 
-const mcT = (align: "left"|"right"|"center" = "right", color = C.black): React.CSSProperties => ({
-  border: "1px solid #e0e0e0",
-  fontSize: FONT.small,
-  padding: "0px 1px",
-  textAlign: align,
-  fontWeight: 700,
-  color,
-  backgroundColor: C.matTotalBg,
-  overflow: "visible",
+const mcT = (align: "left"|"right"|"center" = "right"): React.CSSProperties => ({
+  border: "1px solid #e0e0e0", fontSize: FONT.small, padding: "0px 1px",
+  textAlign: align, fontWeight: 700, backgroundColor: C.matTotalBg, overflow: "visible",
 });
+
+// ============================================================================
+// HELPER: renderiza las 4 celdas de un bloque (proyectado, matriculado, variación, %)
+// color de variación y % dependen de esPositivo
+// ============================================================================
+const MatCells = ({
+  d,
+  isTotalRow = false,
+  isYellow = false,
+}: {
+  d: { proyectado: string; matriculado: string; variacion: string; porcentaje: string; esPositivo: boolean; esExito: boolean };
+  isTotalRow?: boolean;
+  isYellow?: boolean;
+}) => {
+  const colorVar = d.esPositivo ? C.green : C.redTotal;
+  const colorPct = parseFloat(d.porcentaje) >= 0 ? C.green : C.redTotal;
+  const styleProy = isTotalRow ? mcT() : isYellow ? mcY() : mc();
+  const styleMatr = isTotalRow ? mcT() : isYellow ? mcY() : mc();
+  const styleVar  = isTotalRow ? { ...mcT(), color: colorVar } : { ...mc(), color: colorVar };
+  const stylePct  = isTotalRow ? { ...mcT(), color: colorPct } : { ...mc(), color: colorPct };
+  return (
+    <>
+      <td style={styleProy}>{d.proyectado}</td>
+      <td style={styleMatr}>{d.matriculado}</td>
+      <td style={styleVar}>{d.variacion}</td>
+      <td style={stylePct}>{d.porcentaje}</td>
+    </>
+  );
+};
 
 // ============================================================================
 // COMPONENTE PRINCIPAL
 // ============================================================================
-// NUEVO: Añadimos centroId a las props, con valor por defecto
 interface Props { innerRef?: React.Ref<HTMLDivElement>; centroId?: string; }
 
 export function Page2({ innerRef, centroId = 'centro-engativa' }: Props) {
-  // NUEVO: Usamos centroId en el hook
-  const { data, loading } = useObservatorio(centroId, {});
+  // ✅ Hook con UN solo argumento
+  const { data, loading } = useObservatorio(centroId);
   const pageData = transformarPage2(data);
 
-  // NUEVO: Construimos el subtítulo dinámicamente
   const centroNombre = CENTRO_NOMBRES[centroId] || 'Desconocido';
   const subtitle = `Centro Universitario ${centroNombre}`;
 
-  if (loading) {
-    return <div>Cargando...</div>;
-  }
+  if (loading) return <div>Cargando...</div>;
 
   return (
     <>
-      <style>{`
-        @media print {
-          .print-page {
-            padding: 1mm 2mm !important;
-          }
-          table, td, th {
-            font-size: 6px !important;
-          }
-          .banner-text {
-            font-size: 7px !important;
-          }
-          .graph-container {
-            height: 65px !important;
-          }
-          svg text {
-            font-size: 4px !important;
-          }
-        }
-      `}</style>
-      <div
-        ref={innerRef}
-        className="bg-white print-page"
-        style={{
-          width: "297mm",
-          minHeight: "210mm",
-          padding: "1mm 4mm",
-          display: "flex",
-          flexDirection: "column",
-          overflow: "visible",
-          pageBreakInside: "avoid",
-        }}
-      >
+      <div ref={innerRef} className="bg-white" style={{ width: "297mm", height: "210mm", overflow: "hidden", pageBreakInside: "avoid" }}>
+
         {/* HEADER */}
         <div className="flex flex-col w-full" style={{ marginBottom: 1 }}>
           <div className="flex justify-between items-center px-2 py-0 w-full">
             <img src="/Logo UNIMINUTO.png" alt="Logo UNIMINUTO" className="h-10 w-auto object-contain" />
             <div className="flex-1 mx-2 h-6 relative flex justify-center items-center">
               <div className="absolute inset-0" style={{ backgroundColor: C.skyBlue, clipPath: "polygon(2% 0%, 100% 0%, 98% 100%, 0% 100%)" }} />
-              {/* NUEVO: Usamos subtitle dinámico */}
-              <span className="relative z-10 text-black font-normal text-[10px] tracking-wide whitespace-nowrap" style={{ fontFamily: '"Inter", sans-serif' }}>
-                {subtitle}
-              </span>
+              <span className="relative z-10 text-black font-normal text-[12px] tracking-wide whitespace-nowrap" style={{ fontFamily: '"Inter", sans-serif' }}>{subtitle}</span>
             </div>
             <img src="/Logo_Acreditacion.png" alt="Logo Acreditación" className="h-8 w-auto object-contain" />
           </div>
-
           <div className="w-full flex justify-center mt-0">
-            <div className="px-4 py-0" style={{
-              backgroundColor: C.grayBanner,
-              clipPath: "polygon(1% 0%, 100% 0%, 99% 100%, 0% 100%)",
-              boxShadow: "0px 1px 2px rgba(0,0,0,0.1)",
-              display: "flex",
-              alignItems: "center",
-              height: "10px"
-            }}>
-              <h3 className="text-black font-semibold text-[7px] text-center whitespace-nowrap" style={{ fontFamily: '"Inter", sans-serif', lineHeight: 1 }}>
+            <div className="px-4 py-0" style={{ backgroundColor: C.grayBanner, clipPath: "polygon(1% 0%, 100% 0%, 99% 100%, 0% 100%)", display: "flex", alignItems: "center", height: "10px" }}>
+              <h3 className="text-black font-semibold text-[10px] text-center whitespace-nowrap" style={{ fontFamily: '"Inter", sans-serif', lineHeight: 1 }}>
                 Proyección estudiantes 2026–2030 S1/Q1 por Nivel Académico y Modalidad
               </h3>
             </div>
           </div>
         </div>
 
-        {/* TABLA 1 — Nivel Académico */}
+        {/* TABLA 1 */}
         <div style={{ display: "flex", justifyContent: "center", marginTop: 1 }}>
           <table style={tableStyle}>
             <TableHeader />
@@ -305,7 +215,7 @@ export function Page2({ innerRef, centroId = 'centro-engativa' }: Props) {
 
         <div style={{ height: 1 }} />
 
-        {/* TABLA 2 — Modalidad */}
+        {/* TABLA 2 */}
         <div style={{ display: "flex", justifyContent: "center" }}>
           <table style={tableStyle}>
             <TableHeader />
@@ -328,216 +238,103 @@ export function Page2({ innerRef, centroId = 'centro-engativa' }: Props) {
 
         <div style={{ height: 1 }} />
 
-        {/* TABLA MATRÍCULAS 2026 — completa */}
+        {/* TABLA 3: MATRÍCULAS 2026 */}
         <div style={{ display: "flex", justifyContent: "center", width: "100%", overflow: "visible" }}>
-          <table style={{
-            ...tableStyle,
-            fontSize: FONT.small,
-            tableLayout: "fixed",
-            width: "auto",
-            borderSpacing: 0
-          }}>
+          <table style={{ ...tableStyle, fontSize: FONT.small, tableLayout: "fixed", width: "auto", borderSpacing: 0 }}>
             <colgroup>
-              <col style={{ width: "45px" }} />
-              <col style={{ width: "45px" }} />
-              <col style={{ width: "32px" }} />
-              <col style={{ width: "32px" }} />
-              <col style={{ width: "32px" }} />
-              <col style={{ width: "32px" }} />
-              <col style={{ width: "32px" }} />
-              <col style={{ width: "32px" }} />
-              <col style={{ width: "32px" }} />
-              <col style={{ width: "32px" }} />
-              <col style={{ width: "32px" }} />
-              <col style={{ width: "32px" }} />
-              <col style={{ width: "32px" }} />
-              <col style={{ width: "32px" }} />
+              <col style={{ width: "45px" }} /><col style={{ width: "45px" }} />
+              <col style={{ width: "32px" }} /><col style={{ width: "32px" }} /><col style={{ width: "32px" }} /><col style={{ width: "32px" }} />
+              <col style={{ width: "32px" }} /><col style={{ width: "32px" }} /><col style={{ width: "32px" }} /><col style={{ width: "32px" }} />
+              <col style={{ width: "32px" }} /><col style={{ width: "32px" }} /><col style={{ width: "32px" }} /><col style={{ width: "32px" }} />
             </colgroup>
             <thead>
               <tr>
-                <td colSpan={14} style={{
-                  border: "none",
-                  backgroundColor: C.grayBanner,
-                  textAlign: "center",
-                  fontSize: FONT.banner,
-                  fontWeight: 600,
-                  padding: "1px 2px 1px 2px",
-                  clipPath: "polygon(1% 0%, 100% 0%, 99% 100%, 0% 100%)"
-                }}>
+                <td colSpan={14} style={{ border: "none", backgroundColor: C.grayBanner, textAlign: "center", fontSize: FONT.banner, fontWeight: 600, padding: "1px 2px", clipPath: "polygon(1% 0%, 100% 0%, 99% 100%, 0% 100%)" }}>
                   Comportamiento matrículas 2026 S1/Q1 por Nivel Académico y Modalidad
                 </td>
               </tr>
               <tr><td colSpan={14} style={{ border: "none", height: "1px", padding: 0 }} /></tr>
               <tr>
                 {[
-                  { label: "Pregrado", align: "left" as const },
-                  { label: "", align: "left" as const },
-                  { label: "Nuevos\nProyectados", align: "center" as const },
-                  { label: "Nuevos\nMatriculados", align: "center" as const },
-                  { label: "Variación", align: "center" as const },
-                  { label: "%", align: "center" as const },
-                  { label: "Continuos\nProyectados", align: "center" as const },
-                  { label: "Continuos\nMatriculados", align: "center" as const },
-                  { label: "Variación", align: "center" as const },
-                  { label: "%", align: "center" as const },
-                  { label: "Totales\nProyectados", align: "center" as const },
-                  { label: "Totales\nMatriculados", align: "center" as const },
-                  { label: "Variación", align: "center" as const },
-                  { label: "%", align: "center" as const },
+                  { label: "Nivel",               align: "left"   as const },
+                  { label: "",                    align: "left"   as const },
+                  { label: "Nuevos\nProyecciones",        align: "center" as const },
+                  { label: "Nuevos\nMatriculados",      align: "center" as const },
+                  { label: "Variación",            align: "center" as const },
+                  { label: "%",                   align: "center" as const },
+                  { label: "Continuos\nProyecciones",     align: "center" as const },
+                  { label: "Continuos\nMatriculados",   align: "center" as const },
+                  { label: "Variación",            align: "center" as const },
+                  { label: "%",                   align: "center" as const },
+                  { label: "Totales\nProyecciones",       align: "center" as const },
+                  { label: "Totales\nMatriculados",     align: "center" as const },
+                  { label: "Variación",            align: "center" as const },
+                  { label: "%",                   align: "center" as const },
                 ].map((h, i) => (
-                  <th key={i} style={{
-                    border: "1px solid #e0e0e0",
-                    backgroundColor: C.matHeaderBg,
-                    color: C.black,
-                    fontSize: FONT.small,
-                    fontWeight: 700,
-                    padding: "1px 1px",
-                    textAlign: h.align,
-                    whiteSpace: "pre-line",
-                    lineHeight: 1
-                  }}>
+                  <th key={i} style={{ border: "1px solid #e0e0e0", backgroundColor: C.matHeaderBg, color: C.black, fontSize: FONT.small, fontWeight: 700, padding: "1px 1px", textAlign: h.align, whiteSpace: "pre-line", lineHeight: 1 }}>
                     {h.label}
                   </th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {/* Pregrado Presencial */}
+              {/* ── Pregrado ── */}
               <tr>
                 <td rowSpan={3} style={{ border: "1px solid #e0e0e0", fontSize: FONT.small, fontWeight: 700, padding: "1px 2px", verticalAlign: "middle" }}>1.Pregrado</td>
                 <td style={mc("left")}>Presencial</td>
-                <td style={mc()}>{pageData?.t3_matriculas2026?.pregradoPresencial.nuevos.proyectado}</td>
-                <td style={mc()}>{pageData?.t3_matriculas2026?.pregradoPresencial.nuevos.matriculado}</td>
-                <td style={{ ...mc("right"), color: pageData?.t3_matriculas2026?.pregradoPresencial.nuevos.esPositivo ? C.green : C.redTotal }}>{pageData?.t3_matriculas2026?.pregradoPresencial.nuevos.variacion}</td>
-                <td style={mc()}>{pageData?.t3_matriculas2026?.pregradoPresencial.nuevos.porcentaje}</td>
-                <td style={mc()}>{pageData?.t3_matriculas2026?.pregradoPresencial.continuos.proyectado}</td>
-                <td style={mc()}>{pageData?.t3_matriculas2026?.pregradoPresencial.continuos.matriculado}</td>
-                <td style={{ ...mc("right"), color: pageData?.t3_matriculas2026?.pregradoPresencial.continuos.esPositivo ? C.green : C.redTotal }}>{pageData?.t3_matriculas2026?.pregradoPresencial.continuos.variacion}</td>
-                <td style={{ ...mc("right"), color: pageData?.t3_matriculas2026?.pregradoPresencial.continuos.esExito ? C.green : 'inherit' }}>{pageData?.t3_matriculas2026?.pregradoPresencial.continuos.porcentaje}</td>
-                <td style={mcY()}>{pageData?.t3_matriculas2026?.pregradoPresencial.totales.proyectado}</td>
-                <td style={mcY()}>{pageData?.t3_matriculas2026?.pregradoPresencial.totales.matriculado}</td>
-                <td style={{ ...mc("right"), color: pageData?.t3_matriculas2026?.pregradoPresencial.totales.esPositivo ? C.green : C.redTotal }}>{pageData?.t3_matriculas2026?.pregradoPresencial.totales.variacion}</td>
-                <td style={{ ...mc("right"), color: pageData?.t3_matriculas2026?.pregradoPresencial.totales.esExito ? C.green : 'inherit' }}>{pageData?.t3_matriculas2026?.pregradoPresencial.totales.porcentaje}</td>
+                <MatCells d={pageData?.t3_matriculas2026?.pregradoPresencial.nuevos} />
+                <MatCells d={pageData?.t3_matriculas2026?.pregradoPresencial.continuos} />
+                <MatCells d={pageData?.t3_matriculas2026?.pregradoPresencial.totales} isYellow />
               </tr>
-              {/* Pregrado Distancia */}
               <tr>
                 <td style={mc("left")}>Distancia</td>
-                <td style={mc()}>{pageData?.t3_matriculas2026?.pregradoDistancia.nuevos.proyectado}</td>
-                <td style={mc()}>{pageData?.t3_matriculas2026?.pregradoDistancia.nuevos.matriculado}</td>
-                <td style={{ ...mc("right"), color: pageData?.t3_matriculas2026?.pregradoDistancia.nuevos.esPositivo ? C.green : C.redTotal }}>{pageData?.t3_matriculas2026?.pregradoDistancia.nuevos.variacion}</td>
-                <td style={mc()}>{pageData?.t3_matriculas2026?.pregradoDistancia.nuevos.porcentaje}</td>
-                <td style={mc()}>{pageData?.t3_matriculas2026?.pregradoDistancia.continuos.proyectado}</td>
-                <td style={mc()}>{pageData?.t3_matriculas2026?.pregradoDistancia.continuos.matriculado}</td>
-                <td style={{ ...mc("right"), color: pageData?.t3_matriculas2026?.pregradoDistancia.continuos.esPositivo ? C.green : C.redTotal }}>{pageData?.t3_matriculas2026?.pregradoDistancia.continuos.variacion}</td>
-                <td style={{ ...mc("right"), color: pageData?.t3_matriculas2026?.pregradoDistancia.continuos.esExito ? C.green : 'inherit' }}>{pageData?.t3_matriculas2026?.pregradoDistancia.continuos.porcentaje}</td>
-                <td style={mcY()}>{pageData?.t3_matriculas2026?.pregradoDistancia.totales.proyectado}</td>
-                <td style={mcY()}>{pageData?.t3_matriculas2026?.pregradoDistancia.totales.matriculado}</td>
-                <td style={{ ...mc("right"), color: pageData?.t3_matriculas2026?.pregradoDistancia.totales.esPositivo ? C.green : C.redTotal }}>{pageData?.t3_matriculas2026?.pregradoDistancia.totales.variacion}</td>
-                <td style={{ ...mc("right"), color: pageData?.t3_matriculas2026?.pregradoDistancia.totales.esExito ? C.green : 'inherit' }}>{pageData?.t3_matriculas2026?.pregradoDistancia.totales.porcentaje}</td>
+                <MatCells d={pageData?.t3_matriculas2026?.pregradoDistancia.nuevos} />
+                <MatCells d={pageData?.t3_matriculas2026?.pregradoDistancia.continuos} />
+                <MatCells d={pageData?.t3_matriculas2026?.pregradoDistancia.totales} isYellow />
               </tr>
-              {/* Pregrado Total */}
               <tr>
                 <td style={mcT("left")}>Total</td>
-                <td style={mcT()}>{pageData?.t3_matriculas2026?.pregradoTotal.nuevos.proyectado}</td>
-                <td style={mcT()}>{pageData?.t3_matriculas2026?.pregradoTotal.nuevos.matriculado}</td>
-                <td style={{ ...mcT("right"), color: pageData?.t3_matriculas2026?.pregradoTotal.nuevos.esPositivo ? C.green : C.redTotal }}>{pageData?.t3_matriculas2026?.pregradoTotal.nuevos.variacion}</td>
-                <td style={mcT()}>{pageData?.t3_matriculas2026?.pregradoTotal.nuevos.porcentaje}</td>
-                <td style={mcT()}>{pageData?.t3_matriculas2026?.pregradoTotal.continuos.proyectado}</td>
-                <td style={mcT()}>{pageData?.t3_matriculas2026?.pregradoTotal.continuos.matriculado}</td>
-                <td style={{ ...mcT("right"), color: pageData?.t3_matriculas2026?.pregradoTotal.continuos.esPositivo ? C.green : C.redTotal }}>{pageData?.t3_matriculas2026?.pregradoTotal.continuos.variacion}</td>
-                <td style={{ ...mcT("right"), color: pageData?.t3_matriculas2026?.pregradoTotal.continuos.esExito ? C.green : 'inherit' }}>{pageData?.t3_matriculas2026?.pregradoTotal.continuos.porcentaje}</td>
-                <td style={mcT()}>{pageData?.t3_matriculas2026?.pregradoTotal.totales.proyectado}</td>
-                <td style={mcT()}>{pageData?.t3_matriculas2026?.pregradoTotal.totales.matriculado}</td>
-                <td style={{ ...mcT("right"), color: pageData?.t3_matriculas2026?.pregradoTotal.totales.esPositivo ? C.green : C.redTotal }}>{pageData?.t3_matriculas2026?.pregradoTotal.totales.variacion}</td>
-                <td style={{ ...mcT("right"), color: pageData?.t3_matriculas2026?.pregradoTotal.totales.esExito ? C.green : 'inherit' }}>{pageData?.t3_matriculas2026?.pregradoTotal.totales.porcentaje}</td>
+                <MatCells d={pageData?.t3_matriculas2026?.pregradoTotal.nuevos} isTotalRow />
+                <MatCells d={pageData?.t3_matriculas2026?.pregradoTotal.continuos} isTotalRow />
+                <MatCells d={pageData?.t3_matriculas2026?.pregradoTotal.totales} isTotalRow />
               </tr>
 
-              {/* Posgrado Presencial */}
+              {/* ── Posgrado ── */}
               <tr>
                 <td rowSpan={3} style={{ border: "1px solid #e0e0e0", fontSize: FONT.small, fontWeight: 700, padding: "1px 2px", verticalAlign: "middle" }}>2.Posgrado</td>
                 <td style={mc("left")}>Presencial</td>
-                <td style={mc()}>{pageData?.t3_matriculas2026?.posgradoPresencial.nuevos.proyectado}</td>
-                <td style={mc()}>{pageData?.t3_matriculas2026?.posgradoPresencial.nuevos.matriculado}</td>
-                <td style={{ ...mc("right"), color: pageData?.t3_matriculas2026?.posgradoPresencial.nuevos.esPositivo ? C.green : C.redTotal }}>{pageData?.t3_matriculas2026?.posgradoPresencial.nuevos.variacion}</td>
-                <td style={mc()}>{pageData?.t3_matriculas2026?.posgradoPresencial.nuevos.porcentaje}</td>
-                <td style={mc()}>{pageData?.t3_matriculas2026?.posgradoPresencial.continuos.proyectado}</td>
-                <td style={mc()}>{pageData?.t3_matriculas2026?.posgradoPresencial.continuos.matriculado}</td>
-                <td style={{ ...mc("right"), color: pageData?.t3_matriculas2026?.posgradoPresencial.continuos.esPositivo ? C.green : C.redTotal }}>{pageData?.t3_matriculas2026?.posgradoPresencial.continuos.variacion}</td>
-                <td style={{ ...mc("right"), color: pageData?.t3_matriculas2026?.posgradoPresencial.continuos.esExito ? C.green : 'inherit' }}>{pageData?.t3_matriculas2026?.posgradoPresencial.continuos.porcentaje}</td>
-                <td style={mcY()}>{pageData?.t3_matriculas2026?.posgradoPresencial.totales.proyectado}</td>
-                <td style={mcY()}>{pageData?.t3_matriculas2026?.posgradoPresencial.totales.matriculado}</td>
-                <td style={{ ...mc("right"), color: pageData?.t3_matriculas2026?.posgradoPresencial.totales.esPositivo ? C.green : C.redTotal }}>{pageData?.t3_matriculas2026?.posgradoPresencial.totales.variacion}</td>
-                <td style={{ ...mc("right"), color: pageData?.t3_matriculas2026?.posgradoPresencial.totales.esExito ? C.green : 'inherit' }}>{pageData?.t3_matriculas2026?.posgradoPresencial.totales.porcentaje}</td>
+                <MatCells d={pageData?.t3_matriculas2026?.posgradoPresencial.nuevos} />
+                <MatCells d={pageData?.t3_matriculas2026?.posgradoPresencial.continuos} />
+                <MatCells d={pageData?.t3_matriculas2026?.posgradoPresencial.totales} isYellow />
               </tr>
-              {/* Posgrado Distancia */}
               <tr>
                 <td style={mc("left")}>Distancia</td>
-                <td style={mc()}>{pageData?.t3_matriculas2026?.posgradoDistancia.nuevos.proyectado}</td>
-                <td style={mc()}>{pageData?.t3_matriculas2026?.posgradoDistancia.nuevos.matriculado}</td>
-                <td style={{ ...mc("right"), color: pageData?.t3_matriculas2026?.posgradoDistancia.nuevos.esPositivo ? C.green : C.redTotal }}>{pageData?.t3_matriculas2026?.posgradoDistancia.nuevos.variacion}</td>
-                <td style={mc()}>{pageData?.t3_matriculas2026?.posgradoDistancia.nuevos.porcentaje}</td>
-                <td style={mc()}>{pageData?.t3_matriculas2026?.posgradoDistancia.continuos.proyectado}</td>
-                <td style={mc()}>{pageData?.t3_matriculas2026?.posgradoDistancia.continuos.matriculado}</td>
-                <td style={{ ...mc("right"), color: pageData?.t3_matriculas2026?.posgradoDistancia.continuos.esPositivo ? C.green : C.redTotal }}>{pageData?.t3_matriculas2026?.posgradoDistancia.continuos.variacion}</td>
-                <td style={{ ...mc("right"), color: pageData?.t3_matriculas2026?.posgradoDistancia.continuos.esExito ? C.green : 'inherit' }}>{pageData?.t3_matriculas2026?.posgradoDistancia.continuos.porcentaje}</td>
-                <td style={mcY()}>{pageData?.t3_matriculas2026?.posgradoDistancia.totales.proyectado}</td>
-                <td style={mcY()}>{pageData?.t3_matriculas2026?.posgradoDistancia.totales.matriculado}</td>
-                <td style={{ ...mc("right"), color: pageData?.t3_matriculas2026?.posgradoDistancia.totales.esPositivo ? C.green : C.redTotal }}>{pageData?.t3_matriculas2026?.posgradoDistancia.totales.variacion}</td>
-                <td style={{ ...mc("right"), color: pageData?.t3_matriculas2026?.posgradoDistancia.totales.esExito ? C.green : 'inherit' }}>{pageData?.t3_matriculas2026?.posgradoDistancia.totales.porcentaje}</td>
+                <MatCells d={pageData?.t3_matriculas2026?.posgradoDistancia.nuevos} />
+                <MatCells d={pageData?.t3_matriculas2026?.posgradoDistancia.continuos} />
+                <MatCells d={pageData?.t3_matriculas2026?.posgradoDistancia.totales} isYellow />
               </tr>
-              {/* Posgrado Total */}
               <tr>
                 <td style={mcT("left")}>Total</td>
-                <td style={mcT()}>{pageData?.t3_matriculas2026?.posgradoTotal.nuevos.proyectado}</td>
-                <td style={mcT()}>{pageData?.t3_matriculas2026?.posgradoTotal.nuevos.matriculado}</td>
-                <td style={{ ...mcT("right"), color: pageData?.t3_matriculas2026?.posgradoTotal.nuevos.esPositivo ? C.green : C.redTotal }}>{pageData?.t3_matriculas2026?.posgradoTotal.nuevos.variacion}</td>
-                <td style={mcT()}>{pageData?.t3_matriculas2026?.posgradoTotal.nuevos.porcentaje}</td>
-                <td style={mcT()}>{pageData?.t3_matriculas2026?.posgradoTotal.continuos.proyectado}</td>
-                <td style={mcT()}>{pageData?.t3_matriculas2026?.posgradoTotal.continuos.matriculado}</td>
-                <td style={{ ...mcT("right"), color: pageData?.t3_matriculas2026?.posgradoTotal.continuos.esPositivo ? C.green : C.redTotal }}>{pageData?.t3_matriculas2026?.posgradoTotal.continuos.variacion}</td>
-                <td style={{ ...mcT("right"), color: pageData?.t3_matriculas2026?.posgradoTotal.continuos.esExito ? C.green : 'inherit' }}>{pageData?.t3_matriculas2026?.posgradoTotal.continuos.porcentaje}</td>
-                <td style={mcT()}>{pageData?.t3_matriculas2026?.posgradoTotal.totales.proyectado}</td>
-                <td style={mcT()}>{pageData?.t3_matriculas2026?.posgradoTotal.totales.matriculado}</td>
-                <td style={{ ...mcT("right"), color: pageData?.t3_matriculas2026?.posgradoTotal.totales.esPositivo ? C.green : C.redTotal }}>{pageData?.t3_matriculas2026?.posgradoTotal.totales.variacion}</td>
-                <td style={{ ...mcT("right"), color: pageData?.t3_matriculas2026?.posgradoTotal.totales.esExito ? C.green : 'inherit' }}>{pageData?.t3_matriculas2026?.posgradoTotal.totales.porcentaje}</td>
+                <MatCells d={pageData?.t3_matriculas2026?.posgradoTotal.nuevos} isTotalRow />
+                <MatCells d={pageData?.t3_matriculas2026?.posgradoTotal.continuos} isTotalRow />
+                <MatCells d={pageData?.t3_matriculas2026?.posgradoTotal.totales} isTotalRow />
               </tr>
 
-              {/* Total General */}
+              {/* ── Total General ── */}
               <tr>
                 <td colSpan={2} style={mcT("left")}>Total</td>
-                <td style={mcT()}>{pageData?.t3_matriculas2026?.totalGeneral.nuevos.proyectado}</td>
-                <td style={mcT()}>{pageData?.t3_matriculas2026?.totalGeneral.nuevos.matriculado}</td>
-                <td style={{ ...mcT("right"), color: pageData?.t3_matriculas2026?.totalGeneral.nuevos.esPositivo ? C.green : C.redTotal }}>{pageData?.t3_matriculas2026?.totalGeneral.nuevos.variacion}</td>
-                <td style={mcT()}>{pageData?.t3_matriculas2026?.totalGeneral.nuevos.porcentaje}</td>
-                <td style={mcT()}>{pageData?.t3_matriculas2026?.totalGeneral.continuos.proyectado}</td>
-                <td style={mcT()}>{pageData?.t3_matriculas2026?.totalGeneral.continuos.matriculado}</td>
-                <td style={{ ...mcT("right"), color: pageData?.t3_matriculas2026?.totalGeneral.continuos.esPositivo ? C.green : C.redTotal }}>{pageData?.t3_matriculas2026?.totalGeneral.continuos.variacion}</td>
-                <td style={{ ...mcT("right"), color: pageData?.t3_matriculas2026?.totalGeneral.continuos.esExito ? C.green : 'inherit' }}>{pageData?.t3_matriculas2026?.totalGeneral.continuos.porcentaje}</td>
-                <td style={mcT()}>{pageData?.t3_matriculas2026?.totalGeneral.totales.proyectado}</td>
-                <td style={mcT()}>{pageData?.t3_matriculas2026?.totalGeneral.totales.matriculado}</td>
-                <td style={{ ...mcT("right"), color: pageData?.t3_matriculas2026?.totalGeneral.totales.esPositivo ? C.green : C.redTotal }}>{pageData?.t3_matriculas2026?.totalGeneral.totales.variacion}</td>
-                <td style={{ ...mcT("right"), color: pageData?.t3_matriculas2026?.totalGeneral.totales.esExito ? C.green : 'inherit' }}>{pageData?.t3_matriculas2026?.totalGeneral.totales.porcentaje}</td>
+                <MatCells d={pageData?.t3_matriculas2026?.totalGeneral.nuevos} isTotalRow />
+                <MatCells d={pageData?.t3_matriculas2026?.totalGeneral.continuos} isTotalRow />
+                <MatCells d={pageData?.t3_matriculas2026?.totalGeneral.totales} isTotalRow />
               </tr>
             </tbody>
           </table>
         </div>
 
-        {/* TITULO — Proyección 2026-2030 */}
+        {/* TITULO TABLA 4 */}
         <div style={{ display: "flex", justifyContent: "center", marginTop: 1, marginBottom: 1 }}>
-          <div style={{
-            backgroundColor: C.grayBanner,
-            clipPath: "polygon(1% 0%, 100% 0%, 99% 100%, 0% 100%)",
-            padding: "1px 4px",
-            display: "flex",
-            alignItems: "center"
-          }}>
-            <span style={{
-              fontSize: FONT.banner,
-              fontWeight: 600,
-              fontFamily: "Inter, sans-serif",
-              lineHeight: 1,
-              display: "block"
-            }}>
+          <div style={{ backgroundColor: C.grayBanner, clipPath: "polygon(1% 0%, 100% 0%, 99% 100%, 0% 100%)", padding: "1px 4px", display: "flex", alignItems: "center" }}>
+            <span style={{ fontSize: FONT.banner, fontWeight: 600, fontFamily: "Inter, sans-serif", lineHeight: 1 }}>
               Proyección estudiantes 2026–2030 S1/Q1 por Nivel Académico y Periodicidad
             </span>
           </div>
@@ -545,7 +342,7 @@ export function Page2({ innerRef, centroId = 'centro-engativa' }: Props) {
 
         <div style={{ height: 1 }} />
 
-        {/* TABLA 4 — Periodicidad */}
+        {/* TABLA 4 */}
         <div style={{ display: "flex", justifyContent: "center" }}>
           <table style={tableStyle}>
             <TableHeader />
@@ -586,174 +383,240 @@ export function Page2({ innerRef, centroId = 'centro-engativa' }: Props) {
 
         <div style={{ height: 1 }} />
 
-        {/* GRÁFICAS — 3 paneles completos */}
-        <div style={{ display: "flex", flexDirection: "row", gap: 2, width: "100%", height: 70, alignItems: "stretch" }} className="graph-container">
-          {/* Panel 1: Oferta Académica */}
-          <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-            <Banner text="Proyección Oferta Académica" />
-            <div style={{ flex: 1, padding: "0 1px", overflow: "visible" }}>
-              <table style={{ ...tableStyle, fontSize: FONT.small }}>
-                <thead>
-                  <tr>
-                    <th style={{ border: "1px solid #e0e0e0", backgroundColor: C.skyBlue, color: C.skyBlueTx, fontSize: FONT.small, fontWeight: 700, padding: "1px 2px", textAlign: "left" }}>Periodicidad</th>
-                    {YEARS.map(y => <th key={y} style={{ border: "1px solid #e0e0e0", backgroundColor: C.skyBlue, color: C.skyBlueTx, fontSize: FONT.small, fontWeight: 700, padding: "1px 2px", textAlign: "center" }}>{y}</th>)}
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td rowSpan={3} style={{ border: "1px solid #e0e0e0", fontSize: FONT.small, fontWeight: 700, padding: "1px 2px", verticalAlign: "middle" }}>⊟ 1.Pregrado</td>
-                    {pageData?.graficaOferta?.pregrado?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.small, fontWeight: 700, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}
-                  </tr>
-                  <tr>{pageData?.graficaOferta?.pregradoSemestral?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.small, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}</tr>
-                  <tr>{pageData?.graficaOferta?.pregradoCuatrimestral?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.small, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}</tr>
-                  <tr>
-                    <td rowSpan={3} style={{ border: "1px solid #e0e0e0", fontSize: FONT.small, fontWeight: 700, padding: "1px 2px", verticalAlign: "middle" }}>⊟ 2.Posgrado</td>
-                    {pageData?.graficaOferta?.posgrado?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.small, fontWeight: 700, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}
-                  </tr>
-                  <tr>{pageData?.graficaOferta?.posgradoSemestral?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.small, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}</tr>
-                  <tr>{pageData?.graficaOferta?.posgradoCuatrimestral?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.small, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}</tr>
-                  <tr>
-                    <td style={{ border: "1px solid #e0e0e0", backgroundColor: C.purple, color: C.black, fontSize: FONT.small, fontWeight: 700, padding: "1px 2px" }}>Total</td>
-                    {pageData?.graficaOferta?.total?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", backgroundColor: C.purple, color: C.black, fontSize: FONT.small, fontWeight: 700, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}
-                  </tr>
-                  <tr><td colSpan={7} style={{ border: "none", padding: "1px" }}></td></tr>
-                  <tr>
-                    <th style={{ border: "1px solid #e0e0e0", backgroundColor: C.skyBlue, color: C.skyBlueTx, fontSize: FONT.small, fontWeight: 700, padding: "1px 2px", textAlign: "left" }}>Modalidad</th>
-                    {YEARS.map(y => <th key={y} style={{ border: "1px solid #e0e0e0", backgroundColor: C.skyBlue, color: C.skyBlueTx, fontSize: FONT.small, fontWeight: 700, padding: "1px 2px", textAlign: "center" }}>{y}</th>)}
-                  </tr>
-                  <tr>
-                    <td style={{ border: "1px solid #e0e0e0", fontSize: FONT.small, padding: "1px 2px" }}>Presencial</td>
-                    {pageData?.graficaOferta?.presencial?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.small, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}
-                  </tr>
-                  <tr>
-                    <td style={{ border: "1px solid #e0e0e0", fontSize: FONT.small, padding: "1px 2px" }}>Distancia</td>
-                    {pageData?.graficaOferta?.distancia?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.small, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}
-                  </tr>
-                  <tr>
-                    <td style={{ border: "1px solid #e0e0e0", backgroundColor: C.purple, color: C.black, fontSize: FONT.small, fontWeight: 700, padding: "1px 2px" }}>Total</td>
-                    {pageData?.graficaOferta?.totalModalidad?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", backgroundColor: C.purple, color: C.black, fontSize: FONT.small, fontWeight: 700, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}
-                  </tr>
-                </tbody>
-              </table>
+                                {/* GRÁFICAS */}
+              <div style={{ display: "flex", flexDirection: "row", gap: 0, width: "95%", height: 200, alignItems: "stretch", justifyContent: "center"}} className="graph-container">
+
+                {/* Panel 1: Oferta Académica (se mantiene igual, con flex:1) */}
+                <div style={{ width: "35%", display: "flex", flexDirection: "column" }}>
+                  <Banner text="Proyección Oferta Académica"/>
+                    <div style={{ flex: 1, padding: "0 1px", overflow: "visible" }}>
+                      <table style={{ ...tableStyle, fontSize: FONT.oferta, margin: "0 auto", width: "90%"}}>
+                        <thead>
+                        <tr>
+                          <th style={{ border: "1px solid #e0e0e0", backgroundColor: C.skyBlue, color: C.skyBlueTx, fontSize: FONT.oferta, fontWeight: 700, padding: "1px 2px", textAlign: "left" }}>Periodicidad</th>
+                          {YEARS.map(y => <th key={y} style={{ border: "1px solid #e0e0e0", backgroundColor: C.skyBlue, color: C.skyBlueTx, fontSize: FONT.small, fontWeight: 700, padding: "1px 2px", textAlign: "center" }}>{y}</th>)}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td rowSpan={3} style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, fontWeight: 700, padding: "1px 2px", verticalAlign: "middle" }}>⊟ 1.Pregrado</td>
+                          {pageData?.graficaOferta?.pregrado?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.small, fontWeight: 700, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}
+                        </tr>
+                        <tr>{pageData?.graficaOferta?.pregradoSemestral?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.small, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}</tr>
+                        <tr>{pageData?.graficaOferta?.pregradoCuatrimestral?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.small, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}</tr>
+                        <tr>
+                          <td rowSpan={3} style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, fontWeight: 700, padding: "1px 2px", verticalAlign: "middle" }}>⊟ 2.Posgrado</td>
+                          {pageData?.graficaOferta?.posgrado?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.small, fontWeight: 700, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}
+                        </tr>
+                        <tr>{pageData?.graficaOferta?.posgradoSemestral?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}</tr>
+                        <tr>{pageData?.graficaOferta?.posgradoCuatrimestral?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}</tr>
+                        <tr>
+                          <td style={{ border: "1px solid #e0e0e0", backgroundColor: C.purple, color: C.black, fontSize: FONT.oferta, fontWeight: 700, padding: "1px 2px" }}>Total</td>
+                          {pageData?.graficaOferta?.total?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", backgroundColor: C.purple, color: C.black, fontSize: FONT.small, fontWeight: 700, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}
+                        </tr>
+                        <tr><td colSpan={7} style={{ border: "none", padding: "1px" }}></td></tr>
+                        <tr>
+                          <th style={{ border: "1px solid #e0e0e0", backgroundColor: C.skyBlue, color: C.skyBlueTx, fontSize: FONT.small, fontWeight: 700, padding: "1px 2px", textAlign: "left" }}>Modalidad</th>
+                          {YEARS.map(y => <th key={y} style={{ border: "1px solid #e0e0e0", backgroundColor: C.skyBlue, color: C.skyBlueTx, fontSize: FONT.small, fontWeight: 700, padding: "1px 2px", textAlign: "center" }}>{y}</th>)}
+                        </tr>
+                        <tr>
+                          <td style={{ border: "1px solid #e0e0e0", fontSize: FONT.small, padding: "1px 2px" }}>Presencial</td>
+                          {pageData?.graficaOferta?.presencial?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.small, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}
+                        </tr>
+                        <tr>
+                          <td style={{ border: "1px solid #e0e0e0", fontSize: FONT.small, padding: "1px 2px" }}>Distancia</td>
+                          {pageData?.graficaOferta?.distancia?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.small, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}
+                        </tr>
+                        <tr>
+                          <td style={{ border: "1px solid #e0e0e0", backgroundColor: C.purple, color: C.black, fontSize: FONT.small, fontWeight: 700, padding: "1px 2px" }}>Total</td>
+                          {pageData?.graficaOferta?.totalModalidad?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", backgroundColor: C.purple, color: C.black, fontSize: FONT.small, fontWeight: 700, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* Panel 2: Deserción */}
+<div style={{ width: "35%", display: "flex", flexDirection: "column", minWidth: 0 }}>
+  <Banner text="Proyección Deserción por Centro Universitario" />
+  <div style={{ flex: 1, width: "100%", overflow: "hidden" }}>
+    {(() => {
+
+      // Función segura para convertir a número
+      const toNumber = (val) => {
+        if (val === null || val === undefined || val === '') return 0;
+        const num = Number(val);
+        return isNaN(num) ? 0 : num;
+      };
+
+      // Obtener arrays, asegurando que sean arrays (incluso si vienen undefined)
+      const presRaw = (pageData?.graficaDesercion?.presencial || []).map(v => toNumber(v));
+      const distRaw = (pageData?.graficaDesercion?.distancia || []).map(v => toNumber(v));
+
+
+      // Asegurar que tengan 5 elementos (rellenar con 0 si es necesario)
+      const pres = presRaw.length >= 5 ? presRaw.slice(0,5) : [...presRaw, ...Array(5 - presRaw.length).fill(0)];
+      const dist = distRaw.length >= 5 ? distRaw.slice(0,5) : [...distRaw, ...Array(5 - distRaw.length).fill(0)];
+
+      const años = ["2026", "2027", "2028", "2029", "2030"];
+      const colorDist = "#4A86C8";
+      const colorPres = "#F5D97A";
+
+      const W = 900;
+      const H = 400;
+      const padL = 20;
+      const padR = 20;
+      const padTop = 40;
+      const padBot = 70;
+
+      const plotW = W - padL - padR;
+      const plotH = H - padTop - padBot;
+      const base = padTop + plotH;
+      const n = años.length;
+      const step = plotW / n;
+      const colW = step * 0.6;
+
+      // Calcular máximo sin NaN
+      const valoresSuma = pres.map((p, i) => p + dist[i]).filter(v => !isNaN(v));
+      const maxVal = valoresSuma.length > 0 ? Math.max(...valoresSuma, 1) : 1;
+      const sc = plotH / maxVal;
+
+      return (
+        <svg width="100%" height="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet" style={{ display: "block" }}>
+          {años.map((y, i) => {
+            const cx = padL + i * step + step / 2;
+            const x = cx - colW / 2;
+            const hP = pres[i] * sc;
+            const hD = dist[i] * sc;
+            if (i === 0);
+
+            return (
+              <g key={y}>
+                <rect x={x} y={base - hP} width={colW} height={Math.max(hP, 1)} fill={colorPres} />
+                <rect x={x} y={base - hP - hD} width={colW} height={Math.max(hD, 1)} fill={colorDist} />
+                {hP > 5 && (
+                  <text x={cx} y={base - hP / 2} textAnchor="middle" dominantBaseline="middle" fontSize="22" fontWeight="bold" fill="#333">
+                    {Math.round(pres[i])}%
+                  </text>
+                )}
+                {hD > 5 && (
+                  <text x={cx} y={base - hP - hD / 2} textAnchor="middle" dominantBaseline="middle" fontSize="22" fontWeight="bold" fill="white">
+                    {Math.round(dist[i])}%
+                  </text>
+                )}
+                <text x={cx} y={base + 14} textAnchor="middle" fontSize="22" fill="#333">{y}</text>
+              </g>
+            );
+          })}
+          <rect x={W / 2 - 90} y={H - 15} width={12} height={9} fill={colorPres} />
+<text x={W / 2 - 70} y={H - 8} fontSize="22" fill="#333">Presencial</text>
+<rect x={W / 2 + 50} y={H - 15} width={12} height={9} fill={colorDist} />
+<text x={W / 2 + 64} y={H - 8} fontSize="22" fill="#333">Distancia</text>
+        </svg>
+      );
+    })()}
+  </div>
+</div>
+
+                            {/* Panel 3: Líneas (más espaciado) */}
+            <div style={{ flex: 1.5, display: "flex", flexDirection: "column", background: "white", minWidth: 0 }}>
+              <Banner text="Proyección estudiantes por modalidad S1-Q1" />
+              <div style={{ flex: 1, width: "100%", overflow: "hidden" }}>
+                {(() => {
+                  const yearsNum = [2026, 2027, 2028, 2029, 2030];
+                  const series = [
+                    { label: "Profesional",     color: "#d4af37", values: pageData?.graficaLineas?.profesional     ?? [0,0,0,0,0] },
+                    { label: "Maestría",        color: "#00aaff", values: pageData?.graficaLineas?.maestria        ?? [0,0,0,0,0] },
+                    { label: "Especialización", color: "#e91e63", values: pageData?.graficaLineas?.especializacion ?? [0,0,0,0,0] },
+                    { label: "Doctorado",       color: "#4caf50", values: pageData?.graficaLineas?.doctorado       ?? [0,0,0,0,0] },
+                  ];
+
+                  // Aumentamos dimensiones y márgenes
+                  const W = 900;
+                  const H = 520;
+                  const padL = 60;
+                  const padR = 30;
+                  const padTop = 30;
+                  const padBot = 80;
+
+                  const plotW = W - padL - padR;
+                  const plotH = H - padTop - padBot;
+                  const base = padTop + plotH;
+
+                  const allV = series.flatMap(s => s.values);
+                  const maxV = Math.max(...allV, 1);
+                  const minV = Math.min(...allV.filter(v => v > 0), 0);
+
+                  const xP = (i) => padL + (i / (yearsNum.length - 1)) * plotW;
+                  const yP = (v) => padTop + plotH - ((v - minV) / (maxV - minV || 1)) * plotH;
+                  const ticks = 4;
+
+                  return (
+                    <svg width="100%" height="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet" style={{ display: "block", fontFamily: "Inter, sans-serif" }}>
+                      {/* Grid horizontal */}
+                      {Array.from({ length: ticks + 1 }).map((_, i) => {
+                        const y = padTop + (plotH / ticks) * i;
+                        const val = Math.round(maxV - (maxV - minV) * (i / ticks));
+                        return (
+                          <g key={i}>
+                            <line x1={padL} y1={y} x2={W - padR} y2={y} stroke="#e0e0e0" strokeWidth="1.5" />
+                            <text x={padL - 8} y={y} textAnchor="end" dominantBaseline="middle" fontSize="18" fill="#666">{val}</text>
+                          </g>
+                        );
+                      })}
+
+                      {/* Grid vertical */}
+                      {yearsNum.map((_, i) => (
+                        <line key={i} x1={xP(i)} y1={padTop} x2={xP(i)} y2={base} stroke="#e8e8e8" strokeWidth="1.5" strokeDasharray="4,4" />
+                      ))}
+
+                      {/* Líneas de series */}
+                      {series.map(s => (
+                        <polyline key={s.label} points={s.values.map((v, i) => `${xP(i)},${yP(v)}`).join(" ")} fill="none" stroke={s.color} strokeWidth="4" strokeLinejoin="round" />
+                      ))}
+
+                      {/* Puntos y etiquetas */}
+                      {series.map((s, si) =>
+                        s.values.map((v, i) => {
+                          const offsetY = si % 2 === 0 ? -16 : 16;
+                          return (
+                            <g key={`${s.label}-${i}`}>
+                              <circle cx={xP(i)} cy={yP(v)} r="5" fill={s.color} stroke="white" strokeWidth="2" />
+                              {v > 0 && (
+                                <text x={xP(i)} y={yP(v) + offsetY} textAnchor="middle" fontSize="18" fill={s.color} fontWeight="600">
+                                  {Math.round(v)}
+                                </text>
+                              )}
+                            </g>
+                          );
+                        })
+                      )}
+
+                      {/* Años */}
+                      {yearsNum.map((y, i) => (
+                        <text key={y} x={xP(i)} y={base + 32} textAnchor="middle" fontSize="18" fill="#333">{y}</text>
+                      ))}
+
+                      {/* Leyenda en 2 columnas */}
+                      {series.map((s, i) => {
+                        const col = i % 2;
+                        const row = Math.floor(i / 2);
+                        const lx = W / 2 - 200 + col * 200;
+                        const ly = H - 32 + row * 26;
+                        return (
+                          <g key={`leg-${s.label}`}>
+                            <line x1={lx} y1={ly} x2={lx + 28} y2={ly} stroke={s.color} strokeWidth="4" />
+                            <circle cx={lx + 14} cy={ly} r="5" fill={s.color} />
+                            <text x={lx + 42} y={ly + 2} fontSize="18" fill="#000000" dominantBaseline="middle">{s.label}</text>
+                          </g>
+                        );
+                      })}
+                    </svg>
+                  );
+                })()}
+              </div>
             </div>
-          </div>
-
-          {/* Panel 2: Deserción barras */}
-          <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-            <Banner text="Proyección Deserción por Centro Universitario" />
-            <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: 0 }}>
-              {(() => {
-                const pres = pageData?.graficaDesercion?.presencial?.map(v => Number(v)) ?? [0,0,0,0,0];
-                const dist = pageData?.graficaDesercion?.distancia?.map(v => Number(v)) ?? [0,0,0,0,0];
-                const yellow = "#F5D97A", blue = "#4A86C8";
-                const colW = 18, gap = 3, pX = 2, pBot = 16, pTop = 6;
-                const W = YEARS.length * (colW + gap) - gap + pX * 2, H = 68;
-                const maxVal = Math.max(...pres, ...dist, 1);
-                const sc = (H - pTop - pBot) / maxVal, base = H - pBot;
-                return (
-                  <svg width="100%" height="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet">
-                    {YEARS.map((y, i) => {
-                      const x = pX + i * (colW + gap), hP = pres[i] * sc, hD = dist[i] * sc;
-                      return (
-                        <g key={y}>
-                          <rect x={x} y={base - hP} width={colW} height={hP} fill={yellow} />
-                          <rect x={x} y={base - hP - hD} width={colW} height={hD} fill={blue} />
-                          <text x={x + colW / 2} y={base - hP / 2} textAnchor="middle" dominantBaseline="middle" fontSize={FONT.graph} fontWeight="600" fill="#333">
-                            {pres[i].toFixed(1)}%
-                          </text>
-                          <text x={x + colW / 2} y={base - hP - hD / 2} textAnchor="middle" dominantBaseline="middle" fontSize={FONT.graph} fontWeight="600" fill="white">
-                            {dist[i].toFixed(1)}%
-                          </text>
-                          <text x={x + colW / 2} y={H - pBot + 4} textAnchor="middle" fontSize={FONT.graph} fill="#555">{y}</text>
-                        </g>
-                      );
-                    })}
-                    <rect x={pX} y={H - 8} width={4} height={3} fill={yellow} />
-                    <text x={pX + 6} y={H - 5.5} fontSize={FONT.graph} fill="#555">Presencial</text>
-                    <rect x={pX + 28} y={H - 8} width={4} height={3} fill={blue} />
-                    <text x={pX + 34} y={H - 5.5} fontSize={FONT.graph} fill="#555">Distancia</text>
-                  </svg>
-                );
-              })()}
             </div>
-          </div>
-
-          {/* Panel 3: Líneas modalidad */}
-          <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "white" }}>
-            <Banner text="Proyección estudiantes por modalidad S1-Q1" />
-            <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "2px" }}>
-              {(() => {
-                const yearsNum = [2026, 2027, 2028, 2029, 2030];
-                const series = [
-                  { label: "Profesional",     color: "#d4af37", values: pageData?.graficaLineas?.profesional ?? [0,0,0,0,0] },
-                  { label: "Maestría",        color: "#00aaff", values: pageData?.graficaLineas?.maestria ?? [0,0,0,0,0] },
-                  { label: "Especialización", color: "#e91e63", values: pageData?.graficaLineas?.especializacion ?? [0,0,0,0,0] },
-                  { label: "Doctorado",       color: "#4caf50", values: pageData?.graficaLineas?.doctorado ?? [0,0,0,0,0] },
-                ];
-
-                const pX = 15, pTop = 16, pBot = 28, W = 250, H = 68;
-                const allV = series.flatMap(s => s.values);
-                const maxV = Math.max(...allV, 1);
-                
-                const plotW = W - pX * 2, plotH = H - pTop - pBot;
-                const xP = (i) => pX + (i / (YEARS.length - 1)) * plotW;
-                const yP = (v) => pTop + plotH - (v / maxV) * plotH;
-
-                return (
-                  <svg width="100%" height="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet" style={{fontFamily: 'sans-serif'}}>
-                    {/* Líneas verticales punteadas */}
-                    {YEARS.map((_, i) => (
-                      <line key={`v-line-${i}`} x1={xP(i)} y1={pTop} x2={xP(i)} y2={H - pBot} stroke="#999" strokeWidth="0.5" strokeDasharray="2,2" />
-                    ))}
-
-                    {/* Líneas de series */}
-                    {series.map(s => {
-                      const pts = s.values.map((v, i) => `${xP(i)},${yP(v)}`).join(" ");
-                      return (
-                        <polyline key={`line-${s.label}`} points={pts} fill="none" stroke={s.color} strokeWidth="1.2" />
-                      );
-                    })}
-
-                    {/* Puntos y etiquetas */}
-                    {series.map(s =>
-                      s.values.map((v, i) => (
-                        <g key={`${s.label}-${i}`}>
-                          <circle cx={xP(i)} cy={yP(v)} r="1.5" fill={s.color} />
-                          <text
-                            x={xP(i)}
-                            y={s.label === "Profesional" ? yP(v) + 10 : yP(v) - 5}
-                            textAnchor="middle"
-                            fontSize="5px"
-                            fill="#333"
-                          >
-                            {v.toLocaleString('es-CO')}
-                          </text>
-                        </g>
-                      ))
-                    )}
-
-                    {/* Eje X */}
-                    {yearsNum.map((y, i) => (
-                      <text key={y} x={xP(i)} y={H - pBot + 10} textAnchor="middle" fontSize="6px" fill="#000">{y}</text>
-                    ))}
-
-                    {/* Leyenda */}
-                    {series.map((s, i) => {
-                      const spacing = 60;
-                      const startX = (W - (series.length * spacing)) / 2;
-                      return (
-                        <g key={`legend-${s.label}`} transform={`translate(${startX + i * spacing}, ${H - 6})`}>
-                          <circle cx="0" cy="0" r="2" fill={s.color} />
-                          <text x="5" y="2" fontSize="5px" fill="#333">{s.label}</text>
-                        </g>
-                      );
-                    })}
-                  </svg>
-                );
-              })()}
-            </div>
-          </div>
-        </div>
       </div>
     </>
   );
