@@ -23,7 +23,7 @@ const FONT = {
   banner: "9px",
   graph:  "5px",
   small:  "8.5px",
-  oferta: "7px",
+  oferta: "10px",
 };
 
 const PAD = "0px 1px";
@@ -387,10 +387,10 @@ export function Page2({ innerRef, centroId = 'centro-engativa' }: Props) {
               <div style={{ display: "flex", flexDirection: "row", gap: 0, width: "95%", height: 200, alignItems: "stretch", justifyContent: "center"}} className="graph-container">
 
                 {/* Panel 1: Oferta Académica (se mantiene igual, con flex:1) */}
-                <div style={{ width: "35%", display: "flex", flexDirection: "column" }}>
+                <div style={{width: "34%", display: "flex", flexDirection: "column" }}>
                   <Banner text="Proyección Oferta Académica"/>
-                    <div style={{ flex: 1, padding: "0 1px", overflow: "visible" }}>
-                      <table style={{ ...tableStyle, fontSize: FONT.oferta, margin: "0 auto", width: "90%"}}>
+                    <div className= "mt-3" style={{ flex: 1, padding: "0 1px", overflow: "visible" }}>
+                      <table style={{ ...tableStyle, fontSize: FONT.oferta, margin: "0 auto", width: "80%"}}>
                         <thead>
                         <tr>
                           <th style={{ border: "1px solid #e0e0e0", backgroundColor: C.skyBlue, color: C.skyBlueTx, fontSize: FONT.oferta, fontWeight: 700, padding: "1px 2px", textAlign: "left" }}>Periodicidad</th>
@@ -398,39 +398,30 @@ export function Page2({ innerRef, centroId = 'centro-engativa' }: Props) {
                         </tr>
                       </thead>
                       <tbody>
-                        <tr>
-                          <td rowSpan={3} style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, fontWeight: 700, padding: "1px 2px", verticalAlign: "middle" }}>⊟ 1.Pregrado</td>
-                          {pageData?.graficaOferta?.pregrado?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.small, fontWeight: 700, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}
-                        </tr>
-                        <tr>{pageData?.graficaOferta?.pregradoSemestral?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.small, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}</tr>
-                        <tr>{pageData?.graficaOferta?.pregradoCuatrimestral?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.small, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}</tr>
-                        <tr>
-                          <td rowSpan={3} style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, fontWeight: 700, padding: "1px 2px", verticalAlign: "middle" }}>⊟ 2.Posgrado</td>
-                          {pageData?.graficaOferta?.posgrado?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.small, fontWeight: 700, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}
-                        </tr>
-                        <tr>{pageData?.graficaOferta?.posgradoSemestral?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}</tr>
-                        <tr>{pageData?.graficaOferta?.posgradoCuatrimestral?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}</tr>
-                        <tr>
-                          <td style={{ border: "1px solid #e0e0e0", backgroundColor: C.purple, color: C.black, fontSize: FONT.oferta, fontWeight: 700, padding: "1px 2px" }}>Total</td>
-                          {pageData?.graficaOferta?.total?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", backgroundColor: C.purple, color: C.black, fontSize: FONT.small, fontWeight: 700, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}
-                        </tr>
-                        <tr><td colSpan={7} style={{ border: "none", padding: "1px" }}></td></tr>
-                        <tr>
-                          <th style={{ border: "1px solid #e0e0e0", backgroundColor: C.skyBlue, color: C.skyBlueTx, fontSize: FONT.small, fontWeight: 700, padding: "1px 2px", textAlign: "left" }}>Modalidad</th>
-                          {YEARS.map(y => <th key={y} style={{ border: "1px solid #e0e0e0", backgroundColor: C.skyBlue, color: C.skyBlueTx, fontSize: FONT.small, fontWeight: 700, padding: "1px 2px", textAlign: "center" }}>{y}</th>)}
-                        </tr>
-                        <tr>
-                          <td style={{ border: "1px solid #e0e0e0", fontSize: FONT.small, padding: "1px 2px" }}>Presencial</td>
-                          {pageData?.graficaOferta?.presencial?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.small, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}
-                        </tr>
-                        <tr>
-                          <td style={{ border: "1px solid #e0e0e0", fontSize: FONT.small, padding: "1px 2px" }}>Distancia</td>
-                          {pageData?.graficaOferta?.distancia?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.small, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}
-                        </tr>
-                        <tr>
-                          <td style={{ border: "1px solid #e0e0e0", backgroundColor: C.purple, color: C.black, fontSize: FONT.small, fontWeight: 700, padding: "1px 2px" }}>Total</td>
-                          {pageData?.graficaOferta?.totalModalidad?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", backgroundColor: C.purple, color: C.black, fontSize: FONT.small, fontWeight: 700, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}
-                        </tr>
+                   <tr>
+                    <td style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, fontWeight: 700, padding: "1px 2px" }}>⊟ 1.Pregrado</td>
+                    {pageData?.graficaOferta?.pregrado?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.small, fontWeight: 700, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}
+                  </tr>
+                  <tr>
+                    <td style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, padding: "1px 2px", paddingLeft: "8px" }}>Presencial</td>
+                    {pageData?.graficaOferta?.pregradoSemestral?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.small, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}
+                  </tr>
+                  <tr>
+                    <td style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, padding: "1px 2px", paddingLeft: "8px" }}>Distancia</td>
+                    {pageData?.graficaOferta?.pregradoCuatrimestral?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.small, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}
+                  </tr>
+                  <tr>
+                    <td style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, fontWeight: 700, padding: "1px 2px" }}>⊟ 2.Posgrado</td>
+                    {pageData?.graficaOferta?.posgrado?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.small, fontWeight: 700, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}
+                  </tr>
+                  <tr>
+                    <td style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, padding: "1px 2px", paddingLeft: "8px" }}>Presencial</td>
+                    {pageData?.graficaOferta?.posgradoSemestral?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}
+                  </tr>
+                  <tr>
+                    <td style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, padding: "1px 2px", paddingLeft: "8px" }}>Distancia</td>
+                    {pageData?.graficaOferta?.posgradoCuatrimestral?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}
+                  </tr>
                       </tbody>
                     </table>
                   </div>

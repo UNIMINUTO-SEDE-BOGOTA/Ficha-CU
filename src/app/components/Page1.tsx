@@ -84,7 +84,7 @@ export function Page1({ innerRef, centroId = 'centro-engativa' }: Props) {
           <table className="w-full text-[9px] border-collapse leading-tight">
             <thead>
               <tr className="bg-[#C3E0FB] text-black">
-                <th className="border px-1 py-[3px] text-left">Nombre Corto</th>
+                <th className="border px-1 py-[3px] text-left">Indicador</th>
                 {años.map(h => (
                   <th key={h} className="border px-1 py-[3px] text-center">{h}</th>
                 ))}
