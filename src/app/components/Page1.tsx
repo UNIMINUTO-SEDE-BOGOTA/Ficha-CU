@@ -146,25 +146,25 @@ export function Page1({ innerRef, centroId = 'centro-engativa' }: Props) {
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td className="border px-2 py-0.5">1. Pregrado</td>
-                  <td className="border px-2 py-0.5 text-right">{formatNumber(studentSummary.pregradoPresencial)}</td>
-                  <td className="border px-2 py-0.5 text-right">{formatNumber(studentSummary.pregradoPresencial)}</td>
-                  <td className="border px-2 py-0.5 text-right font-bold bg-[#C7B8E7]">{formatNumber(studentSummary.pregradoTotal)}</td>
-                </tr>
-                <tr>
-                  <td className="border px-2 py-0.5">2. Posgrado</td>
-                  <td className="border px-2 py-0.5 text-right">{studentSummary.posgradoDistancia}</td>
-                  <td className="border px-2 py-0.5 text-right">{studentSummary.posgradoPresencial}</td>
-                  <td className="border px-2 py-0.5 text-right font-bold bg-[#C7B8E7]">{studentSummary.posgradoTotal}</td>
-                </tr>
-                <tr className="bg-[#C7B8E7] font-semibold">
-                  <td className="border px-2 py-0.5">Total</td>
-                  <td className="border px-2 py-0.5 text-right">{studentSummary.totalGeneralDistancia}</td>
-                  <td className="border px-2 py-0.5 text-right">{studentSummary.totalGeneralPresencial}</td>
-                  <td className="border px-2 py-0.5 text-right">{studentSummary.totalGeneral}</td>
-                </tr>
-              </tbody>
+                  <tr>
+                    <td className="border px-2 py-0.5">1. Pregrado</td>
+                    <td className="border px-2 py-0.5 text-right">{studentSummary.pregradoDistancia}</td>
+                    <td className="border px-2 py-0.5 text-right">{studentSummary.pregradoPresencial}</td>
+                    <td className="border px-2 py-0.5 text-right font-bold bg-[#C7B8E7]">{studentSummary.pregradoTotal}</td>
+                  </tr>
+                  <tr>
+                    <td className="border px-2 py-0.5">2. Posgrado</td>
+                    <td className="border px-2 py-0.5 text-right">{studentSummary.posgradoDistancia}</td>
+                    <td className="border px-2 py-0.5 text-right">{studentSummary.posgradoPresencial}</td>
+                    <td className="border px-2 py-0.5 text-right font-bold bg-[#C7B8E7]">{studentSummary.posgradoTotal}</td>
+                  </tr>
+                  <tr className="bg-[#C7B8E7] font-semibold">
+                    <td className="border px-2 py-0.5">Total</td>
+                    <td className="border px-2 py-0.5 text-right">{studentSummary.totalGeneralDistancia}</td>
+                    <td className="border px-2 py-0.5 text-right">{studentSummary.totalGeneralPresencial}</td>
+                    <td className="border px-2 py-0.5 text-right">{studentSummary.totalGeneral}</td>
+                  </tr>
+                </tbody>
             </table>
           </div>
  

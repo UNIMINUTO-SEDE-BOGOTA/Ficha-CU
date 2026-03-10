@@ -18,22 +18,19 @@ const mostrarValor = (valor) => {
 };
  
 export function transformarPage1(apiData) {
+  // ── DIAGNÓSTICO ──
+  console.log('🔍 apiData.studentSummary raw:', apiData?.studentSummary);
+  // ─────────────────
 
- 
   if (!apiData) return generarEstructurasVacias();
  
   const indicators = apiData.indicators || [];
  
-  // Filtrar items con Nombre Corto válido
   const itemsValidos = indicators.filter((item) => {
     const nombre = item['Nombre Corto'];
     return nombre && String(nombre).trim() !== '';
   });
  
- 
-  // ==========================================
-  // TODOS los indicadores de la BD, sin lista fija, sin exclusiones
-  // ==========================================
   const indicatorsRows = itemsValidos.map((item) => {
     const nombre = String(item['Nombre Corto']).trim();
     return [
@@ -42,10 +39,7 @@ export function transformarPage1(apiData) {
     ];
   });
  
-  // Filas financieras
   const financialRows = generarFinancialRows(apiData.proyecciones || []);
- 
-  // Resumen de estudiantes
   const studentSummary = generarStudentSummary(apiData.studentSummary);
  
   return {
@@ -95,17 +89,39 @@ function generarFinancialRows(proyecciones) {
 function generarStudentSummary(studentData) {
   if (!studentData) return generarStudentSummaryVacio();
 
-  const campos = [
-    'pregradoDistancia', 'pregradoPresencial', 'pregradoTotal',
-    'posgradoDistancia', 'posgradoPresencial', 'posgradoTotal',
-    'totalGeneralDistancia', 'totalGeneralPresencial', 'totalGeneral',
-    'hombres', 'mujeres'
-  ];
+  // ── DIAGNÓSTICO ──
+  console.log('🔍 studentData keys:', Object.keys(studentData));
+  console.log('🔍 studentData valores:', studentData);
+  // ─────────────────
+
+  // Mapeo snake_case (API) → camelCase (frontend)
+  const normalizado = {
+    pregradoDistancia:      studentData.pregradoDistancia      ?? studentData.pregrado_distancia,
+    pregradoPresencial:     studentData.pregradoPresencial      ?? studentData.pregrado_presencial,
+    pregradoTotal:          studentData.pregradoTotal           ?? studentData.pregrado_total,
+    posgradoDistancia:      studentData.posgradoDistancia       ?? studentData.posgrado_distancia,
+    posgradoPresencial:     studentData.posgradoPresencial      ?? studentData.posgrado_presencial,
+    posgradoTotal:          studentData.posgradoTotal           ?? studentData.posgrado_total,
+    totalGeneralDistancia:  studentData.totalGeneralDistancia   ?? studentData.total_general_distancia,
+    totalGeneralPresencial: studentData.totalGeneralPresencial  ?? studentData.total_general_presencial,
+    totalGeneral:           studentData.totalGeneral            ?? studentData.total_general,
+    hombres:                studentData.hombres,
+    mujeres:                studentData.mujeres,
+  };
+
+  // ── DIAGNÓSTICO ──
+  console.log('🔍 normalizado:', normalizado);
+  // ─────────────────
 
   const resultado = {};
-  campos.forEach((campo) => {
-    resultado[campo] = formatearMiles(studentData[campo]);
+  Object.keys(normalizado).forEach((campo) => {
+    resultado[campo] = formatearMiles(normalizado[campo]);
   });
+
+  // ── DIAGNÓSTICO ──
+  console.log('🔍 resultado final:', resultado);
+  // ─────────────────
+
   return resultado;
 }
 
@@ -134,5 +150,4 @@ function generarStudentSummaryVacio() {
     totalGeneralDistancia: '-', totalGeneralPresencial: '-', totalGeneral: '-',
     hombres: '-', mujeres: '-'
   };
-  
 }
