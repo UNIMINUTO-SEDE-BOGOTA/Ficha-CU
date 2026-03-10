@@ -245,29 +245,6 @@ export function Header() {
                   Cada ficha integra información de matrícula, deserción, indicadores de calidad,
                   proyecciones EBITDA y contexto territorial — todo en un solo lugar.
                 </motion.p>
-
-                {/* Stats row */}
-                <motion.div
-                  className="mt-10 flex flex-wrap gap-4"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.7, delay: 0.9 }}
-                >
-                  {[
-                    { value: "18.341", label: "Estudiantes activos" },
-                    { value: "7", label: "Años proyectados" },
-                    { value: "10+", label: "Indicadores clave" },
-                  ].map((stat) => (
-                    <div key={stat.label} className="stat-card rounded-lg px-5 py-3 min-w-[130px]">
-                      <p className="brand-title" style={{ color: "#ffc000", fontSize: "1.6rem", lineHeight: 1 }}>
-                        {stat.value}
-                      </p>
-                      <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "0.72rem", marginTop: 4, textTransform: "uppercase", letterSpacing: "0.1em" }}>
-                        {stat.label}
-                      </p>
-                    </div>
-                  ))}
-                </motion.div>
               </div>
 
               {/* RIGHT — Logo / Image placeholder */}
