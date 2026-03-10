@@ -551,7 +551,7 @@ export function Page2({ innerRef, centroId = 'centro-engativa' }: Props) {
                         return (
                           <g key={i}>
                             <line x1={padL} y1={y} x2={W - padR} y2={y} stroke="#e0e0e0" strokeWidth="1.5" />
-                            <text x={padL - 8} y={y} textAnchor="end" dominantBaseline="middle" fontSize="18" fill="#666">{val}</text>
+                            <text x={padL - 8} y={y} textAnchor="end" dominantBaseline="middle" fontSize="18" fill="#666">{val.toLocaleString("es-CO")}</text>
                           </g>
                         );
                       })}
@@ -575,7 +575,7 @@ export function Page2({ innerRef, centroId = 'centro-engativa' }: Props) {
                               <circle cx={xP(i)} cy={yP(v)} r="5" fill={s.color} stroke="white" strokeWidth="2" />
                               {v > 0 && (
                                 <text x={xP(i)} y={yP(v) + offsetY} textAnchor="middle" fontSize="18" fill={s.color} fontWeight="600">
-                                  {Math.round(v)}
+                                  {Math.round(v).toLocaleString("es-CO")}
                                 </text>
                               )}
                             </g>
