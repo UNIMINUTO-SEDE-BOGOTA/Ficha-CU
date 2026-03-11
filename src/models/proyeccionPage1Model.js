@@ -18,8 +18,7 @@ const mostrarValor = (valor) => {
 };
  
 export function transformarPage1(apiData) {
-  // ── DIAGNÓSTICO ──
-  console.log('🔍 apiData.studentSummary raw:', apiData?.studentSummary);
+
   // ─────────────────
 
   if (!apiData) return generarEstructurasVacias();
@@ -89,9 +88,6 @@ function generarFinancialRows(proyecciones) {
 function generarStudentSummary(studentData) {
   if (!studentData) return generarStudentSummaryVacio();
 
-  // ── DIAGNÓSTICO ──
-  console.log('🔍 studentData keys:', Object.keys(studentData));
-  console.log('🔍 studentData valores:', studentData);
   // ─────────────────
 
   // Mapeo snake_case (API) → camelCase (frontend)
@@ -109,8 +105,7 @@ function generarStudentSummary(studentData) {
     mujeres:                studentData.mujeres,
   };
 
-  // ── DIAGNÓSTICO ──
-  console.log('🔍 normalizado:', normalizado);
+
   // ─────────────────
 
   const resultado = {};
@@ -118,8 +113,6 @@ function generarStudentSummary(studentData) {
     resultado[campo] = formatearMiles(normalizado[campo]);
   });
 
-  // ── DIAGNÓSTICO ──
-  console.log('🔍 resultado final:', resultado);
   // ─────────────────
 
   return resultado;

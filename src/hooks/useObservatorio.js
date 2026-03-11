@@ -29,8 +29,6 @@ export function useObservatorio(centroId) {
       setError(null);
       try {
         const url = `${API_URL}/api/observatorio/completo/${encodeURIComponent(centroId)}`;
-        console.log(`📍 Centro: ${centroNombre} (${centroId})`);
-        console.log('📡 URL:', url);
  
         const response = await fetch(url, {
           headers: {
@@ -44,7 +42,6 @@ export function useObservatorio(centroId) {
         }
  
         const result = await response.json();
-        console.log('✅ Datos recibidos:', result);
         setData(result);
       } catch (err) {
         console.error('Error:', err);
