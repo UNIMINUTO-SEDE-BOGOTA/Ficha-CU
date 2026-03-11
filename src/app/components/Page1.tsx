@@ -38,7 +38,6 @@ export function Page1({ innerRef, centroId = 'centro-engativa' }: Props) {
   const { data, loading, centroNombre } = useObservatorio(centroId);
   const pageData = transformarPage1(data);
  
-  console.log('pageData en Page1:', pageData);
  
   // Función para formatear números con separador de miles (puntos)
   const formatNumber = (num: number | undefined | null): string => {
