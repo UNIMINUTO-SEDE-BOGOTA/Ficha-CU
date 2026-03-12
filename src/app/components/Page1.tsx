@@ -93,8 +93,8 @@ export function Page1({ innerRef, centroId = 'centro-engativa' }: Props) {
           <GrayBanner text="PROYECCIÓN INDICADORES CENTRO UNIVERSITARIO" />
         </div>
 
-        <div className="border shadow-sm mt-0.5" style={{ overflowX: 'auto' }}>
-          <table className="w-full text-[9px] border-collapse leading-tight" style={{ minWidth: '600px' }}>
+        <div className="border shadow-sm mt-0.5">
+          <table className="w-full text-[9px] border-collapse leading-tight" style={{ minWidth: '500px' }}>
             <thead>
               <tr className="bg-[#C3E0FB] text-black">
                 <th className="border px-1 py-[3px] text-left">Indicador</th>
@@ -134,14 +134,14 @@ export function Page1({ innerRef, centroId = 'centro-engativa' }: Props) {
       </div>
 
       {/* ── COLUMNA DERECHA ── */}
-      <div className="flex flex-col h-full bg-white pl-3" style={{ width: "50%", overflowY: 'auto' }}>
+      <div className="flex flex-col h-full bg-white pl-3" style={{ width: "50%"}}>
         <SectionHeader showFecha subtitle={subtitle} />
 
         <h2 className="text-[13px] font-semibold text-gray-800 text-center -mt-1 mb-0">Ficha Centro Universitario</h2>
         <p className="text-[10px] text-gray-700 text-center" style={{ marginBottom: 0, lineHeight: 1 }}>Líder:</p>
 
         {/* Contenedor de mapa sin márgenes negativos */}
-        <div className="w-full flex justify-center items-center" style={{ height: "auto", maxHeight: "80mm", marginTop: "2mm" }}>
+        <div className="w-full flex justify-center items-center" style={{ height: "auto", maxHeight: "60mm", marginTop: "2mm" }}>
           <img src={mapaSrc} style={{ maxWidth: "100%", maxHeight: "80mm", objectFit: "contain" }} alt="Mapa" />
         </div>
 
@@ -153,9 +153,11 @@ export function Page1({ innerRef, centroId = 'centro-engativa' }: Props) {
         </div>
 
         {/* Tabla de estudiantes con scroll horizontal */}
-        <div className="w-full flex flex-row border shadow-sm" style={{ alignItems: "stretch", marginTop: "1mm" }}>
-          {/* Contenedor de la tabla con overflow horizontal */}
-          <div style={{ width: "55%", overflowX: 'auto' }}>
+        <div
+          className="w-full flex flex-row border shadow-sm"
+          style={{ alignItems: "stretch", marginTop: "1mm" }}
+        >
+          <div style={{ width: "55%" }}>
             <table className="text-[9px] border-collapse" style={{ minWidth: '100%' }}>
               <thead>
                 <tr className="bg-[#AFC4D8] text-black">
@@ -215,7 +217,7 @@ export function Page1({ innerRef, centroId = 'centro-engativa' }: Props) {
         </div>
 
         {/* Imagen de contexto */}
-        <div className="w-full flex-1 mt-0.5 flex items-start justify-center overflow-hidden" style={{ minHeight: "80mm" }}>
+        <div className="w-full flex-1 mt-0.5 flex items-start justify-center overflow-hidden" style={{ height: "100%" }}>
           <img src={contextoSrc} alt="Contexto Centro Universitario" style={{ width: "100%", height: "100%", objectFit: "contain", objectPosition: "center" }} />
         </div>
       </div>
