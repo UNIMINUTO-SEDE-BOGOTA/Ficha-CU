@@ -156,7 +156,7 @@ const handlePrint = () => {
   return (
     <div
       className="flex flex-col items-center h-screen"
-      style={{ background: '#e8ecf0', padding: '20px 0 0', overflow: 'hidden' }}
+      style={{ background: '#FFFFFF', padding: '20px 0 0', overflow: 'hidden' }}
     >
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
@@ -297,6 +297,7 @@ const handlePrint = () => {
           // Scrollbar sutil
           scrollbarWidth: 'thin',
           scrollbarColor: '#012657 #dde2e8',
+          
         }}
       >
         {/* Tamaño real escalado para que el scroll sepa hasta dónde llegar */}
