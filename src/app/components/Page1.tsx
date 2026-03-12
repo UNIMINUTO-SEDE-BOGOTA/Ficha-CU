@@ -28,6 +28,13 @@ const EBITDA_IMAGENES: Record<string, string> = {
   'centro-perdomo-ciudad-bolivar': '/ebitda_perdomo.png',
   'centro-san-cristobal-usaquen': '/ebitda_usaquen.png',
 };
+const NOMBRE_LIDER: Record<string, string> = {
+  'centro-engativa': "",
+  'centro-kennedy': "Edgar Germán Martínez",
+  'centro-santa-fe-las-cruces': "Liliana Milena Castro Bastidas",
+  'centro-perdomo-ciudad-bolivar': "Edgar Germán Martínez",
+  'centro-san-cristobal-usaquen': "Edgar Alirio Aguirre Buenaventura",
+};
  
 interface Props {
   innerRef?: React.Ref<HTMLDivElement>;
@@ -55,6 +62,7 @@ export function Page1({ innerRef, centroId = 'centro-engativa' }: Props) {
   const mapaSrc = MAPA_IMAGENES[centroId] || '/mapa-engativa.png';
   const contextoSrc = CONTEXTO_IMAGENES[centroId] || '/contexto-cu.png';
   const ebitdaSrc = EBITDA_IMAGENES[centroId] || '/ebitda_engativa.png';
+  const liderNombre = NOMBRE_LIDER[centroId] || "";
  
   if (loading) {
     return <div className="flex items-center justify-center h-full">Cargando datos del observatorio...</div>;
@@ -121,8 +129,10 @@ export function Page1({ innerRef, centroId = 'centro-engativa' }: Props) {
         <SectionHeader showFecha subtitle={subtitle} />
  
         <h2 className="text-[13px] font-semibold text-gray-800 text-center -mt-1 mb-0">Ficha Centro Universitario</h2>
-        <p className="text-[10px] text-gray-700 text-center" style={{ marginBottom: 0, lineHeight: 1 }}>Líder:</p>
- 
+        <p className="text-[10px] text-gray-700 text-center" style={{ marginBottom: 0, lineHeight: 1 }}>
+          <span className="font-semibold">Líder:</span> {liderNombre}
+        </p>
+        
         <div className="w-full flex justify-center items-center -mt-10" style={{ height: "80mm" }}>
           <img src={mapaSrc} style={{ height: "100%", maxWidth: "85%", objectFit: "contain" }} />
         </div>
