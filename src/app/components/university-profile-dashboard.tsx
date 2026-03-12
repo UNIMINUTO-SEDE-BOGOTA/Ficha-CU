@@ -360,9 +360,9 @@ function MobileContent({ centroId }: { centroId: string }) {
               ].map((item, idx, arr) => (
                 <React.Fragment key={item.label}>
                   <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:2 }}>
-                    <span style={{ color: BLUE, fontWeight:600, fontSize:7, textAlign:'center', lineHeight:1.2, whiteSpace:'pre-line' }}>{item.label}</span>
+                    <span style={{ color: BLUE, fontWeight:600, fontSize:12, textAlign:'center', lineHeight:1.2, whiteSpace:'pre-line' }}>{item.label}</span>
                     <img src={item.src} style={{ height:20, objectFit:'contain' }} alt={item.label} />
-                    <span style={{ fontSize:10, fontWeight:700, color:'#111' }}>{item.value}</span>
+                    <span style={{ fontSize:15, fontWeight:700, color:'#111' }}>{item.value}</span>
                   </div>
                   {idx < arr.length - 1 && <div style={{ width:1, height:28, backgroundColor:`${BLUE}44` }} />}
                 </React.Fragment>
@@ -900,7 +900,7 @@ export function UniversityProfileDashboard() {
       `}</style>
 
       {/* DESKTOP */}
-      <div className="vista-desktop" style={{flexDirection:'column',alignItems:'center',minHeight:'100vh',background:'#011a3d',padding:'20px 0 0',overflow:'hidden'}}>
+      <div className="vista-desktop" style={{flexDirection:'column',alignItems:'center',minHeight:'100vh',background:'#FFFFFF',padding:'20px 0 0',overflow:'hidden'}}>
         <div className="no-print" style={{marginBottom:16,display:'flex',alignItems:'center',gap:12,padding:'8px 16px',borderRadius:8,backgroundColor:'#012657',boxShadow:'0 4px 16px rgba(1,38,87,0.3)'}}>
           <select value={centroSeleccionado} onChange={e=>setCentro(e.target.value)} style={{backgroundColor:'rgba(255,255,255,0.08)',color:'#ffc000',border:'1px solid rgba(255,192,0,0.3)',borderRadius:4,padding:'0.4rem 2rem 0.4rem 0.75rem',fontSize:13,fontWeight:600,cursor:'pointer',appearance:'none',backgroundImage:`url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23ffc000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>")`,backgroundRepeat:'no-repeat',backgroundPosition:'right 0.6rem center',backgroundSize:12}}>
             {CENTROS.map(c=><option key={c.id} value={c.id} style={{backgroundColor:'#012657'}}>{c.nombre}</option>)}
@@ -922,7 +922,7 @@ export function UniversityProfileDashboard() {
           <div style={{width:1,height:28,backgroundColor:'rgba(255,255,255,0.2)'}}/>
           <button onClick={handlePrint} style={{backgroundColor:'#ffc000',color:'#012657',border:'none',borderRadius:4,padding:'0.4rem 1.25rem',fontSize:13,fontWeight:700,cursor:'pointer',boxShadow:'0 2px 8px rgba(255,192,0,0.35)'}}>🖨 Imprimir</button>
         </div>
-        <div className="scroll-area" style={{width:'100%',flex:1,overflow:'auto',display:'flex',justifyContent:'center',alignItems:'flex-start',padding:'16px 24px 32px',background:'#011a3d',scrollbarWidth:'thin',scrollbarColor:'#012657 #011a3d'}}>
+        <div className="scroll-area" style={{width:'100%',flex:1,overflow:'auto',display:'flex',justifyContent:'center',alignItems:'flex-start',padding:'16px 24px 32px',background:'#FFFFFF',scrollbarWidth:'thin',scrollbarColor:'#012657 #FFFFFF'}}>
           <div style={{width:scaledW,height:scaledH,minWidth:scaledW,flexShrink:0,position:'relative'}}>
             <div style={{transform:`scale(${zoomLevel})`,transformOrigin:'top left',width:PAGE_W_PX,height:PAGE_H_PX,boxShadow:'0 8px 32px rgba(0,0,0,0.4)',borderRadius:2,overflow:'hidden'}}>
               {currentPage===1?<Page1 innerRef={ref1} centroId={centroSeleccionado}/>:<Page2 innerRef={ref2} centroId={centroSeleccionado}/>}
