@@ -179,3 +179,23 @@
     line-height: 1.5;
   }
 }
+
+/* ── Animación fade + slide desde izquierda ── */
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.row-animated {
+  animation: slideInLeft 0.35s ease forwards;
+}
+ 
+.row-hidden {
+  opacity: 0;
+}
