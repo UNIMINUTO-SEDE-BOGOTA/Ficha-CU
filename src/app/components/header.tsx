@@ -60,6 +60,10 @@ export function Header() {
           text-transform: uppercase;
           padding: 3px 10px;
           border-radius: 999px;
+          display: inline-block;
+          white-space: normal;
+          word-break: break-word;
+          text-align: center;
         }
 
         .diagonal-stripe {
@@ -70,7 +74,7 @@ export function Header() {
           );
         }
 
-        /* ── Hero layout base (desktop) ── */
+        /* ── Hero base (desktop) ── */
         .hero-section { min-height: 520px; }
 
         .hero-inner {
@@ -111,42 +115,36 @@ export function Header() {
           max-width: 480px;
         }
 
-        .bottom-fade {
-          display: block;
+        .hero-text-block {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          width: 100%;
         }
 
-        /* ── Navbar responsive ── */
-        .nav-brand-text {
-          font-size: 1.15rem;
-        }
+        .bottom-fade { display: block; }
 
-        /* ── Móvil ── */
+        .nav-brand-text { font-size: 1.15rem; }
+        .nav-brand-sub  { display: block; }
+
+        /* ── Tablet / móvil grande ── */
         @media (max-width: 900px) {
-          .hero-section {
-            min-height: unset !important;
-          }
-
-          .hero-inner {
-            padding: 28px 18px !important;
-          }
+          .hero-section   { min-height: unset !important; }
+          .hero-inner     { padding: 24px 16px 32px !important; }
 
           .hero-flex {
             flex-direction: column !important;
-            gap: 20px !important;
+            gap: 16px !important;
             align-items: center !important;
           }
 
-          /* Imagen arriba en móvil, centrada y más pequeña */
-          .hero-image-wrap {
-            order: -1;
-          }
+          .hero-image-wrap { order: -1; }
 
           .hero-image-size {
             width: 140px !important;
             height: 140px !important;
           }
 
-          /* El dot orbitante ajusta su transformOrigin */
           .orbit-dot {
             transform-origin: 50% 62px !important;
           }
@@ -156,53 +154,52 @@ export function Header() {
             text-align: center;
           }
 
-          .pill-tag {
-            display: block;
-            text-align: center;
-          }
-
           .hero-desc {
-            font-size: 0.92rem !important;
+            font-size: 0.9rem !important;
             text-align: center;
             max-width: 100% !important;
           }
 
           .hero-subdesc {
-            font-size: 0.82rem !important;
+            font-size: 0.8rem !important;
             text-align: center;
             max-width: 100% !important;
           }
 
           .hero-text-block {
-            display: flex;
-            flex-direction: column;
             align-items: center;
           }
 
-          .bottom-fade {
-            display: none !important;
-          }
-
-          /* Navbar compacto */
-          .nav-brand-text {
-            font-size: 0.95rem !important;
-          }
-
-          .nav-brand-sub {
-            display: none;
-          }
+          .bottom-fade    { display: none !important; }
+          .nav-brand-text { font-size: 0.95rem !important; }
+          .nav-brand-sub  { display: none; }
 
           .nav-hex {
             width: 34px !important;
             height: 34px !important;
           }
+        }
 
-          .nav-btn-text {
-            display: none;
+        /* ── Móvil pequeño (< 400px) ── */
+        @media (max-width: 400px) {
+          .hero-inner { padding: 18px 12px 24px !important; }
+
+          .hero-image-size {
+            width: 110px !important;
+            height: 110px !important;
           }
 
-          .nav-btn-icon {
-            display: flex !important;
+          .orbit-dot {
+            transform-origin: 50% 47px !important;
+          }
+
+          .hero-title   { font-size: 1.7rem !important; }
+          .hero-desc    { font-size: 0.82rem !important; }
+          .hero-subdesc { font-size: 0.75rem !important; }
+
+          .pill-tag {
+            font-size: 0.6rem !important;
+            letter-spacing: 0.06em !important;
           }
         }
       `}</style>
@@ -219,12 +216,14 @@ export function Header() {
             position: "sticky",
             top: 0,
             zIndex: 50,
+            overflow: "hidden",
+            minWidth: 0,
           }}
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2" style={{ minWidth: 0, overflow: "hidden" }}>
             <motion.div
               className="hex-badge nav-hex flex items-center justify-center"
               style={{
@@ -241,10 +240,10 @@ export function Header() {
                 style={{ width: "90%", height: "90%", objectFit: "contain" }}
               />
             </motion.div>
-            <div>
+            <div style={{ minWidth: 0, overflow: "hidden" }}>
               <p
                 className="brand-title nav-brand-text text-white font-black leading-none"
-                style={{ letterSpacing: "-0.01em" }}
+                style={{ letterSpacing: "-0.01em", margin: 0 }}
               >
                 Ecosistema <span style={{ color: "#ffc000" }}>360</span>
               </p>
@@ -255,6 +254,7 @@ export function Header() {
                   color: "rgba(255,255,255,0.45)",
                   letterSpacing: "0.14em",
                   textTransform: "uppercase",
+                  margin: 0,
                 }}
               >
                 Observatorio Analítico
@@ -262,17 +262,16 @@ export function Header() {
             </div>
           </div>
 
-          {/* Botón desktop: texto + flecha / móvil: solo ícono */}
           <motion.button
             onClick={() =>
               document.getElementById("fichas")?.scrollIntoView({ behavior: "smooth" })
             }
             className="flex items-center gap-2 px-4 py-2 rounded text-xs font-semibold uppercase tracking-widest"
-            style={{ background: "#ffc000", color: "#012657" }}
+            style={{ background: "#ffc000", color: "#012657", flexShrink: 0 }}
             whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(255,192,0,0.4)" }}
             whileTap={{ scale: 0.97 }}
           >
-            <span className="nav-btn-text">Ver Fichas</span>
+            <span className="nav-btn-text" style={{ whiteSpace: "nowrap" }}>Ver Fichas</span>
             <span style={{ fontSize: 14 }}>→</span>
           </motion.button>
         </motion.nav>
@@ -380,7 +379,7 @@ export function Header() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.9, delay: 0.4, type: "spring", stiffness: 80 }}
               >
-                <div className="hero-image-size relative">
+                <div className="hero-image-size" style={{ position: "relative" }}>
                   <motion.div
                     className="rounded-full absolute inset-0"
                     style={{ border: "1px solid rgba(255,192,0,0.2)" }}
