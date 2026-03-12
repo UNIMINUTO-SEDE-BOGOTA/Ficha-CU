@@ -392,13 +392,7 @@ export function UniversityProfileDashboard() {
                   ))}
                 </select>
               </div>
-              <div style={{ height: 1, backgroundColor: 'rgba(255,255,255,0.08)' }} />
-              <button
-                onClick={() => { handlePrint(); setMobileBubbleOpen(false); }}
-                style={{ backgroundColor: '#ffc000', color: '#012657', border: 'none', borderRadius: 10, padding: '11px 0', fontSize: 13, fontWeight: 800, cursor: 'pointer', width: '100%', boxShadow: '0 2px 12px rgba(255,192,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}
-              >
-                🖨️ Imprimir
-              </button>
+
             </div>
           )}
 
