@@ -70,40 +70,139 @@ export function Header() {
           );
         }
 
-        /* ── Móvil: hero compacto ── */
+        /* ── Hero layout base (desktop) ── */
+        .hero-section { min-height: 520px; }
+
+        .hero-inner {
+          padding: 64px 48px 80px;
+        }
+
+        .hero-flex {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 80px;
+        }
+
+        .hero-image-wrap {
+          flex-shrink: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .hero-image-size {
+          width: 220px;
+          height: 220px;
+        }
+
+        .hero-title {
+          font-size: clamp(2.8rem, 6vw, 4.5rem);
+          color: #ffffff;
+        }
+
+        .hero-desc {
+          font-size: 1.05rem;
+          max-width: 520px;
+        }
+
+        .hero-subdesc {
+          font-size: 0.9rem;
+          max-width: 480px;
+        }
+
+        .bottom-fade {
+          display: block;
+        }
+
+        /* ── Navbar responsive ── */
+        .nav-brand-text {
+          font-size: 1.15rem;
+        }
+
+        /* ── Móvil ── */
         @media (max-width: 900px) {
           .hero-section {
             min-height: unset !important;
-            padding-bottom: 0 !important;
           }
+
           .hero-inner {
-            padding-top: 28px !important;
-            padding-bottom: 28px !important;
-            padding-left: 18px !important;
-            padding-right: 18px !important;
+            padding: 28px 18px !important;
           }
+
           .hero-flex {
             flex-direction: column !important;
-            gap: 24px !important;
-            align-items: flex-start !important;
+            gap: 20px !important;
+            align-items: center !important;
           }
+
+          /* Imagen arriba en móvil, centrada y más pequeña */
           .hero-image-wrap {
-            /* en móvil la imagen va más pequeña y alineada al centro */
-            align-self: center !important;
+            order: -1;
           }
-          .hero-image-wrap > div {
-            width: 150px !important;
-            height: 150px !important;
+
+          .hero-image-size {
+            width: 140px !important;
+            height: 140px !important;
           }
-          /* el dot orbitante se ajusta */
-          .hero-image-wrap .orbit-dot {
-            transform-origin: 50% 68px !important;
+
+          /* El dot orbitante ajusta su transformOrigin */
+          .orbit-dot {
+            transform-origin: 50% 62px !important;
           }
+
           .hero-title {
-            font-size: 2.2rem !important;
+            font-size: 2rem !important;
+            text-align: center;
           }
+
+          .pill-tag {
+            display: block;
+            text-align: center;
+          }
+
+          .hero-desc {
+            font-size: 0.92rem !important;
+            text-align: center;
+            max-width: 100% !important;
+          }
+
+          .hero-subdesc {
+            font-size: 0.82rem !important;
+            text-align: center;
+            max-width: 100% !important;
+          }
+
+          .hero-text-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+          }
+
           .bottom-fade {
             display: none !important;
+          }
+
+          /* Navbar compacto */
+          .nav-brand-text {
+            font-size: 0.95rem !important;
+          }
+
+          .nav-brand-sub {
+            display: none;
+          }
+
+          .nav-hex {
+            width: 34px !important;
+            height: 34px !important;
+          }
+
+          .nav-btn-text {
+            display: none;
+          }
+
+          .nav-btn-icon {
+            display: flex !important;
           }
         }
       `}</style>
@@ -112,7 +211,7 @@ export function Header() {
 
         {/* ── NAVBAR ── */}
         <motion.nav
-          className="w-full flex items-center justify-between px-6 lg:px-12 py-4"
+          className="w-full flex items-center justify-between px-4 lg:px-12 py-3"
           style={{
             borderBottom: "1px solid rgba(255,255,255,0.08)",
             background: "rgba(1,38,87,0.6)",
@@ -125,55 +224,85 @@ export function Header() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <motion.div
-              className="hex-badge flex items-center justify-center"
-              style={{ width: 42, height: 42, background: "linear-gradient(135deg, #ffc000, #e6a800)", flexShrink: 0 }}
+              className="hex-badge nav-hex flex items-center justify-center"
+              style={{
+                width: 42, height: 42,
+                background: "linear-gradient(135deg, #ffc000, #e6a800)",
+                flexShrink: 0,
+              }}
               whileHover={{ scale: 1.1, rotate: 10 }}
               transition={{ type: "spring", stiffness: 300 }}
             >
-              <img src="/profile.png" alt="Logo" style={{ width: "90%", height: "90%", objectFit: "contain" }} />
+              <img
+                src="/profile.png"
+                alt="Logo"
+                style={{ width: "90%", height: "90%", objectFit: "contain" }}
+              />
             </motion.div>
             <div>
-              <p className="brand-title text-white font-black leading-none" style={{ fontSize: "1.15rem", letterSpacing: "-0.01em" }}>
+              <p
+                className="brand-title nav-brand-text text-white font-black leading-none"
+                style={{ letterSpacing: "-0.01em" }}
+              >
                 Ecosistema <span style={{ color: "#ffc000" }}>360</span>
               </p>
-              <p style={{ fontSize: "0.6rem", color: "rgba(255,255,255,0.45)", letterSpacing: "0.14em", textTransform: "uppercase" }}>
+              <p
+                className="nav-brand-sub"
+                style={{
+                  fontSize: "0.6rem",
+                  color: "rgba(255,255,255,0.45)",
+                  letterSpacing: "0.14em",
+                  textTransform: "uppercase",
+                }}
+              >
                 Observatorio Analítico
               </p>
             </div>
           </div>
 
+          {/* Botón desktop: texto + flecha / móvil: solo ícono */}
           <motion.button
-            onClick={() => document.getElementById('fichas')?.scrollIntoView({ behavior: 'smooth' })}
+            onClick={() =>
+              document.getElementById("fichas")?.scrollIntoView({ behavior: "smooth" })
+            }
             className="flex items-center gap-2 px-4 py-2 rounded text-xs font-semibold uppercase tracking-widest"
             style={{ background: "#ffc000", color: "#012657" }}
             whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(255,192,0,0.4)" }}
             whileTap={{ scale: 0.97 }}
           >
-            <span>Ver Fichas</span>
+            <span className="nav-btn-text">Ver Fichas</span>
             <span style={{ fontSize: 14 }}>→</span>
           </motion.button>
         </motion.nav>
 
         {/* ── HERO ── */}
-        <div
-          className="hero-section relative overflow-hidden"
-          style={{ minHeight: "520px" }}
-        >
+        <div className="hero-section relative overflow-hidden">
+
           {/* Fondos decorativos */}
           <div className="absolute inset-0 grid-dot" />
           <div className="absolute top-0 right-0 w-1/3 h-full diagonal-stripe opacity-60" />
 
           <motion.div
             className="absolute rounded-full"
-            style={{ width: 500, height: 500, top: -150, right: -100, background: "radial-gradient(circle, rgba(0,187,255,0.12) 0%, transparent 70%)", pointerEvents: "none" }}
+            style={{
+              width: 500, height: 500,
+              top: -150, right: -100,
+              background: "radial-gradient(circle, rgba(0,187,255,0.12) 0%, transparent 70%)",
+              pointerEvents: "none",
+            }}
             animate={{ scale: [1, 1.15, 1] }}
             transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
           />
           <motion.div
             className="absolute rounded-full"
-            style={{ width: 300, height: 300, bottom: -80, left: "20%", background: "radial-gradient(circle, rgba(255,192,0,0.08) 0%, transparent 70%)", pointerEvents: "none" }}
+            style={{
+              width: 300, height: 300,
+              bottom: -80, left: "20%",
+              background: "radial-gradient(circle, rgba(255,192,0,0.08) 0%, transparent 70%)",
+              pointerEvents: "none",
+            }}
             animate={{ scale: [1.1, 1, 1.1] }}
             transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
           />
@@ -186,50 +315,57 @@ export function Header() {
           />
 
           {/* Contenido */}
-          <div
-            className="hero-inner relative z-10 max-w-7xl mx-auto"
-            style={{ paddingLeft: 48, paddingRight: 48, paddingTop: 64, paddingBottom: 80 }}
-          >
-            <div className="hero-flex flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
+          <div className="hero-inner relative z-10 max-w-7xl mx-auto">
+            <div className="hero-flex">
 
               {/* Texto */}
-              <div className="flex-1">
-                <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7, delay: 0.1 }}>
+              <div className="flex-1 hero-text-block">
+                <motion.div
+                  initial={{ opacity: 0, x: -30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.7, delay: 0.1 }}
+                >
                   <span className="pill-tag">Observatorio · Analítico · Institucional</span>
                 </motion.div>
 
                 <motion.h1
                   className="brand-title hero-title mt-5 leading-none"
-                  style={{ fontSize: "clamp(2.8rem, 6vw, 4.5rem)", color: "#ffffff" }}
-                  initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.25 }}
                 >
                   Ecosistema{" "}
-                  <span style={{ color: "#ffc000", textShadow: "0 0 40px rgba(255,192,0,0.3)" }}>360</span>
+                  <span style={{ color: "#ffc000", textShadow: "0 0 40px rgba(255,192,0,0.3)" }}>
+                    360
+                  </span>
                 </motion.h1>
 
                 <motion.div
                   className="mt-2"
                   style={{ width: 60, height: 3, background: "#ffc000", borderRadius: 2 }}
-                  initial={{ width: 0 }} animate={{ width: 60 }}
+                  initial={{ width: 0 }}
+                  animate={{ width: 60 }}
                   transition={{ duration: 0.6, delay: 0.6 }}
                 />
 
                 <motion.p
-                  className="mt-6"
-                  style={{ color: "rgba(255,255,255,0.7)", fontSize: "1.05rem", lineHeight: 1.75, maxWidth: 520 }}
-                  initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                  className="hero-desc mt-6"
+                  style={{ color: "rgba(255,255,255,0.7)", lineHeight: 1.75 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
                   transition={{ duration: 0.7, delay: 0.5 }}
                 >
-                  Plataforma de <strong style={{ color: "#fff" }}>inteligencia institucional</strong> para el análisis
-                  y seguimiento de el Centro Universitario Sede Bogotá. Consulta fichas de datos,
-                  indicadores académicos y proyecciones financieras en tiempo real.
+                  Plataforma de{" "}
+                  <strong style={{ color: "#fff" }}>inteligencia institucional</strong> para el
+                  análisis y seguimiento de el Centro Universitario Sede Bogotá. Consulta fichas de
+                  datos, indicadores académicos y proyecciones financieras en tiempo real.
                 </motion.p>
 
                 <motion.p
-                  className="mt-3"
-                  style={{ color: "rgba(255,255,255,0.45)", fontSize: "0.9rem", lineHeight: 1.7, maxWidth: 480 }}
-                  initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                  className="hero-subdesc mt-3"
+                  style={{ color: "rgba(255,255,255,0.45)", lineHeight: 1.7 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
                   transition={{ duration: 0.7, delay: 0.7 }}
                 >
                   Cada ficha integra información de matrícula, deserción, indicadores de calidad,
@@ -239,11 +375,12 @@ export function Header() {
 
               {/* Imagen / logo */}
               <motion.div
-                className="hero-image-wrap flex-shrink-0 flex items-center justify-center"
-                initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }}
+                className="hero-image-wrap"
+                initial={{ opacity: 0, scale: 0.85 }}
+                animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.9, delay: 0.4, type: "spring", stiffness: 80 }}
               >
-                <div className="relative" style={{ width: 220, height: 220 }}>
+                <div className="hero-image-size relative">
                   <motion.div
                     className="rounded-full absolute inset-0"
                     style={{ border: "1px solid rgba(255,192,0,0.2)" }}
@@ -257,18 +394,28 @@ export function Header() {
                     transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
                   />
                   <div
-                    className="hex-badge relative z-10 flex items-center justify-center overflow-hidden"
+                    className="hex-badge relative z-10 flex items-center justify-center overflow-hidden hero-image-size"
                     style={{
-                      width: 220, height: 220,
-                      background: "linear-gradient(135deg, rgba(1,38,87,0.9), rgba(0,64,128,0.8))",
+                      background:
+                        "linear-gradient(135deg, rgba(1,38,87,0.9), rgba(0,64,128,0.8))",
                       border: "2px solid rgba(255,192,0,0.3)",
                     }}
                   >
-                    <img src="/logo.png" alt="Ecosistema 360" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+                    <img
+                      src="/logo.png"
+                      alt="Ecosistema 360"
+                      style={{ width: "100%", height: "100%", objectFit: "contain" }}
+                    />
                   </div>
                   <motion.div
                     className="orbit-dot absolute rounded-full"
-                    style={{ width: 10, height: 10, background: "#ffc000", top: 8, left: "50%", marginLeft: -5, boxShadow: "0 0 12px #ffc000", transformOrigin: "50% 102px" }}
+                    style={{
+                      width: 10, height: 10,
+                      background: "#ffc000",
+                      top: 8, left: "50%", marginLeft: -5,
+                      boxShadow: "0 0 12px #ffc000",
+                      transformOrigin: "50% 102px",
+                    }}
                     animate={{ rotate: 360 }}
                     transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
                   />
@@ -281,7 +428,9 @@ export function Header() {
           {/* Fade inferior — solo desktop */}
           <div
             className="bottom-fade absolute bottom-0 left-0 right-0 h-16"
-            style={{ background: "linear-gradient(to bottom, transparent, rgba(1,26,61,0.6))" }}
+            style={{
+              background: "linear-gradient(to bottom, transparent, rgba(1,26,61,0.6))",
+            }}
           />
         </div>
 
