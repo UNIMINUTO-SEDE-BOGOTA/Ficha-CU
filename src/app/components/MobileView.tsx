@@ -500,7 +500,10 @@ export function MobileContent({ centroId }: MobileContentProps) {
             <img src="/Logo UNIMINUTO.png" alt="Logo" style={{ height: 36, objectFit: 'contain' }} />
             <div style={{ flex: 1, margin: '0 8px', overflow: 'hidden' }}>
               <div style={{ backgroundColor: BLUE_LIGHT, clipPath: 'polygon(2% 0%,100% 0%,98% 100%,0% 100%)', padding: '4px 12px', textAlign: 'center' }}>
-                <span style={{ fontSize: 10, fontWeight: 600, color: BLUE, whiteSpace: 'nowrap' }}>{subtitle}</span>
+                <span style={{ fontSize: 10, fontWeight: 600, color: BLUE, textAlign: 'center', lineHeight: 1.4 }}>
+                  Centro Universitario<br />
+                  {centroNombre}
+                </span>
               </div>
             </div>
             <img src="/Logo_Acreditacion.png" alt="Acreditación" style={{ height: 30, objectFit: 'contain' }} />
