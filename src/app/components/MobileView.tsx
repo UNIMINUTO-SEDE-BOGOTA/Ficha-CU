@@ -142,7 +142,7 @@ export function MBanner({ children }: { children: React.ReactNode }) {
       padding: '4px 14px',
       marginBottom: 6,
     }}>
-      <span style={{ fontSize: 10, fontWeight: 700, color: '#111' }}>{children}</span>
+      <span style={{ fontSize: 10, fontWeight: 700, color: '#111', display: 'block', textAlign: 'center' }}>{children}</span>
     </div>
   );
 }
@@ -254,7 +254,7 @@ export function StickyInner({
       )}
       <div style={{
         flex: 1, backgroundColor: modBg, color: modColor,
-        fontWeight: modBold ? 700 : 400, fontSize: SC_FS,
+        fontWeight: modBold ? 700 : 0, fontSize: SC_FS,
         padding: SC_P, display: 'flex', alignItems: 'center',
       }}>
         {modalidad}
@@ -566,12 +566,6 @@ export function MobileContent({ centroId }: MobileContentProps) {
               </table>
             </div>
 
-            {/*
-              ── Bloque derecho: Total población / Hombres / Mujeres ──
-              FIX: reducimos fontSize del label (8px), icono (14px) y
-              número (11px) para que todo entre en el espacio disponible.
-              minWidth:0 + overflow:hidden evitan que el flex desborde.
-            */}
             <div style={{
               flex: 1,
               minWidth: 0,
@@ -595,7 +589,6 @@ export function MobileContent({ centroId }: MobileContentProps) {
                     alignItems: 'center', gap: 1,
                     minWidth: 0, overflow: 'hidden',
                   }}>
-                    {/* Label reducido a 8px y sin whiteSpace forzado */}
                     <span style={{
                       color: BLUE, fontWeight: 600,
                       fontSize: 8,
@@ -606,9 +599,7 @@ export function MobileContent({ centroId }: MobileContentProps) {
                     }}>
                       {item.label}
                     </span>
-                    {/* Icono más pequeño */}
                     <img src={item.src} style={{ height: 14, objectFit: 'contain' }} alt={item.label} />
-                    {/* Número reducido a 11px */}
                     <span style={{
                       fontSize: 11, fontWeight: 700, color: '#111',
                       whiteSpace: 'nowrap',
