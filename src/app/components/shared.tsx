@@ -47,7 +47,7 @@ export const SectionHeader = ({
       {showFecha && (
         <div className="flex flex-col items-center text-center">
           <p className="text-gray-400 text-[7px] leading-tight">Fecha de corte:</p>
-          <p className="text-gray-600 font-medium text-[8px] leading-tight">20 de febrero de 2026</p>
+          <p className="text-gray-600 font-medium text-[8px] leading-tight">20 de Marzo de 2026</p>
         </div>
       )}
       <img src="/Logo_Acreditacion.png" alt="Logo Acreditación" className="h-14 w-auto object-contain" />
