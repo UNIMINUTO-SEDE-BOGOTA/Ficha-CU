@@ -13,7 +13,6 @@ const forceIndexLowercase = () => ({
     const upper = path.join(distPath, 'Index.html')
     const lower = path.join(distPath, 'index.html')
 
-    // Si existe Index.html con mayúscula, lo renombra
     if (fs.existsSync(upper)) {
       fs.renameSync(upper, lower)
       console.log('✓ Renombrado: Index.html → index.html')
@@ -25,7 +24,7 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
-    forceIndexLowercase(),  // ← aquí
+    forceIndexLowercase(),
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'icon-192.png', 'icon-512.png'],
@@ -54,6 +53,8 @@ export default defineConfig({
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
         navigateFallback: 'index.html',
+        // Solo rutas que NO sean /api ni rutas internas de Azure (__)
+        navigateFallbackAllowlist: [/^(?!\/__).*/],
         navigateFallbackDenylist: [/^\/api/],
         runtimeCaching: [
           {

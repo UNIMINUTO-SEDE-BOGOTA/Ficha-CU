@@ -1,0 +1,18 @@
+{
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": [
+      "/assets/*",
+      "/icon-*.png",
+      "/favicon.ico",
+      "/apple-touch-icon.png",
+      "/sw.js",
+      "/workbox-*.js",
+      "/manifest.webmanifest",
+      "/registerSW.js"
+    ]
+  },
+  "globalHeaders": {
+    "Cache-Control": "no-cache"
+  }
+}
