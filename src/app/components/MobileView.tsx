@@ -903,17 +903,46 @@ export function MobileContent({ centroId }: MobileContentProps) {
               </thead>
               <tbody>
                 {[
-                  { label: '⊟ 1.Pregrado', data: p2.graficaOferta.pregrado,             bold: true },
+                  { label: '1.Pregrado', data: p2.graficaOferta.pregrado,             bold: true },
                   { label: '  Presencial',  data: p2.graficaOferta.pregradoSemestral,     bold: false },
                   { label: '  Distancia',   data: p2.graficaOferta.pregradoCuatrimestral, bold: false },
-                  { label: '⊟ 2.Posgrado', data: p2.graficaOferta.posgrado,             bold: true },
+                  { label: '2.Posgrado', data: p2.graficaOferta.posgrado,             bold: true },
                   { label: '  Presencial',  data: p2.graficaOferta.posgradoSemestral,     bold: false },
                   { label: '  Distancia',   data: p2.graficaOferta.posgradoCuatrimestral, bold: false },
+                  {
+                    label: 'Total',
+                    data: (p2.graficaOferta.pregrado || []).map((_: any, i: number) =>
+                      Number(p2.graficaOferta.pregrado?.[i] ?? 0) + Number(p2.graficaOferta.posgrado?.[i] ?? 0)
+                    ),
+                    bold: true,
+                    isTotal: true,
+                  },
                 ].map((row, i) => (
-                  <tr key={i} style={{ backgroundColor: i % 2 === 0 ? 'white' : '#f5f7fb' }}>
-                    <td style={{ ...tdBase('left', 'inherit', row.bold), whiteSpace: 'pre' }}>{row.label}</td>
+                  <tr
+                    key={i}
+                    style={{
+                      backgroundColor: row.isTotal ? undefined : i % 2 === 0 ? 'white' : '#f5f7fb',
+                    }}
+                  >
+                    <td
+                      style={{
+                        ...tdBase('left', 'inherit', row.bold),
+                        whiteSpace: 'pre',
+                        ...(row.isTotal && { backgroundColor: '#9977bd', color: '#000000' }),
+                      }}
+                    >
+                      {row.label}
+                    </td>
                     {(row.data || []).map((v: any, j: number) => (
-                      <td key={j} style={tdBase('center', 'inherit', row.bold)}>{v}</td>
+                      <td
+                        key={j}
+                        style={{
+                          ...tdBase('center', 'inherit', row.bold),
+                          ...(row.isTotal && { backgroundColor: '#9977bd', color: '#000000' }),
+                        }}
+                      >
+                        {v}
+                      </td>
                     ))}
                   </tr>
                 ))}
