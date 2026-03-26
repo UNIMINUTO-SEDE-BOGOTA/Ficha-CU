@@ -737,9 +737,9 @@ export function MobileContent({ centroId }: MobileContentProps) {
               </tr>
               <tr className={visibleT1[6] ? 'row-animated' : 'row-hidden'}>
                 <td style={stickyTdBlock(PURPLE2, '#fff')}>
-                  <StickyInner nivel="Tot." modalidad="Total" nivelBg={PURPLE2} nivelColor="#fff" modBg={PURPLE2} modColor="#fff" modBold />
+                  <StickyInner modalidad="Total" nivelBg={PURPLE2} nivelColor="#fff" modBg={PURPLE2} modColor="#000000" modBold />
                 </td>
-                {p2?.t1_grandTotal?.map((d: any, i: number) => <YC key={i} d={d} bg={PURPLE2} color="#fff" />)}
+                {p2?.t1_grandTotal?.map((d: any, i: number) => <YC key={i} d={d} bg={PURPLE2} color="#000000" />)}
               </tr>
             </tbody>
           </StickyScrollTable>
@@ -778,8 +778,8 @@ export function MobileContent({ centroId }: MobileContentProps) {
                 </tr>
               ))}
               <tr className={visibleT2[2] ? 'row-animated' : 'row-hidden'}>
-                <td style={{ ...stickyTdBlock(PURPLE2, '#fff'), textAlign: 'center', padding: SC_P, fontWeight: 700 }}>Total</td>
-                {p2?.t2_modTotal?.map((d: any, i: number) => <YC key={i} d={d} bg={PURPLE2} color="#fff" />)}
+                <td style={{ ...stickyTdBlock(PURPLE2, '#000000'), textAlign: 'center', padding: SC_P, fontWeight: 700 }}>Total</td>
+                {p2?.t2_modTotal?.map((d: any, i: number) => <YC key={i} d={d} bg={PURPLE2} color="#000000" />)}
               </tr>
             </tbody>
           </StickyScrollTable>
@@ -836,7 +836,7 @@ export function MobileContent({ centroId }: MobileContentProps) {
                     <MatCells d={p2?.t3_matriculas2026?.posgradoTotal?.[tipo]} isTotalRow />
                   </tr>
                   <tr className={visibleT3[6] ? 'row-animated' : 'row-hidden'}>
-                    <td colSpan={2} style={{ ...mcT('left'), backgroundColor: PURPLE2, color: '#fff' }}>Total</td>
+                    <td colSpan={2} style={{ ...mcT('left'), backgroundColor: PURPLE2, color: '#000000' }}>Total</td>
                     <MatCells d={p2?.t3_matriculas2026?.totalGeneral?.[tipo]} isTotalRow />
                   </tr>
                 </tbody>
@@ -880,9 +880,9 @@ export function MobileContent({ centroId }: MobileContentProps) {
               </tr>
               <tr className={visibleT4[6] ? 'row-animated' : 'row-hidden'}>
                 <td style={stickyTdBlock(PURPLE2, '#fff')}>
-                  <StickyInner nivel="Tot." modalidad="Total" nivelBg={PURPLE2} nivelColor="#fff" modBg={PURPLE2} modColor="#fff" modBold />
+                  <StickyInner modalidad="Total" nivelBg={PURPLE2} nivelColor="#fff" modBg={PURPLE2} modColor="#000000" modBold />
                 </td>
-                {p2?.t4_grandTotal?.map((d: any, i: number) => <YC key={i} d={d} bg={PURPLE2} color="#fff" />)}
+                {p2?.t4_grandTotal?.map((d: any, i: number) => <YC key={i} d={d} bg={PURPLE2} color="#000000" />)}
               </tr>
             </tbody>
           </StickyScrollTable>

@@ -17,7 +17,6 @@ export function useObservatorio(centroId) {
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState(null);
 
-  // ── centroNombre se deriva del centroId, NO va al useEffect ──────────────
   const centroNombre = CENTRO_NOMBRES[centroId] || 'Desconocido';
 
   useEffect(() => {
@@ -26,15 +25,13 @@ export function useObservatorio(centroId) {
       return;
     }
 
-    // Verificar que la API key esté configurada
     if (!API_KEY) {
-      console.error('❌ VITE_API_KEY no está configurada en las variables de entorno');
       setError('API Key no configurada');
       setLoading(false);
       return;
     }
 
-    let cancelled = false; // evitar setState si el componente se desmontó
+    let cancelled = false;
 
     const fetchData = async () => {
       setLoading(true);
@@ -43,12 +40,11 @@ export function useObservatorio(centroId) {
 
       try {
         const url = `${API_URL}/api/observatorio/completo/${encodeURIComponent(centroId)}`;
-        console.log(`🔄 Fetching: ${url}`);
 
         const response = await fetch(url, {
           headers: {
-            'X-API-Key':     API_KEY,
-            'Content-Type':  'application/json',
+            'X-API-Key':    API_KEY,
+            'Content-Type': 'application/json',
           },
         });
 
@@ -59,20 +55,11 @@ export function useObservatorio(centroId) {
         const result = await response.json();
 
         if (!cancelled) {
-          console.log('✅ Datos recibidos:', {
-            indicators:       result.indicators?.length,
-            studentSummary:   !!result.studentSummary,
-            proyecciones:     result.proyecciones?.length,
-            matriculados2026: result.matriculados2026?.length,
-            desercion:        result.desercion?.length,
-            oferta:           result.oferta?.length,
-          });
           setData(result);
         }
 
       } catch (err) {
         if (!cancelled) {
-          console.error('❌ Error fetch:', err);
           setError(err instanceof Error ? err.message : 'Error desconocido');
         }
       } finally {
@@ -84,10 +71,9 @@ export function useObservatorio(centroId) {
 
     fetchData();
 
-    // Cleanup: si cambia centroId antes de que termine el fetch, cancelar
     return () => { cancelled = true; };
 
-  }, [centroId]); // ← solo centroId, NO centroNombre
+  }, [centroId]);
 
   return { data, loading, error, centroNombre };
 }
