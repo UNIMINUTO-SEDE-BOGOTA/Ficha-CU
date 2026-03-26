@@ -396,13 +396,13 @@ export function Page2({ innerRef, centroId = 'centro-engativa' }: Props) {
               <table style={{ ...tableStyle, fontSize: FONT.oferta, margin: "0 auto", width: "80%" }}>
                 <thead>
                   <tr>
-                    <th style={{ border: "1px solid #e0e0e0", backgroundColor: C.skyBlue, color: C.skyBlueTx, fontSize: FONT.oferta, fontWeight: 700, padding: "1px 2px", textAlign: "left" }}>Periodicidad</th>
-                    {YEARS.map(y => <th key={y} style={{ border: "1px solid #e0e0e0", backgroundColor: C.skyBlue, color: C.skyBlueTx, fontSize: FONT.small, fontWeight: 700, padding: "1px 2px", textAlign: "center" }}>{y}</th>)}
+                    <th style={{ border: "1px solid #e0e0e0", backgroundColor: C.skyBlue, color: C.black, fontSize: FONT.oferta, fontWeight: 700, padding: "1px 2px", textAlign: "left" }}>Periodicidad</th>
+                    {YEARS.map(y => <th key={y} style={{ border: "1px solid #e0e0e0", backgroundColor: C.skyBlue, color: C.black, fontSize: FONT.small, fontWeight: 700, padding: "1px 2px", textAlign: "center" }}>{y}</th>)}
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, fontWeight: 700, padding: "1px 2px" }}>⊟ 1.Pregrado</td>
+                    <td style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, fontWeight: 700, padding: "1px 2px" }}>1.Pregrado</td>
                     {pageData?.graficaOferta?.pregrado?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.small, fontWeight: 700, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}
                   </tr>
                   <tr>
@@ -414,7 +414,7 @@ export function Page2({ innerRef, centroId = 'centro-engativa' }: Props) {
                     {pageData?.graficaOferta?.pregradoCuatrimestral?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.small, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}
                   </tr>
                   <tr>
-                    <td style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, fontWeight: 700, padding: "1px 2px" }}>⊟ 2.Posgrado</td>
+                    <td style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, fontWeight: 700, padding: "1px 2px" }}>2.Posgrado</td>
                     {pageData?.graficaOferta?.posgrado?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.small, fontWeight: 700, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}
                   </tr>
                   <tr>
@@ -424,6 +424,22 @@ export function Page2({ innerRef, centroId = 'centro-engativa' }: Props) {
                   <tr>
                     <td style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, padding: "1px 2px", paddingLeft: "8px" }}>Distancia</td>
                     {pageData?.graficaOferta?.posgradoCuatrimestral?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}
+                  </tr>
+
+                  {/* Fila Total: suma Pregrado + Posgrado por año */}
+                  <tr>
+                    <td style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, fontWeight: 700, padding: "1px 2px", backgroundColor: C.purple, color: C.black }}>
+                      Total
+                    </td>
+                    {YEARS.map((_, i) => {
+                      const pregrado = pageData?.graficaOferta?.pregrado?.[i] ?? 0;
+                      const posgrado = pageData?.graficaOferta?.posgrado?.[i] ?? 0;
+                      return (
+                        <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.small, fontWeight: 700, padding: "1px 2px", textAlign: "center", backgroundColor: C.purple, color: C.black }}>
+                          {Number(pregrado) + Number(posgrado)}
+                        </td>
+                      );
+                    })}
                   </tr>
                 </tbody>
               </table>
