@@ -169,7 +169,7 @@ export function InstallPWA({ onBannerChange }: InstallPWAProps) {
               <img src="/icon-192.png" alt="App" className="w-full h-full object-cover object-top" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-white">Instala el tablero</p>
+              <p className="text-sm font-medium text-white">Instala la Ficha</p>
               <p className="text-xs text-white/70">Accede rápido desde tu pantalla de inicio</p>
             </div>
             <button

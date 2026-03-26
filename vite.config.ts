@@ -29,9 +29,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'icon-192.png', 'icon-512.png'],
       manifest: {
-        name: 'Mi Tablero',
-        short_name: 'Tablero',
-        description: 'Tablero de control',
+        name: 'Ficha de Centros Universitarios - Bogotá',
+        short_name: 'Ficha CU',
+        description: 'Ficha de Centros Universitarios de Bogotá - Información actualizada y detallada',
         start_url: '/',
         display: 'standalone',
         background_color: '#ffffff',
