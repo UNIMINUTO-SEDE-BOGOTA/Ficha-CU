@@ -4,9 +4,6 @@ import { Page2 } from './Page2';
 import { MobileContent } from './MobileView';
 import { BLUE, BLUE_LIGHT, BLUE_MED } from './MobileView';
 
-// ─────────────────────────────────────────────
-// CENTROS
-// ─────────────────────────────────────────────
 const CENTROS = [
   { id: 'centro-engativa',               nombre: 'Especial Minuto de Dios - Engativá' },
   { id: 'centro-kennedy',                nombre: 'Kennedy' },
@@ -19,9 +16,6 @@ const TOTAL_PAGES = 2;
 const PAGE_W_PX   = 1122;
 const PAGE_H_PX   = 794;
 
-// ─────────────────────────────────────────────
-// HELPERS DESKTOP
-// ─────────────────────────────────────────────
 function NavBtn({
   dir,
   currentPage,
@@ -50,10 +44,12 @@ function NavBtn({
   );
 }
 
-// ─────────────────────────────────────────────
-// COMPONENTE PRINCIPAL
-// ─────────────────────────────────────────────
-export function UniversityProfileDashboard() {
+// ← ÚNICA LÍNEA QUE CAMBIA EN LA FIRMA
+interface Props {
+  bannerVisible?: boolean;
+}
+
+export function UniversityProfileDashboard({ bannerVisible = false }: Props) {
   const [currentPage, setCurrentPage]           = useState(1);
   const [centroSeleccionado, setCentro]         = useState(CENTROS[0].id);
   const [zoomLevel, setZoomLevel]               = useState(0.85);
@@ -62,7 +58,9 @@ export function UniversityProfileDashboard() {
   const ref1 = useRef<HTMLDivElement>(null);
   const ref2 = useRef<HTMLDivElement>(null);
 
-  // ── Print ──
+  // El FAB sube 68px (altura del banner) cuando el banner está visible
+  const fabBottom = bannerVisible ? 24 + 68 : 24;
+
   const handlePrint = () => {
     const el1 = ref1.current, el2 = ref2.current;
     if (!el1 || !el2) return;
@@ -111,7 +109,6 @@ export function UniversityProfileDashboard() {
     }, 800);
   };
 
-  // ── Zoom ──
   const ZOOM_MIN = 0.4, ZOOM_MAX = 1.5, ZOOM_STEP = 0.05;
   const zoomIn  = () => setZoomLevel((z) => Math.min(+(z + ZOOM_STEP).toFixed(2), ZOOM_MAX));
   const zoomOut = () => setZoomLevel((z) => Math.max(+(z - ZOOM_STEP).toFixed(2), ZOOM_MIN));
@@ -120,36 +117,20 @@ export function UniversityProfileDashboard() {
 
   return (
     <>
-      {/* ══ ESTILOS GLOBALES ══ */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
         *, *::before, *::after { box-sizing: border-box; }
-        html {
-          overflow-x: hidden;
-          width: 100%;
-        }
+        html { overflow-x: hidden; width: 100%; }
         body {
           font-family: 'Inter', sans-serif;
-          margin: 0;
-          padding: 0;
+          margin: 0; padding: 0;
           background: #011a3d;
           overflow-x: hidden;
-          min-width: 0;
-          width: 100%;
+          min-width: 0; width: 100%;
         }
-        #root, [data-reactroot] {
-          width: 100%;
-          min-width: 0;
-          overflow-x: hidden;
-        }
+        #root, [data-reactroot] { width: 100%; min-width: 0; overflow-x: hidden; }
         @media print { .no-print { display: none !important; } }
 
-        /*
-          ── Breakpoint móvil / desktop ──
-          Bajado de 900px → 640px para que el desborde de tablas anchas
-          nunca ocurra en la vista móvil (tablas horizontalmente scrolleables).
-          Por encima de 640px el usuario ya tiene espacio para la vista desktop.
-        */
         @media screen and (max-width: 640px) {
           .vista-desktop { display: none !important; }
           .vista-movil   { display: flex !important; }
@@ -159,13 +140,10 @@ export function UniversityProfileDashboard() {
           .vista-desktop { display: flex !important; }
         }
         .vista-movil {
-          width: 100%;
-          max-width: 100vw;
-          overflow-x: hidden;
-          box-sizing: border-box;
+          width: 100%; max-width: 100vw;
+          overflow-x: hidden; box-sizing: border-box;
         }
 
-        /* ── Scrollbars ── */
         .scroll-area::-webkit-scrollbar          { width: 6px; height: 6px; }
         .scroll-area::-webkit-scrollbar-track    { background: #011a3d; }
         .scroll-area::-webkit-scrollbar-thumb    { background: #012657; border-radius: 3px; }
@@ -175,10 +153,9 @@ export function UniversityProfileDashboard() {
         .scroll-table-wrap::-webkit-scrollbar-thumb { background: ${BLUE_MED}; border-radius: 2px; }
         .scroll-table-wrap::-webkit-scrollbar-thumb:hover { background: ${BLUE}; }
 
-        /* ── FAB móvil ── */
+        /* ── FAB: ya no tiene bottom fijo aquí, se maneja con inline style ── */
         .fab-container {
           position: fixed;
-          bottom: 24px;
           right: 18px;
           z-index: 1000;
           display: flex;
@@ -206,7 +183,6 @@ export function UniversityProfileDashboard() {
         }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* ── Animación de filas ── */
         .row-animated { animation: rowIn 0.35s ease forwards; }
         .row-hidden   { opacity: 0; transform: translateX(-12px); }
         @keyframes rowIn {
@@ -215,9 +191,7 @@ export function UniversityProfileDashboard() {
         }
       `}</style>
 
-      {/* ══════════════════════════════════════
-          DESKTOP
-      ══════════════════════════════════════ */}
+      {/* ══ DESKTOP ══ */}
       <div
         className="vista-desktop"
         style={{
@@ -226,7 +200,6 @@ export function UniversityProfileDashboard() {
           padding: '20px 0 0', overflow: 'hidden',
         }}
       >
-        {/* ── Barra de controles ── */}
         <div
           className="no-print"
           style={{
@@ -328,9 +301,7 @@ export function UniversityProfileDashboard() {
         </div>
       </div>
 
-      {/* ══════════════════════════════════════
-          MÓVIL  (≤ 640px)
-      ══════════════════════════════════════ */}
+      {/* ══ MÓVIL ══ */}
       <div
         className="vista-movil"
         style={{
@@ -340,27 +311,16 @@ export function UniversityProfileDashboard() {
           minHeight: '100vh',
           background: '#eef1f7',
           padding: '12px 0 100px 0',
-          overflowY: 'auto',
-          overflowX: 'hidden',
           width: '100%',
           maxWidth: '100vw',
           minWidth: 0,
           boxSizing: 'border-box',
-          position: 'relative',
+          // SIN overflowY, SIN position: relative
         }}
       >
-        {/*
-          Wrapper con padding simétrico.
-          width:100% + boxSizing:border-box = nunca desborda el viewport.
-          Sin translateX ni margin negativo.
-        */}
         <div style={{
-          width: '100%',
-          maxWidth: '100%',
-          minWidth: 0,
-          boxSizing: 'border-box',
-          paddingLeft: 10,
-          paddingRight: 10,
+          width: '100%', maxWidth: '100%', minWidth: 0,
+          boxSizing: 'border-box', paddingLeft: 10, paddingRight: 10,
         }}>
           <MobileContent centroId={centroSeleccionado} />
         </div>
@@ -369,7 +329,14 @@ export function UniversityProfileDashboard() {
           <div className="bubble-backdrop" onClick={() => setMobileBubbleOpen(false)} />
         )}
 
-        <div className="fab-container no-print">
+        {/* ← ÚNICO CAMBIO: bottom dinámico + transition suave */}
+        <div
+          className="fab-container no-print"
+          style={{
+            bottom: fabBottom,
+            transition: 'bottom 0.3s ease',
+          }}
+        >
           {mobileBubbleOpen && (
             <div
               className="bubble-panel"
@@ -392,7 +359,6 @@ export function UniversityProfileDashboard() {
                   ))}
                 </select>
               </div>
-
             </div>
           )}
 
