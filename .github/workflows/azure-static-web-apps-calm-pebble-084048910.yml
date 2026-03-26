@@ -36,7 +36,7 @@ jobs:
             const coredemo = require('@actions/core')
             return await coredemo.getIDToken()
           result-encoding: string
-      - name: Build And Deploy
+     - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
         with:
@@ -46,9 +46,11 @@ jobs:
           api_location: ""
           output_location: "dist"
           github_id_token: ${{ steps.idtoken.outputs.result }}
+          app_build_command: "npm run build"  # ← agrega esta línea
         env:
           VITE_API_KEY: ${{ secrets.VITE_API_KEY }}
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
+          ORYX_DISABLE_CACHE: "true"  
 
 
 
