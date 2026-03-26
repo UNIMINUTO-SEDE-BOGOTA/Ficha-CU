@@ -147,7 +147,7 @@ export function Page2({ innerRef, centroId = 'centro-engativa' }: Props) {
   const visibleT4 = useAnimatedRows(centroId, 7, 70);
 
   const centroNombre = CENTRO_NOMBRES[centroId] || 'Desconocido';
-  const subtitle = `Centro Universitario ${centroNombre}`;
+  const subtitle = `Centro Universitario ${centroNombre} S1/Q1`;
 
   if (loading) return <div>Cargando...</div>;
 
@@ -168,7 +168,7 @@ export function Page2({ innerRef, centroId = 'centro-engativa' }: Props) {
           <div className="w-full flex justify-center mt-0">
             <div className="px-4 py-0" style={{ backgroundColor: C.grayBanner, clipPath: "polygon(1% 0%, 100% 0%, 99% 100%, 0% 100%)", display: "flex", alignItems: "center", height: "10px" }}>
               <h3 className="text-black font-semibold text-[10px] text-center whitespace-nowrap" style={{ fontFamily: '"Inter", sans-serif', lineHeight: 1 }}>
-                Proyección estudiantes 2026–2030 S1/Q1 por Nivel Académico y Modalidad
+                Proyección estudiantes 2026–2030 por Nivel Académico y Modalidad
               </h3>
             </div>
           </div>
@@ -250,7 +250,7 @@ export function Page2({ innerRef, centroId = 'centro-engativa' }: Props) {
             <thead>
               <tr>
                 <td colSpan={14} style={{ border: "none", backgroundColor: C.grayBanner, textAlign: "center", fontSize: FONT.banner, fontWeight: 600, padding: "1px 2px", clipPath: "polygon(1% 0%, 100% 0%, 99% 100%, 0% 100%)" }}>
-                  Comportamiento matrículas 2026 S1/Q1 por Nivel Académico y Modalidad
+                  Comportamiento matrículas 2026 por Nivel Académico y Modalidad
                 </td>
               </tr>
               <tr><td colSpan={14} style={{ border: "none", height: "1px", padding: 0 }} /></tr>
@@ -335,7 +335,7 @@ export function Page2({ innerRef, centroId = 'centro-engativa' }: Props) {
         <div style={{ display: "flex", justifyContent: "center", marginTop: 1, marginBottom: 1 }}>
           <div style={{ backgroundColor: C.grayBanner, clipPath: "polygon(1% 0%, 100% 0%, 99% 100%, 0% 100%)", padding: "1px 4px", display: "flex", alignItems: "center" }}>
             <span style={{ fontSize: FONT.banner, fontWeight: 600, fontFamily: "Inter, sans-serif", lineHeight: 1 }}>
-              Proyección estudiantes 2026–2030 S1/Q1 por Nivel Académico y Periodicidad
+              Proyección estudiantes 2026–2030 por Nivel Académico y Periodicidad
             </span>
           </div>
         </div>
@@ -512,7 +512,7 @@ export function Page2({ innerRef, centroId = 'centro-engativa' }: Props) {
             key={`lineas-${centroId}`}
             style={{ flex: 1.5, display: "flex", flexDirection: "column", background: "white", minWidth: 0, animation: "slideInLeft 0.6s ease forwards" }}
           >
-            <Banner text="Proyección estudiantes por modalidad S1-Q1" />
+            <Banner text="Proyección estudiantes por modalidad" />
             <div style={{ flex: 1, width: "100%", overflow: "hidden" }}>
               {(() => {
                 const yearsNum = [2026, 2027, 2028, 2029, 2030];
