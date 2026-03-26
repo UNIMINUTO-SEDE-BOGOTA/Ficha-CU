@@ -175,8 +175,8 @@ export function Header() {
           .nav-brand-sub  { display: none; }
 
           .nav-hex {
-            width: 34px !important;
-            height: 34px !important;
+            width: 38px !important;
+            height: 38px !important;
           }
         }
 
@@ -208,10 +208,10 @@ export function Header() {
 
         {/* ── NAVBAR ── */}
         <motion.nav
-          className="w-full flex items-center justify-between px-4 lg:px-12 py-3"
+          className="w-full flex items-center px-4 lg:px-10 py-1"
           style={{
-            borderBottom: "1px solid rgba(255,255,255,0.08)",
-            background: "rgba(1,38,87,0.6)",
+            borderBottom: "none",
+            background: "linear-gradient(60deg, #ffc000 0%, #012657 50%, #012657 100%)",
             backdropFilter: "blur(12px)",
             position: "sticky",
             top: 0,
@@ -224,56 +224,25 @@ export function Header() {
           transition={{ duration: 0.6 }}
         >
           <div className="flex items-center gap-2" style={{ minWidth: 0, overflow: "hidden" }}>
-            <motion.div
-              className="hex-badge nav-hex flex items-center justify-center"
-              style={{
-                width: 42, height: 42,
-                background: "linear-gradient(135deg, #ffc000, #e6a800)",
-                flexShrink: 0,
-              }}
-              whileHover={{ scale: 1.1, rotate: 10 }}
-              transition={{ type: "spring", stiffness: 300 }}
-            >
+            <motion.div>
+              <div className="flex items-center" style={{ width: "120px", minWidth: "120px" }}>
               <img
-                src="/profile.png"
+                src="/Logo UNIMINUTO.png"
                 alt="Logo"
-                style={{ width: "90%", height: "90%", objectFit: "contain" }}
+                style={{ 
+                  width: "auto", 
+                  height: "100px", 
+                  objectFit: "contain",
+                  display: "block"
+                }}
               />
+              </div>
             </motion.div>
             <div style={{ minWidth: 0, overflow: "hidden" }}>
-              <p
-                className="brand-title nav-brand-text text-white font-black leading-none"
-                style={{ letterSpacing: "-0.01em", margin: 0 }}
-              >
-                Ecosistema <span style={{ color: "#ffc000" }}>360</span>
-              </p>
-              <p
-                className="nav-brand-sub"
-                style={{
-                  fontSize: "0.6rem",
-                  color: "rgba(255,255,255,0.45)",
-                  letterSpacing: "0.14em",
-                  textTransform: "uppercase",
-                  margin: 0,
-                }}
-              >
-                Observatorio Analítico
-              </p>
+              
             </div>
           </div>
 
-          <motion.button
-            onClick={() =>
-              document.getElementById("fichas")?.scrollIntoView({ behavior: "smooth" })
-            }
-            className="flex items-center gap-2 px-4 py-2 rounded text-xs font-semibold uppercase tracking-widest"
-            style={{ background: "#ffc000", color: "#012657", flexShrink: 0 }}
-            whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(255,192,0,0.4)" }}
-            whileTap={{ scale: 0.97 }}
-          >
-            <span className="nav-btn-text" style={{ whiteSpace: "nowrap" }}>Ver Fichas</span>
-            <span style={{ fontSize: 14 }}>→</span>
-          </motion.button>
         </motion.nav>
 
         {/* ── HERO ── */}
@@ -324,7 +293,7 @@ export function Header() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.7, delay: 0.1 }}
                 >
-                  <span className="pill-tag">Observatorio · Analítico · Institucional</span>
+                  <span className="pill-tag">Ficha Analítica Institucional</span>
                 </motion.div>
 
                 <motion.h1
@@ -333,9 +302,9 @@ export function Header() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.25 }}
                 >
-                  Ecosistema{" "}
+                  Fichas de Centros Universitarios - {" "}
                   <span style={{ color: "#ffc000", textShadow: "0 0 40px rgba(255,192,0,0.3)" }}>
-                    360
+                    Bogotá
                   </span>
                 </motion.h1>
 
@@ -356,7 +325,7 @@ export function Header() {
                 >
                   Plataforma de{" "}
                   <strong style={{ color: "#fff" }}>inteligencia institucional</strong> para el
-                  análisis y seguimiento de el Centro Universitario Sede Bogotá. Consulta fichas de
+                  análisis y seguimiento de los Centros Universitarios en Bogotá. Consulta fichas de
                   datos, indicadores académicos y proyecciones financieras en tiempo real.
                 </motion.p>
 
@@ -372,6 +341,29 @@ export function Header() {
                 </motion.p>
               </div>
 
+              <motion.button
+  onClick={() =>
+    document.getElementById("fichas")?.scrollIntoView({ behavior: "smooth" })
+  }
+  className="flex flex-col items-center gap-1 mt-8"
+  style={{ background: "transparent", border: "none", cursor: "pointer", color: "#ffc000" }}
+  initial={{ opacity: 0, y: 10 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.7, delay: 0.9 }}
+  whileHover={{ y: 4 }}
+>
+  <span style={{ fontSize: "0.8rem", letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 500 }}>
+    Ver Fichas
+  </span>
+  <motion.svg
+    width="24" height="24" viewBox="0 0 24 24" fill="none"
+    stroke="#ffc000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+    animate={{ y: [0, 5, 0] }}
+    transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+  >
+    <path d="M12 5v14M5 12l7 7 7-7"/>
+  </motion.svg>
+</motion.button>
               {/* Imagen / logo */}
               <motion.div
                 className="hero-image-wrap"
@@ -402,7 +394,6 @@ export function Header() {
                   >
                     <img
                       src="/logo.png"
-                      alt="Ecosistema 360"
                       style={{ width: "100%", height: "100%", objectFit: "contain" }}
                     />
                   </div>

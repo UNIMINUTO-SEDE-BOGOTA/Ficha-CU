@@ -44,7 +44,6 @@ function NavBtn({
   );
 }
 
-// ← ÚNICA LÍNEA QUE CAMBIA EN LA FIRMA
 interface Props {
   bannerVisible?: boolean;
 }
@@ -58,7 +57,6 @@ export function UniversityProfileDashboard({ bannerVisible = false }: Props) {
   const ref1 = useRef<HTMLDivElement>(null);
   const ref2 = useRef<HTMLDivElement>(null);
 
-  // El FAB sube 68px (altura del banner) cuando el banner está visible
   const fabBottom = bannerVisible ? 24 + 68 : 24;
 
   const handlePrint = () => {
@@ -153,7 +151,6 @@ export function UniversityProfileDashboard({ bannerVisible = false }: Props) {
         .scroll-table-wrap::-webkit-scrollbar-thumb { background: ${BLUE_MED}; border-radius: 2px; }
         .scroll-table-wrap::-webkit-scrollbar-thumb:hover { background: ${BLUE}; }
 
-        /* ── FAB: ya no tiene bottom fijo aquí, se maneja con inline style ── */
         .fab-container {
           position: fixed;
           right: 18px;
@@ -188,6 +185,29 @@ export function UniversityProfileDashboard({ bannerVisible = false }: Props) {
         @keyframes rowIn {
           from { opacity: 0; transform: translateX(-12px); }
           to   { opacity: 1; transform: translateX(0); }
+        }
+
+        .refresh-btn {
+          width: 100%;
+          background: rgba(255,192,0,0.12);
+          color: #ffc000;
+          border: 1px solid rgba(255,192,0,0.3);
+          border-radius: 8px;
+          padding: 8px 10px;
+          font-size: 12px;
+          font-weight: 700;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          transition: background 0.2s ease;
+        }
+        .refresh-btn:hover {
+          background: rgba(255,192,0,0.22);
+        }
+        .refresh-btn:active {
+          transform: scale(0.97);
         }
       `}</style>
 
@@ -315,7 +335,6 @@ export function UniversityProfileDashboard({ bannerVisible = false }: Props) {
           maxWidth: '100vw',
           minWidth: 0,
           boxSizing: 'border-box',
-          // SIN overflowY, SIN position: relative
         }}
       >
         <div style={{
@@ -329,7 +348,6 @@ export function UniversityProfileDashboard({ bannerVisible = false }: Props) {
           <div className="bubble-backdrop" onClick={() => setMobileBubbleOpen(false)} />
         )}
 
-        {/* ← ÚNICO CAMBIO: bottom dinámico + transition suave */}
         <div
           className="fab-container no-print"
           style={{
@@ -347,6 +365,7 @@ export function UniversityProfileDashboard({ bannerVisible = false }: Props) {
                 display: 'flex', flexDirection: 'column', gap: 14, minWidth: 240,
               }}
             >
+              {/* ── Selector de centro ── */}
               <div>
                 <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 10, margin: '0 0 7px', textTransform: 'uppercase', letterSpacing: '0.09em', fontWeight: 700 }}>Centro</p>
                 <select
@@ -358,6 +377,22 @@ export function UniversityProfileDashboard({ bannerVisible = false }: Props) {
                     <option key={c.id} value={c.id} style={{ backgroundColor: '#012657' }}>{c.nombre}</option>
                   ))}
                 </select>
+              </div>
+
+              {/* ── Botón actualizar ── */}
+              <div>
+                <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 10, margin: '0 0 7px', textTransform: 'uppercase', letterSpacing: '0.09em', fontWeight: 700 }}>Datos</p>
+                <button
+                  className="refresh-btn"
+                  onClick={() => window.location.reload()}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffc000" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M23 4v6h-6"/>
+                    <path d="M1 20v-6h6"/>
+                    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+                  </svg>
+                  Actualizar datos
+                </button>
               </div>
             </div>
           )}
