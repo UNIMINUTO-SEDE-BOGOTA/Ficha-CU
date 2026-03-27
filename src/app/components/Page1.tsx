@@ -57,7 +57,7 @@ export function Page1({ innerRef, centroId = 'centro-engativa' }: Props) {
   // Si necesitas mostrar financialRows, puedes agregarlos en otra sección
   // const financialRows = pageData.financialRows;
  
-  const años = ['2025', '2026', '2027', '2028', '2029', '2030 ']; // Coincide con ANIOS
+  const años = ['2024 LB', '2025', '2026', '2027', '2028', '2029', '2030 ']; // Coincide con ANIOS
   const subtitle = `Centro Universitario ${centroNombre}`;
   const mapaSrc = MAPA_IMAGENES[centroId] || '/mapa-engativa.png';
   const contextoSrc = CONTEXTO_IMAGENES[centroId] || '/contexto-cu.png';
