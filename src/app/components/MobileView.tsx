@@ -391,53 +391,122 @@ function DesercionChart({ data }: { data: any }) {
 }
 
 function LineasChart({ data }: { data: any }) {
-  const yearsNum = [2026, 2027, 2028, 2029, 2030];
+  const años = ['2026', '2027', '2028', '2029', '2030'];
   const series = [
-    { label: 'Profesional',     color: '#d4af37', values: data.profesional     ?? [] },
-    { label: 'Maestría',        color: '#00aaff', values: data.maestria        ?? [] },
-    { label: 'Especialización', color: '#e91e63', values: data.especializacion ?? [] },
-    { label: 'Doctorado',       color: '#4caf50', values: data.doctorado       ?? [] },
+    { label: 'Profesional',     color: '#d4af37', bg: 'rgba(212,175,55,0.25)',  values: data.profesional     ?? [] },
+    { label: 'Maestría',        color: '#00aaff', bg: 'rgba(0,170,255,0.20)',   values: data.maestria        ?? [] },
+    { label: 'Especialización', color: '#e91e63', bg: 'rgba(233,30,99,0.18)',   values: data.especializacion ?? [] },
+    { label: 'Doctorado',       color: '#4caf50', bg: 'rgba(76,175,80,0.18)',   values: data.doctorado       ?? [] },
   ];
-  const W = 900, H = 520, pL = 60, pR = 30, pT = 30, pB = 80;
-  const plotW = W - pL - pR, plotH = H - pT - pB, base = pT + plotH;
-  const allV = series.flatMap((s) => s.values);
-  const maxV = Math.max(...allV, 1), minV = Math.min(...allV.filter((v: any) => v > 0), 0);
-  const xP = (i: number) => pL + (i / (yearsNum.length - 1)) * plotW;
-  const yP = (v: number) => pT + plotH - ((v - minV) / (maxV - minV || 1)) * plotH;
+
+  const W = 900, H = 500;
+  const padL = 80, padR = 20, padTop = 40, padBot = 60;
+  const plotW = W - padL - padR;
+  const plotH = H - padTop - padBot;
+  const base  = padTop + plotH;
+  const ticks = 4;
+
+  const allV = series.flatMap(s => (s.values || []).map(Number)).filter(v => !isNaN(v));
+  const maxV = Math.max(...allV, 1);
+
+  const xP = (i: number) => padL + (i / (años.length - 1)) * plotW;
+  const yP = (v: number) => padTop + plotH - (Number(v) / maxV) * plotH;
+
+  const areaPath = (values: any[]) => {
+    const pts = values.map((v, i) => `${xP(i)},${yP(Number(v))}`).join(' L ');
+    return `M ${pts} L ${xP(values.length - 1)},${base} L ${xP(0)},${base} Z`;
+  };
+
+  const linePath = (values: any[]) =>
+    values.map((v, i) => `${i === 0 ? 'M' : 'L'} ${xP(i)},${yP(Number(v))}`).join(' ');
+
+  const offsets = [-28, 18, -44, 32];
+
   return (
-    <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet" style={{ display: 'block', fontFamily: 'Inter,sans-serif' }}>
-      {[0, 1, 2, 3, 4].map((i) => {
-        const y = pT + (plotH / 4) * i, val = Math.round(maxV - (maxV - minV) * (i / 4));
-        return (
-          <g key={i}>
-            <line x1={pL} y1={y} x2={W - pR} y2={y} stroke="#e0e0e0" strokeWidth="1.5" />
-            <text x={pL - 8} y={y} textAnchor="end" dominantBaseline="middle" fontSize="18" fill="#666">{val.toLocaleString('es-CO')}</text>
-          </g>
-        );
-      })}
-      {yearsNum.map((_, i) => <line key={i} x1={xP(i)} y1={pT} x2={xP(i)} y2={base} stroke="#e8e8e8" strokeWidth="1.5" strokeDasharray="4,4" />)}
-      {series.map((s) => <polyline key={s.label} points={s.values.map((v: any, i: number) => `${xP(i)},${yP(v)}`).join(' ')} fill="none" stroke={s.color} strokeWidth="4" strokeLinejoin="round" />)}
-      {series.map((s, si) => s.values.map((v: any, i: number) => {
-        const offsetY = si % 2 === 0 ? -16 : 16;
-        return (
-          <g key={`${s.label}-${i}`}>
-            <circle cx={xP(i)} cy={yP(v)} r="5" fill={s.color} stroke="white" strokeWidth="2" />
-            {v > 0 && <text x={xP(i)} y={yP(v) + offsetY} textAnchor="middle" fontSize="18" fill={s.color} fontWeight="600">{Math.round(v).toLocaleString('es-CO')}</text>}
-          </g>
-        );
-      }))}
-      {yearsNum.map((y, i) => <text key={y} x={xP(i)} y={base + 32} textAnchor="middle" fontSize="18" fill="#333">{y}</text>)}
+    <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet"
+      style={{ display: 'block', fontFamily: 'Inter, sans-serif' }}>
+
+      {/* Leyenda */}
       {series.map((s, i) => {
         const col = i % 2, row = Math.floor(i / 2);
-        const lx = W / 2 - 200 + col * 200, ly = H - 32 + row * 26;
+        const lx = W / 2 - 200 + col * 220;
+        const ly = H - 20 + row * 22;
         return (
           <g key={`leg-${s.label}`}>
-            <line x1={lx} y1={ly} x2={lx + 28} y2={ly} stroke={s.color} strokeWidth="4" />
-            <circle cx={lx + 14} cy={ly} r="5" fill={s.color} />
-            <text x={lx + 42} y={ly + 2} fontSize="18" fill="#000" dominantBaseline="middle">{s.label}</text>
+            <rect x={lx} y={ly - 6} width={14} height={8} rx="2" fill={s.bg} stroke={s.color} strokeWidth="1.5" />
+            <text x={lx + 20} y={ly + 1} fontSize="18" fill="#333" dominantBaseline="middle">{s.label}</text>
           </g>
         );
       })}
+
+      {/* Gridlines horizontales */}
+      {Array.from({ length: ticks + 1 }).map((_, i) => {
+        const y   = padTop + (plotH / ticks) * i;
+        const val = Math.round(maxV - (maxV * i) / ticks);
+        return (
+          <g key={i}>
+            <line x1={padL} y1={y} x2={W - padR} y2={y} stroke="#e8e8e8" strokeWidth="1" />
+            <text x={padL - 6} y={y} textAnchor="end" dominantBaseline="middle" fontSize="17" fill="#888">
+              {val.toLocaleString('es-CO')}
+            </text>
+          </g>
+        );
+      })}
+
+      {/* Gridlines verticales punteadas */}
+      {años.map((_, i) => (
+        <line key={i} x1={xP(i)} y1={padTop} x2={xP(i)} y2={base}
+          stroke="#ececec" strokeWidth="1" strokeDasharray="3,3" />
+      ))}
+
+      {/* Ejes */}
+      <line x1={padL} y1={padTop} x2={padL}     y2={base} stroke="#bbb" strokeWidth="1.5" />
+      <line x1={padL} y1={base}   x2={W - padR} y2={base} stroke="#bbb" strokeWidth="1.5" />
+
+      {/* Áreas rellenas */}
+      {series.map((s) => (
+        <path key={`area-${s.label}`} d={areaPath(s.values)} fill={s.bg} stroke="none" />
+      ))}
+
+      {/* Líneas */}
+      {series.map((s) => (
+        <path key={`line-${s.label}`} d={linePath(s.values)} fill="none"
+          stroke={s.color} strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
+      ))}
+
+      {/* Puntos y etiquetas con separación dinámica */}
+      {series.map((s, si) =>
+        (s.values || []).map((v: any, i: number) => {
+          const vn = Number(v);
+          const cx = xP(i);
+          const cy = yP(vn);
+
+          const otrosY = series
+            .filter((_, idx) => idx !== si)
+            .map(other => yP(Number((other.values || [])[i] ?? 0)));
+
+          const demasiadoCerca = otrosY.some(oy => Math.abs(oy - cy) < 28);
+          const off = demasiadoCerca ? offsets[si] : (si % 2 === 0 ? -18 : 16);
+
+          return (
+            <g key={`${s.label}-${i}`}>
+              <circle cx={cx} cy={cy} r="5" fill="white" stroke={s.color} strokeWidth="2" />
+              {vn > 0 && (
+                <text x={cx} y={cy + off} textAnchor="middle"
+                  fontSize="22" fontWeight="600" fill={s.color}>
+                  {Math.round(vn).toLocaleString('es-CO')}
+                </text>
+              )}
+            </g>
+          );
+        })
+      )}
+
+      {/* Etiquetas eje X */}
+      {años.map((y, i) => (
+        <text key={y} x={xP(i)} y={base + 22} textAnchor="middle" fontSize="22" fill="#444">{y}</text>
+      ))}
+
     </svg>
   );
 }

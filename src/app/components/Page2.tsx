@@ -2,6 +2,7 @@ import React from 'react';
 import { useObservatorio } from '../../hooks/useObservatorio';
 import { transformarPage2 } from '../../models/proyeccionEsModel';
 import { useAnimatedRows } from '../../hooks/useAnimatedRows';
+import Chart from 'chart.js/auto';
 
 const C = {
   navy:        "#012657",
@@ -16,27 +17,27 @@ const C = {
   black:       "#000000",
   matHeaderBg: "#C6EFCE",
   matTotalBg:  "#FFFF99",
+  peachy:      "#f7e4e5",
 };
 
 const FONT = {
   data:   "9px",
   header: "8px",
-  banner: "9px",
+  banner: "11px",
   graph:  "5px",
   small:  "8.5px",
-  oferta: "10px",
+  oferta: "11px",
 };
 
 const PAD = "0px 1px";
-
 const YEARS = ["2026", "2027", "2028", "2029", "2030"];
 
 const CENTRO_NOMBRES: Record<string, string> = {
-  'centro-engativa': 'Especial Minuto de Dios - Engativá',
-  'centro-kennedy': 'Kennedy',
-  'centro-santa-fe-las-cruces': 'Las Cruces - Santa Fe',
+  'centro-engativa':               'Especial Minuto de Dios - Engativá',
+  'centro-kennedy':                'Kennedy',
+  'centro-santa-fe-las-cruces':    'Las Cruces - Santa Fe',
   'centro-perdomo-ciudad-bolivar': 'Perdomo - Ciudad Bolívar',
-  'centro-san-cristobal-usaquen': 'San Cristóbal Norte - Usaquén',
+  'centro-san-cristobal-usaquen':  'San Cristóbal Norte - Usaquén',
 };
 
 // ============================================================================
@@ -131,6 +132,137 @@ const MatCells = ({
     </>
   );
 };
+
+// ============================================================================
+// AREA CHART PANEL — componente independiente
+// ============================================================================
+function AreaChartPanel({ centroId, graficaLineas }: { centroId: string; graficaLineas: any }) {
+  const años = ["2026", "2027", "2028", "2029", "2030"];
+  const series = [
+    { label: "Profesional",     color: "#d4af37", bg: "rgba(212,175,55,0.25)",  values: graficaLineas?.profesional     ?? [0,0,0,0,0] },
+    { label: "Maestría",        color: "#00aaff", bg: "rgba(0,170,255,0.20)",   values: graficaLineas?.maestria        ?? [0,0,0,0,0] },
+    { label: "Especialización", color: "#e91e63", bg: "rgba(233,30,99,0.18)",   values: graficaLineas?.especializacion ?? [0,0,0,0,0] },
+    { label: "Doctorado",       color: "#4caf50", bg: "rgba(76,175,80,0.18)",   values: graficaLineas?.doctorado       ?? [0,0,0,0,0] },
+  ];
+
+  const W = 700, H = 500;
+  const padL = 75, padR = 15, padTop = 40, padBot = 55;
+  const plotW = W - padL - padR;
+  const plotH = H - padTop - padBot;
+  const base  = padTop + plotH;
+
+  const allV  = series.flatMap(s => s.values.map(Number));
+  const maxV  = Math.max(...allV, 1);
+  const ticks = 4;
+
+  const xP = (i: number) => padL + (i / (años.length - 1)) * plotW;
+  const yP = (v: number) => padTop + plotH - (v / maxV) * plotH;
+
+  const areaPath = (values: number[]) => {
+    const pts = values.map((v, i) => `${xP(i)},${yP(Number(v))}`).join(" L ");
+    return `M ${pts} L ${xP(values.length - 1)},${base} L ${xP(0)},${base} Z`;
+  };
+
+  const linePath = (values: number[]) =>
+    values.map((v, i) => `${i === 0 ? "M" : "L"} ${xP(i)},${yP(Number(v))}`).join(" ");
+
+  // offset vertical para etiquetas — alterna arriba/abajo por serie
+  const labelOffset = [-18, 14, -18, 14];
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", height: "100%", gap: 3 }}>
+      {/* Leyenda */}
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "3px 12px", paddingLeft: padL }}>
+        {series.map((s) => (
+          <span key={s.label} style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 8, color: "#333" }}>
+            <span style={{ width: 10, height: 4, borderRadius: 2, background: s.color, flexShrink: 0, display: "inline-block" }} />
+            {s.label}
+          </span>
+        ))}
+      </div>
+
+      {/* SVG */}
+      <svg width="100%" height="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet" style={{ display: "block", fontFamily: "Inter, sans-serif" }}>
+
+        {/* Gridlines horizontales */}
+        {Array.from({ length: ticks + 1 }).map((_, i) => {
+          const y   = padTop + (plotH / ticks) * i;
+          const val = Math.round(maxV - (maxV * i) / ticks);
+          return (
+            <g key={i}>
+              <line x1={padL} y1={y} x2={W - padR} y2={y} stroke="#e8e8e8" strokeWidth="1" />
+              <text x={padL - 6} y={y} textAnchor="end" dominantBaseline="middle" fontSize="16" fill="#888">
+                {val.toLocaleString("es-CO")}
+              </text>
+            </g>
+          );
+        })}
+
+        {/* Gridlines verticales punteadas */}
+        {años.map((_, i) => (
+          <line key={i} x1={xP(i)} y1={padTop} x2={xP(i)} y2={base} stroke="#ececec" strokeWidth="1" strokeDasharray="3,3" />
+        ))}
+
+        {/* Ejes */}
+        <line x1={padL} y1={padTop} x2={padL}     y2={base}     stroke="#bbb" strokeWidth="1.5" />
+        <line x1={padL} y1={base}   x2={W - padR} y2={base}     stroke="#bbb" strokeWidth="1.5" />
+
+        {/* Áreas rellenas */}
+        {series.map((s) => (
+          <path key={`area-${s.label}`} d={areaPath(s.values)} fill={s.bg} stroke="none" />
+        ))}
+
+        {/* Líneas */}
+        {series.map((s) => (
+          <path key={`line-${s.label}`} d={linePath(s.values)} fill="none" stroke={s.color} strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
+        ))}
+
+        {/* Puntos y etiquetas */}
+          {series.map((s, si) =>
+            s.values.map((v, i) => {
+              const vn = Number(v);
+              const cx = xP(i);
+              const cy = yP(vn);
+
+              // Calcula si hay otra serie con valor cercano en este mismo año
+              const otrosY = series
+                .filter((_, idx) => idx !== si)
+                .map(other => yP(Number(other.values[i])));
+
+              const demasiadoCerca = otrosY.some(oy => Math.abs(oy - cy) < 28);
+
+              // Si está cerca, fuerza separación según índice de serie
+              const offsets = [-28, 18, -44, 32];
+              const off = demasiadoCerca ? offsets[si] : (si % 2 === 0 ? -18 : 16);
+
+              return (
+                <g key={`${s.label}-${i}`}>
+                  <circle cx={cx} cy={cy} r="4" fill="white" stroke={s.color} strokeWidth="2" />
+                  {vn > 0 && (
+                    <text
+                      x={cx} y={cy + off}
+                      textAnchor="middle"
+                      fontSize="30"
+                      fontWeight="600"
+                      fill={s.color}
+                    >
+                      {Math.round(vn).toLocaleString("es-CO")}
+                    </text>
+                  )}
+                </g>
+              );
+            })
+          )}
+
+        {/* Etiquetas eje X */}
+        {años.map((y, i) => (
+          <text key={y} x={xP(i)} y={base + 20} textAnchor="middle" fontSize="18" fill="#444">{y}</text>
+        ))}
+
+      </svg>
+    </div>
+  );
+}
 
 // ============================================================================
 // COMPONENTE PRINCIPAL
@@ -256,20 +388,20 @@ export function Page2({ innerRef, centroId = 'centro-engativa' }: Props) {
               <tr><td colSpan={14} style={{ border: "none", height: "1px", padding: 0 }} /></tr>
               <tr>
                 {[
-                  { label: "Nivel",               align: "left"   as const },
-                  { label: "",                    align: "left"   as const },
-                  { label: "Nuevos\nProyecciones",        align: "center" as const },
-                  { label: "Nuevos\nMatriculados",      align: "center" as const },
+                  { label: "Nivel",                align: "left"   as const },
+                  { label: "",                     align: "left"   as const },
+                  { label: "Nuevos\nProyecciones", align: "center" as const },
+                  { label: "Nuevos\nMatriculados", align: "center" as const },
                   { label: "Variación",            align: "center" as const },
-                  { label: "%",                   align: "center" as const },
-                  { label: "Continuos\nProyecciones",     align: "center" as const },
-                  { label: "Continuos\nMatriculados",   align: "center" as const },
+                  { label: "%",                    align: "center" as const },
+                  { label: "Continuos\nProyecciones", align: "center" as const },
+                  { label: "Continuos\nMatriculados", align: "center" as const },
                   { label: "Variación",            align: "center" as const },
-                  { label: "%",                   align: "center" as const },
-                  { label: "Totales\nProyecciones",       align: "center" as const },
-                  { label: "Totales\nMatriculados",     align: "center" as const },
+                  { label: "%",                    align: "center" as const },
+                  { label: "Totales\nProyecciones",align: "center" as const },
+                  { label: "Totales\nMatriculados",align: "center" as const },
                   { label: "Variación",            align: "center" as const },
-                  { label: "%",                   align: "center" as const },
+                  { label: "%",                    align: "center" as const },
                 ].map((h, i) => (
                   <th key={i} style={{ border: "1px solid #e0e0e0", backgroundColor: C.matHeaderBg, color: C.black, fontSize: FONT.small, fontWeight: 700, padding: "1px 1px", textAlign: h.align, whiteSpace: "pre-line", lineHeight: 1 }}>
                     {h.label}
@@ -278,7 +410,6 @@ export function Page2({ innerRef, centroId = 'centro-engativa' }: Props) {
               </tr>
             </thead>
             <tbody>
-              {/* ── Pregrado ── */}
               <tr className={visibleT3[0] ? 'row-animated' : 'row-hidden'}>
                 <td rowSpan={3} style={{ border: "1px solid #e0e0e0", fontSize: FONT.small, fontWeight: 700, padding: "1px 2px", verticalAlign: "middle" }}>1.Pregrado</td>
                 <td style={mc("left")}>Presencial</td>
@@ -298,8 +429,6 @@ export function Page2({ innerRef, centroId = 'centro-engativa' }: Props) {
                 <MatCells d={pageData?.t3_matriculas2026?.pregradoTotal.continuos} isTotalRow />
                 <MatCells d={pageData?.t3_matriculas2026?.pregradoTotal.totales} isTotalRow />
               </tr>
-
-              {/* ── Posgrado ── */}
               <tr className={visibleT3[3] ? 'row-animated' : 'row-hidden'}>
                 <td rowSpan={3} style={{ border: "1px solid #e0e0e0", fontSize: FONT.small, fontWeight: 700, padding: "1px 2px", verticalAlign: "middle" }}>2.Posgrado</td>
                 <td style={mc("left")}>Presencial</td>
@@ -319,8 +448,6 @@ export function Page2({ innerRef, centroId = 'centro-engativa' }: Props) {
                 <MatCells d={pageData?.t3_matriculas2026?.posgradoTotal.continuos} isTotalRow />
                 <MatCells d={pageData?.t3_matriculas2026?.posgradoTotal.totales} isTotalRow />
               </tr>
-
-              {/* ── Total General ── */}
               <tr className={visibleT3[6] ? 'row-animated' : 'row-hidden'}>
                 <td colSpan={2} style={mcT("left")}>Total</td>
                 <MatCells d={pageData?.t3_matriculas2026?.totalGeneral.nuevos} isTotalRow />
@@ -397,25 +524,25 @@ export function Page2({ innerRef, centroId = 'centro-engativa' }: Props) {
                 <thead>
                   <tr>
                     <th style={{ border: "1px solid #e0e0e0", backgroundColor: C.skyBlue, color: C.black, fontSize: FONT.oferta, fontWeight: 700, padding: "1px 2px", textAlign: "left" }}>Periodicidad</th>
-                    {YEARS.map(y => <th key={y} style={{ border: "1px solid #e0e0e0", backgroundColor: C.skyBlue, color: C.black, fontSize: FONT.small, fontWeight: 700, padding: "1px 2px", textAlign: "center" }}>{y}</th>)}
+                    {YEARS.map(y => <th key={y} style={{ border: "1px solid #e0e0e0", backgroundColor: C.skyBlue, color: C.black, fontSize: FONT.oferta, fontWeight: 700, padding: "1px 2px", textAlign: "center" }}>{y}</th>)}
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, fontWeight: 700, padding: "1px 2px" }}>1.Pregrado</td>
-                    {pageData?.graficaOferta?.pregrado?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.small, fontWeight: 700, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}
+                    <td style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, fontWeight: 700, padding: "1px 2px", backgroundColor: C.peachy, color: C.black }}>1.Pregrado</td>
+                    {pageData?.graficaOferta?.pregrado?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, fontWeight: 700, padding: "1px 2px", textAlign: "center", backgroundColor: C.peachy, color: C.black }}>{v}</td>)}
                   </tr>
                   <tr>
                     <td style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, padding: "1px 2px", paddingLeft: "8px" }}>Presencial</td>
-                    {pageData?.graficaOferta?.pregradoSemestral?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.small, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}
+                    {pageData?.graficaOferta?.pregradoSemestral?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}
                   </tr>
                   <tr>
                     <td style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, padding: "1px 2px", paddingLeft: "8px" }}>Distancia</td>
-                    {pageData?.graficaOferta?.pregradoCuatrimestral?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.small, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}
+                    {pageData?.graficaOferta?.pregradoCuatrimestral?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}
                   </tr>
                   <tr>
-                    <td style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, fontWeight: 700, padding: "1px 2px" }}>2.Posgrado</td>
-                    {pageData?.graficaOferta?.posgrado?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.small, fontWeight: 700, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}
+                    <td style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, fontWeight: 700, padding: "1px 2px", backgroundColor: C.peachy, color: C.black }}>2.Posgrado</td>
+                    {pageData?.graficaOferta?.posgrado?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, fontWeight: 700, padding: "1px 2px", textAlign: "center", backgroundColor: C.peachy, color: C.black }}>{v}</td>)}
                   </tr>
                   <tr>
                     <td style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, padding: "1px 2px", paddingLeft: "8px" }}>Presencial</td>
@@ -425,17 +552,13 @@ export function Page2({ innerRef, centroId = 'centro-engativa' }: Props) {
                     <td style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, padding: "1px 2px", paddingLeft: "8px" }}>Distancia</td>
                     {pageData?.graficaOferta?.posgradoCuatrimestral?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}
                   </tr>
-
-                  {/* Fila Total: suma Pregrado + Posgrado por año */}
                   <tr>
-                    <td style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, fontWeight: 700, padding: "1px 2px", backgroundColor: C.purple, color: C.black }}>
-                      Total
-                    </td>
+                    <td style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, fontWeight: 700, padding: "1px 2px", backgroundColor: C.purple, color: C.black }}>Total</td>
                     {YEARS.map((_, i) => {
                       const pregrado = pageData?.graficaOferta?.pregrado?.[i] ?? 0;
                       const posgrado = pageData?.graficaOferta?.posgrado?.[i] ?? 0;
                       return (
-                        <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.small, fontWeight: 700, padding: "1px 2px", textAlign: "center", backgroundColor: C.purple, color: C.black }}>
+                        <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, fontWeight: 700, padding: "1px 2px", textAlign: "center", backgroundColor: C.purple, color: C.black }}>
                           {Number(pregrado) + Number(posgrado)}
                         </td>
                       );
@@ -454,164 +577,81 @@ export function Page2({ innerRef, centroId = 'centro-engativa' }: Props) {
             <Banner text="Proyección Deserción por Centro Universitario" />
             <div style={{ flex: 1, width: "100%", overflow: "hidden" }}>
               {(() => {
-                const toNumber = (val) => {
+                const toNumber = (val: any) => {
                   if (val === null || val === undefined || val === '') return 0;
                   const num = Number(val);
                   return isNaN(num) ? 0 : num;
                 };
-
-                const presRaw = (pageData?.graficaDesercion?.presencial || []).map(v => toNumber(v));
-                const distRaw = (pageData?.graficaDesercion?.distancia || []).map(v => toNumber(v));
-
+                const presRaw = (pageData?.graficaDesercion?.presencial || []).map((v: any) => toNumber(v));
+                const distRaw = (pageData?.graficaDesercion?.distancia  || []).map((v: any) => toNumber(v));
                 const pres = presRaw.length >= 5 ? presRaw.slice(0,5) : [...presRaw, ...Array(5 - presRaw.length).fill(0)];
                 const dist = distRaw.length >= 5 ? distRaw.slice(0,5) : [...distRaw, ...Array(5 - distRaw.length).fill(0)];
-
-                const años = ["2026", "2027", "2028", "2029", "2030"];
+                const años = ["2026","2027","2028","2029","2030"];
                 const colorDist = "#4A86C8";
                 const colorPres = "#F5D97A";
-
-                const W = 900;
-                const H = 400;
-                const padL = 20;
-                const padR = 20;
-                const padTop = 40;
-                const padBot = 70;
-
+                const W = 900, H = 400, padL = 50, padR = 20, padTop = 40, padBot = 70;
                 const plotW = W - padL - padR;
                 const plotH = H - padTop - padBot;
-                const base = padTop + plotH;
-                const n = años.length;
-                const step = plotW / n;
-                const colW = step * 0.6;
-
-                const valoresSuma = pres.map((p, i) => p + dist[i]).filter(v => !isNaN(v));
+                const base  = padTop + plotH;
+                const step  = plotW / años.length;
+                const colW  = step * 0.6;
+                const valoresSuma = pres.map((p: number, i: number) => p + dist[i]).filter((v: number) => !isNaN(v));
                 const maxVal = valoresSuma.length > 0 ? Math.max(...valoresSuma, 1) : 1;
                 const sc = plotH / maxVal;
-
                 return (
                   <svg width="100%" height="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet" style={{ display: "block" }}>
+                    {/* Ejes */}
+                    <line x1={padL} y1={padTop} x2={padL}     y2={base}     stroke="#999" strokeWidth="1.5" />
+                    <line x1={padL} y1={base}   x2={W - padR} y2={base}     stroke="#999" strokeWidth="1.5" />
+                    {/* Marcas eje Y */}
+                    {[0, 25, 50, 75, 100].map((v) => {
+                      const y = base - (v / maxVal) * plotH;
+                      return (
+                        <g key={v}>
+                          <line x1={padL - 4} y1={y} x2={padL} y2={y} stroke="#999" strokeWidth="1" />
+                          <text x={padL - 6} y={y} textAnchor="end" dominantBaseline="middle" fontSize="16" fill="#666">{v}%</text>
+                        </g>
+                      );
+                    })}
+                    {/* Barras */}
                     {años.map((y, i) => {
                       const cx = padL + i * step + step / 2;
-                      const x = cx - colW / 2;
+                      const x  = cx - colW / 2;
                       const hP = pres[i] * sc;
                       const hD = dist[i] * sc;
                       return (
                         <g key={y}>
-                          <rect x={x} y={base - hP} width={colW} height={Math.max(hP, 1)} fill={colorPres} />
+                          <rect x={x} y={base - hP}      width={colW} height={Math.max(hP, 1)} fill={colorPres} />
                           <rect x={x} y={base - hP - hD} width={colW} height={Math.max(hD, 1)} fill={colorDist} />
-                          {hP > 5 && (
-                            <text x={cx} y={base - hP / 2} textAnchor="middle" dominantBaseline="middle" fontSize="22" fontWeight="bold" fill="#333">
-                              {Math.round(pres[i])}%
-                            </text>
-                          )}
-                          {hD > 5 && (
-                            <text x={cx} y={base - hP - hD / 2} textAnchor="middle" dominantBaseline="middle" fontSize="22" fontWeight="bold" fill="white">
-                              {Math.round(dist[i])}%
-                            </text>
-                          )}
-                          <text x={cx} y={base + 14} textAnchor="middle" fontSize="22" fill="#333">{y}</text>
+                          {hP > 5 && <text x={cx} y={base - hP / 2}      textAnchor="middle" dominantBaseline="middle" fontSize="22" fontWeight="bold" fill="#333">{Math.round(pres[i])}%</text>}
+                          {hD > 5 && <text x={cx} y={base - hP - hD / 2} textAnchor="middle" dominantBaseline="middle" fontSize="22" fontWeight="bold" fill="white">{Math.round(dist[i])}%</text>}
+                          <line x1={cx} y1={base} x2={cx} y2={base + 6} stroke="#999" strokeWidth="1" />
+                          <text x={cx} y={base + 22} textAnchor="middle" fontSize="22" fill="#333">{y}</text>
                         </g>
                       );
                     })}
-                    <rect x={W / 2 - 90} y={H - 15} width={12} height={9} fill={colorPres} />
-                    <text x={W / 2 - 70} y={H - 8} fontSize="22" fill="#333">Presencial</text>
-                    <rect x={W / 2 + 50} y={H - 15} width={12} height={9} fill={colorDist} />
-                    <text x={W / 2 + 64} y={H - 8} fontSize="22" fill="#333">Distancia</text>
+                    {/* Leyenda */}
+                    <rect x={W/2 - 90} y={H - 15} width={12} height={9} fill={colorPres} />
+                    <text x={W/2 - 70} y={H - 8} fontSize="22" fill="#333">Presencial</text>
+                    <rect x={W/2 + 50} y={H - 15} width={12} height={9} fill={colorDist} />
+                    <text x={W/2 + 64} y={H - 8} fontSize="22" fill="#333">Distancia</text>
                   </svg>
                 );
               })()}
             </div>
           </div>
 
-          {/* Panel 3: Líneas */}
+          {/* Panel 3: Área */}
           <div
             key={`lineas-${centroId}`}
             style={{ flex: 1.5, display: "flex", flexDirection: "column", background: "white", minWidth: 0, animation: "slideInLeft 0.6s ease forwards" }}
           >
             <Banner text="Proyección estudiantes por modalidad" />
-            <div style={{ flex: 1, width: "100%", overflow: "hidden" }}>
-              {(() => {
-                const yearsNum = [2026, 2027, 2028, 2029, 2030];
-                const series = [
-                  { label: "Profesional",     color: "#d4af37", values: pageData?.graficaLineas?.profesional     ?? [0,0,0,0,0] },
-                  { label: "Maestría",        color: "#00aaff", values: pageData?.graficaLineas?.maestria        ?? [0,0,0,0,0] },
-                  { label: "Especialización", color: "#e91e63", values: pageData?.graficaLineas?.especializacion ?? [0,0,0,0,0] },
-                  { label: "Doctorado",       color: "#4caf50", values: pageData?.graficaLineas?.doctorado       ?? [0,0,0,0,0] },
-                ];
-
-                const W = 900;
-                const H = 520;
-                const padL = 60;
-                const padR = 30;
-                const padTop = 30;
-                const padBot = 80;
-
-                const plotW = W - padL - padR;
-                const plotH = H - padTop - padBot;
-                const base = padTop + plotH;
-
-                const allV = series.flatMap(s => s.values);
-                const maxV = Math.max(...allV, 1);
-                const minV = Math.min(...allV.filter(v => v > 0), 0);
-
-                const xP = (i) => padL + (i / (yearsNum.length - 1)) * plotW;
-                const yP = (v) => padTop + plotH - ((v - minV) / (maxV - minV || 1)) * plotH;
-                const ticks = 4;
-
-                return (
-                  <svg width="100%" height="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet" style={{ display: "block", fontFamily: "Inter, sans-serif" }}>
-                    {Array.from({ length: ticks + 1 }).map((_, i) => {
-                      const y = padTop + (plotH / ticks) * i;
-                      const val = Math.round(maxV - (maxV - minV) * (i / ticks));
-                      return (
-                        <g key={i}>
-                          <line x1={padL} y1={y} x2={W - padR} y2={y} stroke="#e0e0e0" strokeWidth="1.5" />
-                          <text x={padL - 8} y={y} textAnchor="end" dominantBaseline="middle" fontSize="18" fill="#666">{val.toLocaleString("es-CO")}</text>
-                        </g>
-                      );
-                    })}
-                    {yearsNum.map((_, i) => (
-                      <line key={i} x1={xP(i)} y1={padTop} x2={xP(i)} y2={base} stroke="#e8e8e8" strokeWidth="1.5" strokeDasharray="4,4" />
-                    ))}
-                    {series.map(s => (
-                      <polyline key={s.label} points={s.values.map((v, i) => `${xP(i)},${yP(v)}`).join(" ")} fill="none" stroke={s.color} strokeWidth="4" strokeLinejoin="round" />
-                    ))}
-                    {series.map((s, si) =>
-                      s.values.map((v, i) => {
-                        const offsetY = si % 2 === 0 ? -16 : 16;
-                        return (
-                          <g key={`${s.label}-${i}`}>
-                            <circle cx={xP(i)} cy={yP(v)} r="5" fill={s.color} stroke="white" strokeWidth="2" />
-                            {v > 0 && (
-                              <text x={xP(i)} y={yP(v) + offsetY} textAnchor="middle" fontSize="18" fill={s.color} fontWeight="600">
-                                {Math.round(v).toLocaleString("es-CO")}
-                              </text>
-                            )}
-                          </g>
-                        );
-                      })
-                    )}
-                    {yearsNum.map((y, i) => (
-                      <text key={y} x={xP(i)} y={base + 32} textAnchor="middle" fontSize="18" fill="#333">{y}</text>
-                    ))}
-                    {series.map((s, i) => {
-                      const col = i % 2;
-                      const row = Math.floor(i / 2);
-                      const lx = W / 2 - 200 + col * 200;
-                      const ly = H - 32 + row * 26;
-                      return (
-                        <g key={`leg-${s.label}`}>
-                          <line x1={lx} y1={ly} x2={lx + 28} y2={ly} stroke={s.color} strokeWidth="4" />
-                          <circle cx={lx + 14} cy={ly} r="5" fill={s.color} />
-                          <text x={lx + 42} y={ly + 2} fontSize="18" fill="#000000" dominantBaseline="middle">{s.label}</text>
-                        </g>
-                      );
-                    })}
-                  </svg>
-                );
-              })()}
+            <div style={{ flex: 1, width: "100%", overflow: "hidden", padding: "8px 12px 4px" }}>
+              <AreaChartPanel centroId={centroId} graficaLineas={pageData?.graficaLineas} />
             </div>
           </div>
+
         </div>
       </div>
     </>
