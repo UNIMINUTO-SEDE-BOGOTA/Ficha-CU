@@ -79,7 +79,7 @@ export function Page1({ innerRef, centroId = 'centro-engativa' }: Props) {
         <SectionHeader subtitle={subtitle} />
         <GrayBanner text="Proyección INGRESOS - COSTOS Y GASTOS - EBITDA" />
  
-        <div className="w-full flex justify-center items-center" style={{ marginTop: "-3px" }}>
+        <div className="w-full flex justify-center items-center" style={{ marginTop: "1px" }}>
           <img src={ebitdaSrc} alt="Proyección EBITDA" style={{ width: "100%", height: "auto", objectFit: "contain" }} />
         </div>
  

@@ -78,9 +78,13 @@ export function UniversityProfileDashboard({ bannerVisible = false }: Props) {
     const doc = iframe.contentDocument || iframe.contentWindow?.document;
     if (!doc) return;
     doc.open();
-    doc.write(`<!DOCTYPE html><html><head><title>Impresión</title>
+    doc.write(`<!DOCTYPE html><html><head><title></title>
       <style>
-        @page { size: 297mm 210mm; margin: 0; }
+        @page { 
+          size: 297mm 210mm; 
+          margin: 0mm;
+        }
+        @page :first { margin: 0mm; }
         *, *::before, *::after {
           -webkit-print-color-adjust: exact !important;
           print-color-adjust: exact !important;
