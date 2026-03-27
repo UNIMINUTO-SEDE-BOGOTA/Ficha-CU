@@ -466,7 +466,7 @@ export function MobileContent({ centroId }: MobileContentProps) {
     hombres: '-', mujeres: '-',
   };
 
-  const años6       = ['2025', '2026', '2027', '2028', '2029', '2030 '];
+  const años6 = ['2024 LB', '2025', '2026', '2027', '2028', '2029', '2030 '];
   const mapaSrc     = MAPA_IMAGENES[centroId]     || '/engativa.png';
   const contextoSrc = CONTEXTO_IMAGENES[centroId] || '/contexto-engativa.png';
   const ebitdaSrc   = EBITDA_IMAGENES[centroId]   || '/ebitda_engativa.png';
@@ -636,37 +636,79 @@ export function MobileContent({ centroId }: MobileContentProps) {
       </Reveal>
 
       {/* ══ INDICADORES ══ */}
-      {p1.indicatorsRows.length > 0 && (
-        <Reveal delay={60}>
-          <Card mb={10}>
-            <MBanner>PROYECCIÓN INDICADORES CENTRO UNIVERSITARIO</MBanner>
-            <FullTable>
-              <thead>
-                <tr>
-                  <th style={{ ...thBase(BLUE_LIGHT, 'left'), width: '32%' }}>Indicador</th>
-                  {años6.map((a) => (
-                    <th key={a} style={{ ...thBase(BLUE_LIGHT), width: `${68 / 6}%` }}>{a}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {p1.indicatorsRows.map((row, i) => (
-                  <tr key={i}
-                    className={visibleIndicators[i] ? 'row-animated' : 'row-hidden'}
-                    style={{ backgroundColor: i % 2 === 0 ? 'white' : '#f5f7fb' }}>
-                    {row.map((cell, j) => (
-                      <td key={j} style={{
-                        ...tdBase(j === 0 ? 'left' : 'center', j === 0 ? RED_ROW : (i % 2 === 0 ? 'white' : '#f5f7fb'), j === 0),
-                        overflow: 'hidden', textOverflow: 'ellipsis',
-                      }}>{cell}</td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </FullTable>
-          </Card>
-        </Reveal>
-      )}
+{p1.indicatorsRows.length > 0 && (
+  <Reveal delay={60}>
+    <Card mb={10}>
+      <MBanner>PROYECCIÓN INDICADORES CENTRO UNIVERSITARIO</MBanner>
+      <StickyScrollTable>
+        <thead>
+          <tr>
+            <th style={{
+              ...stickyThBlock(),
+              minWidth: 130,
+              width: 130,
+              whiteSpace: 'normal',
+              lineHeight: 1.3,
+              verticalAlign: 'middle',
+              textAlign: 'left',
+              padding: SC_P,
+            }}>
+              Indicador
+            </th>
+            {años6.map((a) => (
+              <th key={a} style={{
+                border: B,
+                backgroundColor: BLUE_LIGHT,
+                fontWeight: 700,
+                fontSize: SC_FS,
+                textAlign: 'center',
+                padding: SC_P,
+                whiteSpace: 'nowrap',
+                minWidth: 52,
+              }}>
+                {a}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {p1.indicatorsRows.map((row, i) => (
+            <tr key={i} className={visibleIndicators[i] ? 'row-animated' : 'row-hidden'}>
+              {/* Columna sticky con nombre completo */}
+              <td style={{
+                ...stickyTdBlock(i % 2 === 0 ? RED_ROW : '#fde8e7'),
+                color: '#000',
+                fontWeight: 600,
+                minWidth: 130,
+                width: 130,
+                whiteSpace: 'normal',      // ← permite wrap
+                lineHeight: 1.3,
+                verticalAlign: 'middle',
+                padding: SC_P,
+              }}>
+                {row[0]}
+              </td>
+              {/* Columnas de valores */}
+              {row.slice(1).map((cell, j) => (
+                <td key={j} style={{
+                  border: B,
+                  backgroundColor: i % 2 === 0 ? 'white' : '#f5f7fb',
+                  fontSize: SC_FS,
+                  textAlign: 'center',
+                  padding: SC_P,
+                  whiteSpace: 'nowrap',
+                  minWidth: 52,
+                }}>
+                  {cell}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </StickyScrollTable>
+    </Card>
+  </Reveal>
+)}
 
       {/* ══ HEADER PAGE 2 ══ */}
       <Reveal delay={0}>
