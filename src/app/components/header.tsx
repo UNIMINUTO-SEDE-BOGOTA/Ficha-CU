@@ -293,7 +293,7 @@ export function Header() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.7, delay: 0.1 }}
                 >
-                  <span className="pill-tag">Ficha Analítica Institucional</span>
+                  <span className="pill-tag">Ficha Analítica De La Sede</span>
                 </motion.div>
 
                 <motion.h1
@@ -324,7 +324,7 @@ export function Header() {
                   transition={{ duration: 0.7, delay: 0.5 }}
                 >
                   Plataforma de{" "}
-                  <strong style={{ color: "#fff" }}>inteligencia institucional</strong> para el
+                  <strong style={{ color: "#fff" }}>inteligencia de la Sede</strong> para el
                   análisis y seguimiento de los Centros Universitarios en Bogotá. Consulta fichas de
                   datos, indicadores académicos y proyecciones financieras en tiempo real.
                 </motion.p>
