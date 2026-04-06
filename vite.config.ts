@@ -1,3 +1,4 @@
+// vite.config.ts
 import { defineConfig } from 'vite'
 import path from 'path'
 import fs from 'fs'
@@ -5,7 +6,6 @@ import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
-// Plugin para forzar index.html en minúscula en el output
 const forceIndexLowercase = () => ({
   name: 'force-index-lowercase',
   closeBundle() {
@@ -53,15 +53,40 @@ export default defineConfig({
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
         navigateFallback: 'index.html',
-        // Solo rutas que NO sean /api ni rutas internas de Azure (__)
         navigateFallbackAllowlist: [/^(?!\/__).*/],
         navigateFallbackDenylist: [/^\/api/],
+
+        // Incrementá este número en cada deploy importante
+        // para forzar invalidación total del cache
+        cacheId: 'ficha-cu-v2',
+
         runtimeCaching: [
           {
             urlPattern: /^\/api/,
             handler: 'NetworkOnly',
           },
+          {
+            urlPattern: /\.(?:js|css)$/,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'js-css-cache',
+              networkTimeoutSeconds: 5,
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60 * 24, // 1 día
+              },
+            },
+          },
+          {
+            urlPattern: /\.html$/,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'html-cache',
+              networkTimeoutSeconds: 5,
+            },
+          },
         ],
+
         skipWaiting: true,
         clientsClaim: true,
       },

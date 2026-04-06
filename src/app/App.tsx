@@ -1,10 +1,25 @@
-import { useState } from 'react'
+// App.tsx
+import { useState, useEffect } from 'react'
 import { Header } from './components/header'
 import { DashboardGrid } from './components/dashboard-grid'
 import { InstallPWA } from './components/InstallPWA'
 
 export default function App() {
   const [bannerVisible, setBannerVisible] = useState(false)
+
+  useEffect(() => {
+    if (!('serviceWorker' in navigator)) return
+
+    const handleControllerChange = () => {
+      window.location.reload()
+    }
+
+    navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange)
+
+    return () => {
+      navigator.serviceWorker.removeEventListener('controllerchange', handleControllerChange)
+    }
+  }, [])
 
   return (
     <div
