@@ -600,9 +600,18 @@ export function MobileContent({ centroId }: MobileContentProps) {
           <MBanner>ESTUDIANTES CENTRO UNIVERSITARIO 2026 S1-Q1</MBanner>
           <div style={{ display: 'flex', gap: 6, alignItems: 'flex-start' }}>
 
-            {/* Tabla izquierda */}
-            <div style={{ flex: '0 0 58%', overflow: 'hidden' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            {/* Tabla izquierda
+                — flex-shrink:1 permite que ceda espacio si la pantalla es angosta
+                — table-layout:fixed + anchos explícitos evitan que "Total" se corte
+            */}
+            <div style={{ flex: '1 1 58%', minWidth: 0, overflow: 'hidden' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
+                <colgroup>
+                  <col style={{ width: 'auto' }} />
+                  <col style={{ width: 38 }} />
+                  <col style={{ width: 44 }} />
+                  <col style={{ width: 50 }} />
+                </colgroup>
                 <thead>
                   <tr>
                     <th style={thBase(BLUE_MED, 'left')}></th>
@@ -613,20 +622,22 @@ export function MobileContent({ centroId }: MobileContentProps) {
                 </thead>
                 <tbody>
                   <tr className={visibleStudents[0] ? 'row-animated' : 'row-hidden'}>
-                    <td style={tdBase('left')}>1. Pregrado</td>
+                    <td style={{ ...tdBase('left'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>1. Pregrado</td>
                     <td style={tdBase('right')}>{ss.pregradoDistancia}</td>
                     <td style={tdBase('right')}>{ss.pregradoPresencial}</td>
                     <td style={tdBase('right', PURPLE, true)}>{ss.pregradoTotal}</td>
                   </tr>
                   <tr className={visibleStudents[1] ? 'row-animated' : 'row-hidden'}>
-                    <td style={tdBase('left')}>2. Posgrado</td>
+                    <td style={{ ...tdBase('left'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>2. Posgrado</td>
                     <td style={tdBase('right')}>{ss.posgradoDistancia}</td>
                     <td style={tdBase('right')}>{ss.posgradoPresencial}</td>
                     <td style={tdBase('right', PURPLE, true)}>{ss.posgradoTotal}</td>
                   </tr>
-                  <tr className={visibleStudents[2] ? 'row-animated' : 'row-hidden'}
-                    style={{ backgroundColor: PURPLE, fontWeight: 600 }}>
-                    <td style={tdBase('left', PURPLE, true)}>Total</td>
+                  <tr
+                    className={visibleStudents[2] ? 'row-animated' : 'row-hidden'}
+                    style={{ backgroundColor: PURPLE, fontWeight: 600 }}
+                  >
+                    <td style={{ ...tdBase('left', PURPLE, true), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Total</td>
                     <td style={tdBase('right', PURPLE)}>{ss.totalGeneralDistancia}</td>
                     <td style={tdBase('right', PURPLE)}>{ss.totalGeneralPresencial}</td>
                     <td style={tdBase('right', PURPLE)}>{ss.totalGeneral}</td>
@@ -635,9 +646,13 @@ export function MobileContent({ centroId }: MobileContentProps) {
               </table>
             </div>
 
+            {/* Panel derecho de iconos
+                — flex: 0 0 auto para que no crezca ni encoja
+                — ancho mínimo garantizado para que los 3 items quepan
+            */}
             <div style={{
-              flex: 1,
-              minWidth: 0,
+              flex: '0 0 auto',
+              minWidth: 90,
               overflow: 'hidden',
               display: 'flex',
               flexDirection: 'row',

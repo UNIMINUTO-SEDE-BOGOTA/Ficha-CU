@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Page1 } from './Page1';
 import { Page2 } from './Page2';
 import { MobileContent } from './MobileView';
@@ -15,15 +15,17 @@ const CENTROS = [
 const TOTAL_PAGES = 2;
 const PAGE_W_PX   = 1122;
 const PAGE_H_PX   = 794;
+const PADDING      = 48;
+
+const TOOLBAR_H            = 64;
+const TOOLBAR_MARGIN_TOP   = 16;
+const TOOLBAR_MARGIN_BOTTOM= 16;
+const TOOLBAR_TOTAL        = TOOLBAR_H + TOOLBAR_MARGIN_TOP + TOOLBAR_MARGIN_BOTTOM;
 
 function NavBtn({
-  dir,
-  currentPage,
-  onNavigate,
+  dir, currentPage, onNavigate,
 }: {
-  dir: 'prev' | 'next';
-  currentPage: number;
-  onNavigate: (page: number) => void;
+  dir: 'prev' | 'next'; currentPage: number; onNavigate: (page: number) => void;
 }) {
   const disabled = dir === 'prev' ? currentPage === 1 : currentPage === TOTAL_PAGES;
   return (
@@ -51,13 +53,66 @@ interface Props {
 export function UniversityProfileDashboard({ bannerVisible = false }: Props) {
   const [currentPage, setCurrentPage]           = useState(1);
   const [centroSeleccionado, setCentro]         = useState(CENTROS[0].id);
-  const [zoomLevel, setZoomLevel]               = useState(0.85);
+  const [zoomLevel, setZoomLevel]               = useState(0.70);
   const [mobileBubbleOpen, setMobileBubbleOpen] = useState(false);
 
+  // Altura disponible para el scroll-area (calculada dinámicamente)
+  const [desktopH, setDesktopH]   = useState(0);
+  const [areaW, setAreaW]         = useState(0);
+  const [areaH, setAreaH]         = useState(0);
+
+  const wrapperRef    = useRef<HTMLDivElement>(null);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
   const ref1 = useRef<HTMLDivElement>(null);
   const ref2 = useRef<HTMLDivElement>(null);
 
   const fabBottom = bannerVisible ? 24 + 68 : 24;
+
+  /*
+   * Mide la altura real disponible para el wrapper desktop.
+   * Busca el offsetTop del wrapper (distancia desde el top del viewport)
+   * y calcula cuánto queda: vh - offsetTop.
+   * Esto funciona sin importar qué tan alto sea el Header externo.
+   */
+  useEffect(() => {
+    const measure = () => {
+      if (wrapperRef.current) {
+        const top = wrapperRef.current.getBoundingClientRect().top;
+        setDesktopH(window.innerHeight - top);
+      }
+    };
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, []);
+
+  // Mide el scroll-area real con ResizeObserver
+  useEffect(() => {
+    const el = scrollAreaRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => {
+      setAreaW(entry.contentRect.width);
+      setAreaH(entry.contentRect.height);
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  const ZOOM_MIN = 0.4, ZOOM_MAX = 1.5, ZOOM_STEP = 0.05;
+  const zoomIn  = () => setZoomLevel((z) => Math.min(+(z + ZOOM_STEP).toFixed(2), ZOOM_MAX));
+  const zoomOut = () => setZoomLevel((z) => Math.max(+(z - ZOOM_STEP).toFixed(2), ZOOM_MIN));
+
+  const scaledW = PAGE_W_PX * zoomLevel;
+  const scaledH = PAGE_H_PX * zoomLevel;
+
+  const contentW = scaledW + PADDING;
+  const contentH = scaledH + PADDING;
+
+  const offsetX = (areaW > 0 && contentW <= areaW) ? (areaW - scaledW) / 2 : PADDING / 2;
+  const offsetY = (areaH > 0 && contentH <= areaH) ? (areaH - scaledH) / 2 : PADDING / 2;
+
+  const innerW = Math.max(contentW, areaW || contentW);
+  const innerH = Math.max(contentH, areaH || contentH);
 
   const handlePrint = () => {
     const el1 = ref1.current, el2 = ref2.current;
@@ -80,10 +135,7 @@ export function UniversityProfileDashboard({ bannerVisible = false }: Props) {
     doc.open();
     doc.write(`<!DOCTYPE html><html><head><title></title>
       <style>
-        @page { 
-          size: 297mm 210mm; 
-          margin: 0mm;
-        }
+        @page { size: 297mm 210mm; margin: 0mm; }
         @page :first { margin: 0mm; }
         *, *::before, *::after {
           -webkit-print-color-adjust: exact !important;
@@ -111,26 +163,22 @@ export function UniversityProfileDashboard({ bannerVisible = false }: Props) {
     }, 800);
   };
 
-  const ZOOM_MIN = 0.4, ZOOM_MAX = 1.5, ZOOM_STEP = 0.05;
-  const zoomIn  = () => setZoomLevel((z) => Math.min(+(z + ZOOM_STEP).toFixed(2), ZOOM_MAX));
-  const zoomOut = () => setZoomLevel((z) => Math.max(+(z - ZOOM_STEP).toFixed(2), ZOOM_MIN));
-  const scaledW = PAGE_W_PX * zoomLevel;
-  const scaledH = PAGE_H_PX * zoomLevel;
+  // Altura del scroll-area = altura total del wrapper - toolbar
+  const scrollAreaH = desktopH > 0 ? desktopH - TOOLBAR_TOTAL : '100%';
 
   return (
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
         *, *::before, *::after { box-sizing: border-box; }
-        html { overflow-x: hidden; width: 100%; }
+        html { width: 100%; }
         body {
           font-family: 'Inter', sans-serif;
           margin: 0; padding: 0;
           background: #011a3d;
-          overflow-x: hidden;
           min-width: 0; width: 100%;
         }
-        #root, [data-reactroot] { width: 100%; min-width: 0; overflow-x: hidden; }
+        #root, [data-reactroot] { width: 100%; min-width: 0; }
         @media print { .no-print { display: none !important; } }
 
         @media screen and (max-width: 640px) {
@@ -142,12 +190,15 @@ export function UniversityProfileDashboard({ bannerVisible = false }: Props) {
           .vista-desktop { display: flex !important; }
         }
         .vista-movil {
-          width: 100%; max-width: 100vw;
-          overflow-x: hidden; box-sizing: border-box;
+          width: 100%;
+          max-width: 100dvw;
+          overflow-x: hidden;
+          overflow-y: auto;
+          box-sizing: border-box;
         }
 
         .scroll-area::-webkit-scrollbar          { width: 6px; height: 6px; }
-        .scroll-area::-webkit-scrollbar-track    { background: #011a3d; }
+        .scroll-area::-webkit-scrollbar-track    { background: #f0f4f8; }
         .scroll-area::-webkit-scrollbar-thumb    { background: #012657; border-radius: 3px; }
 
         .scroll-table-wrap::-webkit-scrollbar       { height: 4px; }
@@ -156,15 +207,9 @@ export function UniversityProfileDashboard({ bannerVisible = false }: Props) {
         .scroll-table-wrap::-webkit-scrollbar-thumb:hover { background: ${BLUE}; }
 
         .fab-container {
-          position: fixed;
-          right: 18px;
-          z-index: 1000;
-          display: flex;
-          flex-direction: column;
-          align-items: flex-end;
-          gap: 10px;
-          transform: translateZ(0);
-          will-change: transform;
+          position: fixed; right: 18px; z-index: 1000;
+          display: flex; flex-direction: column; align-items: flex-end; gap: 10px;
+          transform: translateZ(0); will-change: transform;
         }
         .bubble-trigger { transition: transform 0.18s ease, box-shadow 0.18s ease; }
         .bubble-trigger:active { transform: scale(0.91) !important; }
@@ -183,55 +228,55 @@ export function UniversityProfileDashboard({ bannerVisible = false }: Props) {
           transform: translateZ(0);
         }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
         .row-animated { animation: rowIn 0.35s ease forwards; }
         .row-hidden   { opacity: 0; transform: translateX(-12px); }
         @keyframes rowIn {
           from { opacity: 0; transform: translateX(-12px); }
           to   { opacity: 1; transform: translateX(0); }
         }
-
         .refresh-btn {
-          width: 100%;
-          background: rgba(255,192,0,0.12);
-          color: #ffc000;
-          border: 1px solid rgba(255,192,0,0.3);
-          border-radius: 8px;
-          padding: 8px 10px;
-          font-size: 12px;
-          font-weight: 700;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
+          width: 100%; background: rgba(255,192,0,0.12); color: #ffc000;
+          border: 1px solid rgba(255,192,0,0.3); border-radius: 8px;
+          padding: 8px 10px; font-size: 12px; font-weight: 700; cursor: pointer;
+          display: flex; align-items: center; justify-content: center; gap: 8px;
           transition: background 0.2s ease;
         }
-        .refresh-btn:hover {
-          background: rgba(255,192,0,0.22);
-        }
-        .refresh-btn:active {
-          transform: scale(0.97);
-        }
+        .refresh-btn:hover { background: rgba(255,192,0,0.22); }
+        .refresh-btn:active { transform: scale(0.97); }
       `}</style>
 
       {/* ══ DESKTOP ══ */}
       <div
+        ref={wrapperRef}
         className="vista-desktop"
         style={{
-          flexDirection: 'column', alignItems: 'center',
-          minHeight: '100vh', background: '#FFFFFF',
-          padding: '20px 0 0', overflow: 'hidden',
+          flexDirection: 'column',
+          alignItems: 'stretch',
+          /*
+           * La altura se calcula dinámicamente: desde el top del wrapper
+           * hasta el bottom del viewport. Así no importa cuánto mida el Header.
+           * Mientras desktopH no está listo usamos 100vh como fallback seguro.
+           */
+          height: desktopH > 0 ? desktopH : '100vh',
+          background: '#FFFFFF',
+          overflow: 'hidden',
         }}
       >
+        {/* Toolbar */}
         <div
           className="no-print"
           style={{
-            marginBottom: 16, display: 'flex', alignItems: 'center',
+            marginTop: TOOLBAR_MARGIN_TOP,
+            marginBottom: TOOLBAR_MARGIN_BOTTOM,
+            marginLeft: 24,
+            marginRight: 24,
+            display: 'flex', alignItems: 'center',
             gap: 12, padding: '8px 16px', borderRadius: 8,
             backgroundColor: '#012657',
             boxShadow: '0 4px 16px rgba(1,38,87,0.3)',
             flexWrap: 'wrap',
+            height: TOOLBAR_H,
+            flexShrink: 0,
           }}
         >
           <select
@@ -281,7 +326,7 @@ export function UniversityProfileDashboard({ bannerVisible = false }: Props) {
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <button onClick={zoomOut} style={{ width: 28, height: 28, borderRadius: '50%', border: 'none', fontSize: 18, fontWeight: 'bold', cursor: 'pointer', backgroundColor: 'rgba(255,255,255,0.1)', color: '#ffc000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>−</button>
             <span style={{ fontSize: 12, fontWeight: 600, color: '#fff', minWidth: 38, textAlign: 'center' }}>{Math.round(zoomLevel * 100)}%</span>
-            <button onClick={zoomIn}  style={{ width: 28, height: 28, borderRadius: '50%', border: 'none', fontSize: 18, fontWeight: 'bold', cursor: 'pointer', backgroundColor: 'rgba(255,255,255,0.1)', color: '#ffc000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>+</button>
+            <button onClick={zoomIn} style={{ width: 28, height: 28, borderRadius: '50%', border: 'none', fontSize: 18, fontWeight: 'bold', cursor: 'pointer', backgroundColor: 'rgba(255,255,255,0.1)', color: '#ffc000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>+</button>
           </div>
 
           <div style={{ width: 1, height: 28, backgroundColor: 'rgba(255,255,255,0.2)' }} />
@@ -294,30 +339,54 @@ export function UniversityProfileDashboard({ bannerVisible = false }: Props) {
           </button>
         </div>
 
+        {/*
+         * SCROLL AREA
+         * La altura es explícita: desktopH - TOOLBAR_TOTAL
+         * Así el scroll-area tiene un tamaño real y overflow:auto funciona.
+         */}
         <div
+          ref={scrollAreaRef}
           className="scroll-area"
           style={{
-            width: '100%', flex: 1, overflow: 'auto',
-            display: 'flex', justifyContent: 'center', alignItems: 'flex-start',
-            padding: '16px 24px 32px', background: '#FFFFFF',
-            scrollbarWidth: 'thin', scrollbarColor: '#012657 #FFFFFF',
+            width: '100%',
+            height: scrollAreaH,
+            overflow: 'auto',
+            background: '#FFFFFF',
+            scrollbarWidth: 'thin',
+            scrollbarColor: '#012657 #f0f4f8',
           }}
         >
-          <div style={{ width: scaledW, height: scaledH, minWidth: scaledW, flexShrink: 0, position: 'relative' }}>
-            <div style={{
-              transform: `scale(${zoomLevel})`,
-              transformOrigin: 'top left',
-              width: PAGE_W_PX, height: PAGE_H_PX,
-              boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
-              borderRadius: 2, overflow: 'hidden',
-            }}>
-              {currentPage === 1
-                ? <Page1 innerRef={ref1} centroId={centroSeleccionado} />
-                : <Page2 innerRef={ref2} centroId={centroSeleccionado} />}
+          <div style={{ width: innerW, height: innerH, position: 'relative' }}>
+            <div
+              style={{
+                position: 'absolute',
+                left: offsetX,
+                top: offsetY,
+                width: scaledW,
+                height: scaledH,
+                flexShrink: 0,
+              }}
+            >
+              <div
+                style={{
+                  transform: `scale(${zoomLevel})`,
+                  transformOrigin: 'top left',
+                  width: PAGE_W_PX,
+                  height: PAGE_H_PX,
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+                  borderRadius: 2,
+                  overflow: 'hidden',
+                }}
+              >
+                {currentPage === 1
+                  ? <Page1 innerRef={ref1} centroId={centroSeleccionado} />
+                  : <Page2 innerRef={ref2} centroId={centroSeleccionado} />}
+              </div>
             </div>
           </div>
         </div>
 
+        {/* Página oculta para impresión */}
         <div style={{ position: 'absolute', top: '-99999px', left: '-99999px', pointerEvents: 'none' }}>
           {currentPage === 1
             ? <Page2 innerRef={ref2} centroId={centroSeleccionado} />
@@ -336,14 +405,17 @@ export function UniversityProfileDashboard({ bannerVisible = false }: Props) {
           background: '#eef1f7',
           padding: '12px 0 100px 0',
           width: '100%',
-          maxWidth: '100vw',
+          maxWidth: '100dvw',
           minWidth: 0,
           boxSizing: 'border-box',
+          overflowX: 'hidden',
         }}
       >
         <div style={{
-          width: '100%', maxWidth: '100%', minWidth: 0,
-          boxSizing: 'border-box', paddingLeft: 10, paddingRight: 10,
+          width: '100%', minWidth: 0, boxSizing: 'border-box',
+          paddingLeft: 'clamp(8px, 3vw, 16px)',
+          paddingRight: 'clamp(8px, 3vw, 16px)',
+          overflowX: 'hidden',
         }}>
           <MobileContent centroId={centroSeleccionado} />
         </div>
@@ -352,13 +424,7 @@ export function UniversityProfileDashboard({ bannerVisible = false }: Props) {
           <div className="bubble-backdrop" onClick={() => setMobileBubbleOpen(false)} />
         )}
 
-        <div
-          className="fab-container no-print"
-          style={{
-            bottom: fabBottom,
-            transition: 'bottom 0.3s ease',
-          }}
-        >
+        <div className="fab-container no-print" style={{ bottom: fabBottom, transition: 'bottom 0.3s ease' }}>
           {mobileBubbleOpen && (
             <div
               className="bubble-panel"
@@ -369,7 +435,6 @@ export function UniversityProfileDashboard({ bannerVisible = false }: Props) {
                 display: 'flex', flexDirection: 'column', gap: 14, minWidth: 240,
               }}
             >
-              {/* ── Selector de centro ── */}
               <div>
                 <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 10, margin: '0 0 7px', textTransform: 'uppercase', letterSpacing: '0.09em', fontWeight: 700 }}>Centro</p>
                 <select
@@ -382,14 +447,9 @@ export function UniversityProfileDashboard({ bannerVisible = false }: Props) {
                   ))}
                 </select>
               </div>
-
-              {/* ── Botón actualizar ── */}
               <div>
                 <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 10, margin: '0 0 7px', textTransform: 'uppercase', letterSpacing: '0.09em', fontWeight: 700 }}>Datos</p>
-                <button
-                  className="refresh-btn"
-                  onClick={() => window.location.reload()}
-                >
+                <button className="refresh-btn" onClick={() => window.location.reload()}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffc000" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M23 4v6h-6"/>
                     <path d="M1 20v-6h6"/>
@@ -400,7 +460,6 @@ export function UniversityProfileDashboard({ bannerVisible = false }: Props) {
               </div>
             </div>
           )}
-
           <button
             className="bubble-trigger"
             onClick={() => setMobileBubbleOpen((o) => !o)}
