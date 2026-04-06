@@ -355,37 +355,80 @@ function MatCells({ d, isTotalRow = false, isYellow = false }: {
   );
 }
 
-// ─────────────────────────────────────────────
-// GRÁFICAS
-// ─────────────────────────────────────────────
 function DesercionChart({ data }: { data: any }) {
   const toN = (v: any) => { const n = Number(v); return isNaN(n) ? 0 : n; };
   const años = ['2026', '2027', '2028', '2029', '2030'];
   const pres = (data.presencial || []).slice(0, 5).map(toN);
   const dist = (data.distancia  || []).slice(0, 5).map(toN);
   const maxVal = Math.max(...pres.map((p: number, i: number) => p + dist[i]), 1);
-  const W = 900, H = 400, pL = 20, pR = 20, pT = 40, pB = 70;
+
+  /*
+   * Viewbox más alto para que las etiquetas de año tengan banda propia
+   * pL ampliado para que no se corten los % en la barra izquierda
+   */
+  const W = 900, H = 440;
+  const pL = 30, pR = 30, pT = 30, pB = 80;
   const plotW = W - pL - pR, plotH = H - pT - pB, base = pT + plotH;
-  const step = plotW / años.length, colW = step * 0.6, sc = plotH / maxVal;
+  const step = plotW / años.length, colW = step * 0.58, sc = plotH / maxVal;
+
+  // Banda de años bajo el eje X
+  const bandaY = base + 1;
+  const bandaH = pB - 16;
+
   return (
-    <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet" style={{ display: 'block' }}>
+    <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet"
+      style={{ display: 'block', fontFamily: 'Inter, sans-serif' }}>
+
+      {/* Línea eje X */}
+      <line x1={pL} y1={base} x2={W - pR} y2={base} stroke="#888" strokeWidth="2" />
+
+      {/* Banda de fondo bajo el eje X para los años */}
+      <rect x={pL} y={bandaY} width={plotW} height={bandaH} fill="#f5f5f5" />
+
       {años.map((y, i) => {
-        const cx = pL + i * step + step / 2, x = cx - colW / 2;
-        const hP = pres[i] * sc, hD = dist[i] * sc;
+        const cx = pL + i * step + step / 2;
+        const x  = cx - colW / 2;
+        const hP = pres[i] * sc;
+        const hD = dist[i] * sc;
         return (
           <g key={y}>
+            {/* Barra presencial */}
             <rect x={x} y={base - hP}      width={colW} height={Math.max(hP, 1)} fill="#F5D97A" />
+            {/* Barra distancia encima */}
             <rect x={x} y={base - hP - hD} width={colW} height={Math.max(hD, 1)} fill="#4A86C8" />
-            {hP > 5 && <text x={cx} y={base - hP / 2}      textAnchor="middle" dominantBaseline="middle" fontSize="22" fontWeight="bold" fill="#333">{Math.round(pres[i])}%</text>}
-            {hD > 5 && <text x={cx} y={base - hP - hD / 2} textAnchor="middle" dominantBaseline="middle" fontSize="22" fontWeight="bold" fill="white">{Math.round(dist[i])}%</text>}
-            <text x={cx} y={base + 14} textAnchor="middle" fontSize="22" fill="#333">{y}</text>
+
+            {/* Etiqueta % presencial — solo si hay espacio */}
+            {hP > 18 && (
+              <text x={cx} y={base - hP / 2}
+                textAnchor="middle" dominantBaseline="middle"
+                fontSize="22" fontWeight="bold" fill="#333">
+                {Math.round(pres[i])}%
+              </text>
+            )}
+            {/* Etiqueta % distancia */}
+            {hD > 18 && (
+              <text x={cx} y={base - hP - hD / 2}
+                textAnchor="middle" dominantBaseline="middle"
+                fontSize="22" fontWeight="bold" fill="white">
+                {Math.round(dist[i])}%
+              </text>
+            )}
+
+            {/* Año en la banda inferior */}
+            <text x={cx} y={bandaY + bandaH / 2}
+              textAnchor="middle" dominantBaseline="middle"
+              fontSize="22" fontWeight="600" fill="#444">
+              {y}
+            </text>
           </g>
         );
       })}
-      <rect x={W / 2 - 90} y={H - 15} width={12} height={9} fill="#F5D97A" />
-      <text x={W / 2 - 70} y={H - 8} fontSize="22" fill="#333">Presencial</text>
-      <rect x={W / 2 + 50} y={H - 15} width={12} height={9} fill="#4A86C8" />
-      <text x={W / 2 + 64} y={H - 8} fontSize="22" fill="#333">Distancia</text>
+
+      {/* Leyenda centrada en la franja inferior bajo la banda */}
+      <rect x={W / 2 - 120} y={H - 14} width={13} height={9} fill="#F5D97A" />
+      <text x={W / 2 - 100} y={H - 7} fontSize="20" fill="#333" dominantBaseline="middle">Presencial</text>
+      <rect x={W / 2 + 50}  y={H - 14} width={13} height={9} fill="#4A86C8" />
+      <text x={W / 2 + 70}  y={H - 7} fontSize="20" fill="#333" dominantBaseline="middle">Distancia</text>
     </svg>
   );
 }
@@ -393,14 +436,16 @@ function DesercionChart({ data }: { data: any }) {
 function LineasChart({ data }: { data: any }) {
   const años = ['2026', '2027', '2028', '2029', '2030'];
   const series = [
-    { label: 'Profesional',     color: '#d4af37', bg: 'rgba(212,175,55,0.25)',  values: data.profesional     ?? [] },
-    { label: 'Maestría',        color: '#00aaff', bg: 'rgba(0,170,255,0.20)',   values: data.maestria        ?? [] },
-    { label: 'Especialización', color: '#e91e63', bg: 'rgba(233,30,99,0.18)',   values: data.especializacion ?? [] },
-    { label: 'Doctorado',       color: '#4caf50', bg: 'rgba(76,175,80,0.18)',   values: data.doctorado       ?? [] },
+    { label: 'Profesional',     color: '#b8962e', bg: 'rgba(184,150,46,0.18)',  values: data.profesional     ?? [] },
+    { label: 'Maestría',        color: '#0088cc', bg: 'rgba(0,136,204,0.15)',   values: data.maestria        ?? [] },
+    { label: 'Especialización', color: '#c0143c', bg: 'rgba(192,20,60,0.13)',   values: data.especializacion ?? [] },
+    { label: 'Doctorado',       color: '#2e8b57', bg: 'rgba(46,139,87,0.13)',   values: data.doctorado       ?? [] },
   ];
 
-  const W = 900, H = 500;
-  const padL = 80, padR = 20, padTop = 40, padBot = 60;
+  const W = 560, H = 340;
+  // padL ampliado para que los números del eje Y no se recorten
+  // padTop ampliado para etiquetas que suben por encima del plot
+  const padL = 72, padR = 16, padTop = 38, padBot = 62;
   const plotW = W - padL - padR;
   const plotH = H - padTop - padBot;
   const base  = padTop + plotH;
@@ -420,33 +465,36 @@ function LineasChart({ data }: { data: any }) {
   const linePath = (values: any[]) =>
     values.map((v, i) => `${i === 0 ? 'M' : 'L'} ${xP(i)},${yP(Number(v))}`).join(' ');
 
-  const offsets = [-28, 18, -44, 32];
+  // Banda de años
+  const bandaY = base + 1;
+  const bandaH = 24;
+
+  // Leyenda — 2 filas de 2, debajo de la banda
+  const legY = bandaY + bandaH + 10;
 
   return (
-    <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet"
-      style={{ display: 'block', fontFamily: 'Inter, sans-serif' }}>
-
-      {/* Leyenda */}
-      {series.map((s, i) => {
-        const col = i % 2, row = Math.floor(i / 2);
-        const lx = W / 2 - 200 + col * 220;
-        const ly = H - 20 + row * 22;
-        return (
-          <g key={`leg-${s.label}`}>
-            <rect x={lx} y={ly - 6} width={14} height={8} rx="2" fill={s.bg} stroke={s.color} strokeWidth="1.5" />
-            <text x={lx + 20} y={ly + 1} fontSize="18" fill="#333" dominantBaseline="middle">{s.label}</text>
-          </g>
-        );
-      })}
-
+    <svg
+      width="100%"
+      viewBox={`0 0 ${W} ${H}`}
+      preserveAspectRatio="xMidYMid meet"
+      style={{ display: 'block', fontFamily: 'Inter, sans-serif' }}
+    >
       {/* Gridlines horizontales */}
       {Array.from({ length: ticks + 1 }).map((_, i) => {
         const y   = padTop + (plotH / ticks) * i;
         const val = Math.round(maxV - (maxV * i) / ticks);
         return (
           <g key={i}>
-            <line x1={padL} y1={y} x2={W - padR} y2={y} stroke="#e8e8e8" strokeWidth="1" />
-            <text x={padL - 6} y={y} textAnchor="end" dominantBaseline="middle" fontSize="17" fill="#888">
+            <line x1={padL} y1={y} x2={W - padR} y2={y} stroke="#e0e0e0" strokeWidth="1" />
+            <text
+              x={padL - 10}
+              y={y}
+              textAnchor="end"
+              dominantBaseline="middle"
+              fontSize="11"
+              fontWeight="500"
+              fill="#666"
+            >
               {val.toLocaleString('es-CO')}
             </text>
           </g>
@@ -455,13 +503,20 @@ function LineasChart({ data }: { data: any }) {
 
       {/* Gridlines verticales punteadas */}
       {años.map((_, i) => (
-        <line key={i} x1={xP(i)} y1={padTop} x2={xP(i)} y2={base}
-          stroke="#ececec" strokeWidth="1" strokeDasharray="3,3" />
+        <line
+          key={i}
+          x1={xP(i)} y1={padTop} x2={xP(i)} y2={base}
+          stroke="#ececec" strokeWidth="1" strokeDasharray="3,3"
+        />
       ))}
 
-      {/* Ejes */}
-      <line x1={padL} y1={padTop} x2={padL}     y2={base} stroke="#bbb" strokeWidth="1.5" />
-      <line x1={padL} y1={base}   x2={W - padR} y2={base} stroke="#bbb" strokeWidth="1.5" />
+      {/* Eje Y */}
+      <line x1={padL} y1={padTop} x2={padL} y2={base} stroke="#bbb" strokeWidth="1.5" />
+      {/* Eje X */}
+      <line x1={padL} y1={base} x2={W - padR} y2={base} stroke="#999" strokeWidth="2" />
+
+      {/* Banda de fondo para los años */}
+      <rect x={padL} y={bandaY} width={plotW} height={bandaH} fill="#f5f5f5" />
 
       {/* Áreas rellenas */}
       {series.map((s) => (
@@ -470,30 +525,48 @@ function LineasChart({ data }: { data: any }) {
 
       {/* Líneas */}
       {series.map((s) => (
-        <path key={`line-${s.label}`} d={linePath(s.values)} fill="none"
-          stroke={s.color} strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
+        <path
+          key={`line-${s.label}`}
+          d={linePath(s.values)}
+          fill="none"
+          stroke={s.color}
+          strokeWidth="2.5"
+          strokeLinejoin="round"
+          strokeLinecap="round"
+        />
       ))}
 
-      {/* Puntos y etiquetas con separación dinámica */}
+      {/* Puntos y etiquetas */}
       {series.map((s, si) =>
         (s.values || []).map((v: any, i: number) => {
           const vn = Number(v);
           const cx = xP(i);
           const cy = yP(vn);
 
-          const otrosY = series
+          const othersY = series
             .filter((_, idx) => idx !== si)
             .map(other => yP(Number((other.values || [])[i] ?? 0)));
 
-          const demasiadoCerca = otrosY.some(oy => Math.abs(oy - cy) < 28);
-          const off = demasiadoCerca ? offsets[si] : (si % 2 === 0 ? -18 : 16);
+          const tooClose = othersY.some(oy => Math.abs(oy - cy) < 14);
+          const baseOff  = si % 2 === 0 ? -10 : 9;
+          const off      = tooClose ? (si < 2 ? -14 : 12) : baseOff;
+
+          // Clamp: si la etiqueta saldría del borde superior, empujar hacia abajo
+          const labelY  = cy + off;
+          const finalOff = labelY < padTop + 6 ? 9 : off;
 
           return (
             <g key={`${s.label}-${i}`}>
-              <circle cx={cx} cy={cy} r="5" fill="white" stroke={s.color} strokeWidth="2" />
+              <circle cx={cx} cy={cy} r="3" fill="white" stroke={s.color} strokeWidth="1.5" />
               {vn > 0 && (
-                <text x={cx} y={cy + off} textAnchor="middle"
-                  fontSize="22" fontWeight="600" fill={s.color}>
+                <text
+                  x={cx}
+                  y={cy + finalOff}
+                  textAnchor="middle"
+                  fontSize="10"
+                  fontWeight="500"
+                  fill={s.color}
+                >
                   {Math.round(vn).toLocaleString('es-CO')}
                 </text>
               )}
@@ -502,11 +575,38 @@ function LineasChart({ data }: { data: any }) {
         })
       )}
 
-      {/* Etiquetas eje X */}
+      {/* Años en la banda inferior */}
       {años.map((y, i) => (
-        <text key={y} x={xP(i)} y={base + 22} textAnchor="middle" fontSize="22" fill="#444">{y}</text>
+        <text
+          key={y}
+          x={xP(i)}
+          y={bandaY + bandaH / 2}
+          textAnchor="middle"
+          dominantBaseline="middle"
+          fontSize="11"
+          fontWeight="600"
+          fill="#444"
+        >
+          {y}
+        </text>
       ))}
 
+      {/* Leyenda en 2 filas de 2 */}
+      {series.map((s, i) => {
+        const col = i % 2;
+        const row = Math.floor(i / 2);
+        const lx  = W / 2 - 120 + col * 130;
+        const ly  = legY + row * 16;
+        return (
+          <g key={`leg-${s.label}`}>
+            <rect x={lx} y={ly - 4} width={10} height={7} rx="2"
+              fill={s.bg} stroke={s.color} strokeWidth="1.5" />
+            <text x={lx + 14} y={ly + 1} fontSize="10" fill="#444" dominantBaseline="middle">
+              {s.label}
+            </text>
+          </g>
+        );
+      })}
     </svg>
   );
 }

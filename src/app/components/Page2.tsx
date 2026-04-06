@@ -146,10 +146,11 @@ function AreaChartPanel({ centroId, graficaLineas }: { centroId: string; grafica
   ];
 
   const W = 700, H = 500;
-  const padL = 75, padR = 15, padTop = 40, padBot = 55;
+  // padBot más grande: deja espacio para la banda de años bajo la línea del eje X
+  const padL = 85, padR = 15, padTop = 40, padBot = 70;
   const plotW = W - padL - padR;
   const plotH = H - padTop - padBot;
-  const base  = padTop + plotH;
+  const base  = padTop + plotH; // y de la línea del eje X
 
   const allV  = series.flatMap(s => s.values.map(Number));
   const maxV  = Math.max(...allV, 1);
@@ -165,9 +166,6 @@ function AreaChartPanel({ centroId, graficaLineas }: { centroId: string; grafica
 
   const linePath = (values: number[]) =>
     values.map((v, i) => `${i === 0 ? "M" : "L"} ${xP(i)},${yP(Number(v))}`).join(" ");
-
-  // offset vertical para etiquetas — alterna arriba/abajo por serie
-  const labelOffset = [-18, 14, -18, 14];
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%", gap: 3 }}>
@@ -191,21 +189,31 @@ function AreaChartPanel({ centroId, graficaLineas }: { centroId: string; grafica
           return (
             <g key={i}>
               <line x1={padL} y1={y} x2={W - padR} y2={y} stroke="#e8e8e8" strokeWidth="1" />
-              <text x={padL - 6} y={y} textAnchor="end" dominantBaseline="middle" fontSize="16" fill="#888">
+              {/* fontSize subido de 16 → 22 para que se vean bien */}
+              <text
+                x={padL - 8}
+                y={y}
+                textAnchor="end"
+                dominantBaseline="middle"
+                fontSize="22"
+                fill="#555"
+                fontWeight="600"
+              >
                 {val.toLocaleString("es-CO")}
               </text>
             </g>
           );
         })}
 
-        {/* Gridlines verticales punteadas */}
+        {/* Gridlines verticales punteadas — solo dentro del área de datos, no bajan a la banda de años */}
         {años.map((_, i) => (
           <line key={i} x1={xP(i)} y1={padTop} x2={xP(i)} y2={base} stroke="#ececec" strokeWidth="1" strokeDasharray="3,3" />
         ))}
 
         {/* Ejes */}
         <line x1={padL} y1={padTop} x2={padL}     y2={base}     stroke="#bbb" strokeWidth="1.5" />
-        <line x1={padL} y1={base}   x2={W - padR} y2={base}     stroke="#bbb" strokeWidth="1.5" />
+        {/* Línea del eje X — separa el área de datos de la banda de años */}
+        <line x1={padL} y1={base}   x2={W - padR} y2={base}     stroke="#888" strokeWidth="2" />
 
         {/* Áreas rellenas */}
         {series.map((s) => (
@@ -217,46 +225,60 @@ function AreaChartPanel({ centroId, graficaLineas }: { centroId: string; grafica
           <path key={`line-${s.label}`} d={linePath(s.values)} fill="none" stroke={s.color} strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
         ))}
 
-        {/* Puntos y etiquetas */}
-          {series.map((s, si) =>
-            s.values.map((v, i) => {
-              const vn = Number(v);
-              const cx = xP(i);
-              const cy = yP(vn);
+        {/* Puntos y etiquetas de valores */}
+        {series.map((s, si) =>
+          s.values.map((v, i) => {
+            const vn = Number(v);
+            const cx = xP(i);
+            const cy = yP(vn);
 
-              // Calcula si hay otra serie con valor cercano en este mismo año
-              const otrosY = series
-                .filter((_, idx) => idx !== si)
-                .map(other => yP(Number(other.values[i])));
+            const otrosY = series
+              .filter((_, idx) => idx !== si)
+              .map(other => yP(Number(other.values[i])));
 
-              const demasiadoCerca = otrosY.some(oy => Math.abs(oy - cy) < 28);
+            const demasiadoCerca = otrosY.some(oy => Math.abs(oy - cy) < 28);
+            const offsets = [-28, 18, -44, 32];
+            const off = demasiadoCerca ? offsets[si] : (si % 2 === 0 ? -18 : 16);
 
-              // Si está cerca, fuerza separación según índice de serie
-              const offsets = [-28, 18, -44, 32];
-              const off = demasiadoCerca ? offsets[si] : (si % 2 === 0 ? -18 : 16);
+            return (
+              <g key={`${s.label}-${i}`}>
+                <circle cx={cx} cy={cy} r="4" fill="white" stroke={s.color} strokeWidth="2" />
+                {vn > 0 && (
+                  <text
+                    x={cx} y={cy + off}
+                    textAnchor="middle"
+                    fontSize="30"
+                    fontWeight="600"
+                    fill={s.color}
+                  >
+                    {Math.round(vn).toLocaleString("es-CO")}
+                  </text>
+                )}
+              </g>
+            );
+          })
+        )}
 
-              return (
-                <g key={`${s.label}-${i}`}>
-                  <circle cx={cx} cy={cy} r="4" fill="white" stroke={s.color} strokeWidth="2" />
-                  {vn > 0 && (
-                    <text
-                      x={cx} y={cy + off}
-                      textAnchor="middle"
-                      fontSize="30"
-                      fontWeight="600"
-                      fill={s.color}
-                    >
-                      {Math.round(vn).toLocaleString("es-CO")}
-                    </text>
-                  )}
-                </g>
-              );
-            })
-          )}
+        {/*
+         * Banda de años — debajo de la línea del eje X
+         * Fondo suave para diferenciarla visualmente del área de datos
+         */}
+        <rect x={padL} y={base + 1} width={plotW} height={padBot - 10} fill="#f5f5f5" />
 
-        {/* Etiquetas eje X */}
+        {/* Etiquetas eje X — centradas en la banda, bien separadas de los datos */}
         {años.map((y, i) => (
-          <text key={y} x={xP(i)} y={base + 20} textAnchor="middle" fontSize="18" fill="#444">{y}</text>
+          <text
+            key={y}
+            x={xP(i)}
+            y={base + (padBot - 10) / 2 + 2}
+            textAnchor="middle"
+            dominantBaseline="middle"
+            fontSize="22"
+            fontWeight="600"
+            fill="#444"
+          >
+            {y}
+          </text>
         ))}
 
       </svg>
