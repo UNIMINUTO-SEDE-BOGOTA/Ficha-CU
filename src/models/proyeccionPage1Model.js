@@ -18,7 +18,8 @@ const mostrarValor = (valor) => {
 };
  
 export function transformarPage1(apiData) {
-
+console.log('=== RAW studentSummary ===', JSON.stringify(apiData?.studentSummary));
+  console.log('=== RAW oferta (primeras 5) ===', JSON.stringify(apiData?.oferta?.slice(0,5)));
   // ─────────────────
 
   if (!apiData) return generarEstructurasVacias();
@@ -88,33 +89,25 @@ function generarFinancialRows(proyecciones) {
 function generarStudentSummary(studentData) {
   if (!studentData) return generarStudentSummaryVacio();
 
-  // ─────────────────
-
-  // Mapeo snake_case (API) → camelCase (frontend)
+  // psycopg2 colapsa camelCase a minúsculas → cubrimos las 3 variantes
   const normalizado = {
-    pregradoDistancia:      studentData.pregradoDistancia      ?? studentData.pregrado_distancia,
-    pregradoPresencial:     studentData.pregradoPresencial      ?? studentData.pregrado_presencial,
-    pregradoTotal:          studentData.pregradoTotal           ?? studentData.pregrado_total,
-    posgradoDistancia:      studentData.posgradoDistancia       ?? studentData.posgrado_distancia,
-    posgradoPresencial:     studentData.posgradoPresencial      ?? studentData.posgrado_presencial,
-    posgradoTotal:          studentData.posgradoTotal           ?? studentData.posgrado_total,
-    totalGeneralDistancia:  studentData.totalGeneralDistancia   ?? studentData.total_general_distancia,
-    totalGeneralPresencial: studentData.totalGeneralPresencial  ?? studentData.total_general_presencial,
-    totalGeneral:           studentData.totalGeneral            ?? studentData.total_general,
+    pregradoDistancia:      studentData.pregradoDistancia      ?? studentData.pregrado_distancia      ?? studentData.pregradodistancia,
+    pregradoPresencial:     studentData.pregradoPresencial      ?? studentData.pregrado_presencial      ?? studentData.pregradopresencial,
+    pregradoTotal:          studentData.pregradoTotal           ?? studentData.pregrado_total           ?? studentData.pregradototal,
+    posgradoDistancia:      studentData.posgradoDistancia       ?? studentData.posgrado_distancia       ?? studentData.posgradodistancia,
+    posgradoPresencial:     studentData.posgradoPresencial      ?? studentData.posgrado_presencial      ?? studentData.posgradopresencial,
+    posgradoTotal:          studentData.posgradoTotal           ?? studentData.posgrado_total           ?? studentData.posgradototal,
+    totalGeneralDistancia:  studentData.totalGeneralDistancia   ?? studentData.total_general_distancia  ?? studentData.totalgeneraldistancia,
+    totalGeneralPresencial: studentData.totalGeneralPresencial  ?? studentData.total_general_presencial ?? studentData.totalgeneralpresencial,
+    totalGeneral:           studentData.totalGeneral            ?? studentData.total_general            ?? studentData.totalgeneral,
     hombres:                studentData.hombres,
     mujeres:                studentData.mujeres,
   };
-
-
-  // ─────────────────
 
   const resultado = {};
   Object.keys(normalizado).forEach((campo) => {
     resultado[campo] = formatearMiles(normalizado[campo]);
   });
-
-  // ─────────────────
-
   return resultado;
 }
 
