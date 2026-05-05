@@ -15,7 +15,7 @@ const CENTROS = [
 const TOTAL_PAGES = 2;
 const PAGE_W_PX   = 1122;
 const PAGE_H_PX   = 794;
-const PADDING      = 48;
+const PADDING = 32;
 
 const TOOLBAR_H            = 64;
 const TOOLBAR_MARGIN_TOP   = 16;
@@ -53,7 +53,7 @@ interface Props {
 export function UniversityProfileDashboard({ bannerVisible = false }: Props) {
   const [currentPage, setCurrentPage]           = useState(1);
   const [centroSeleccionado, setCentro]         = useState(CENTROS[0].id);
-  const [zoomLevel, setZoomLevel]               = useState(0.70);
+  const [zoomLevel, setZoomLevel] = useState(0.85); 
   const [mobileBubbleOpen, setMobileBubbleOpen] = useState(false);
 
   // Altura disponible para el scroll-area (calculada dinámicamente)
