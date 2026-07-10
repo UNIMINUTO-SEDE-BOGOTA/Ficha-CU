@@ -53,66 +53,55 @@ interface Props {
 export function UniversityProfileDashboard({ bannerVisible = false }: Props) {
   const [currentPage, setCurrentPage]           = useState(1);
   const [centroSeleccionado, setCentro]         = useState(CENTROS[0].id);
-  const [zoomLevel, setZoomLevel] = useState(0.85); 
+  const [zoomLevel, setZoomLevel] = useState(0.85);
+  // Mientras autoFit es true, el zoom se ajusta solo al ANCHO disponible
+  // (fit-to-width), para que no aparezca scroll horizontal. El alto NO se
+  // restringe: el componente fluye como parte normal de la página, así que
+  // si la ficha completa no cabe en la pantalla, el usuario simplemente
+  // baja con el scroll normal de la página (como cualquier otro contenido),
+  // no con un scroll interno del tablero.
+  const [autoFit, setAutoFit] = useState(true);
   const [mobileBubbleOpen, setMobileBubbleOpen] = useState(false);
 
-  // Altura disponible para el scroll-area (calculada dinámicamente)
-  const [desktopH, setDesktopH]   = useState(0);
-  const [areaW, setAreaW]         = useState(0);
-  const [areaH, setAreaH]         = useState(0);
+  const [areaW, setAreaW] = useState(0);
 
-  const wrapperRef    = useRef<HTMLDivElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const ref1 = useRef<HTMLDivElement>(null);
   const ref2 = useRef<HTMLDivElement>(null);
 
   const fabBottom = bannerVisible ? 24 + 68 : 24;
 
-  /*
-   * Mide la altura real disponible para el wrapper desktop.
-   * Busca el offsetTop del wrapper (distancia desde el top del viewport)
-   * y calcula cuánto queda: vh - offsetTop.
-   * Esto funciona sin importar qué tan alto sea el Header externo.
-   */
-  useEffect(() => {
-    const measure = () => {
-      if (wrapperRef.current) {
-        const top = wrapperRef.current.getBoundingClientRect().top;
-        setDesktopH(window.innerHeight - top);
-      }
-    };
-    measure();
-    window.addEventListener('resize', measure);
-    return () => window.removeEventListener('resize', measure);
-  }, []);
-
-  // Mide el scroll-area real con ResizeObserver
+  // Mide el ancho real del contenedor, para el fit-to-width del zoom
   useEffect(() => {
     const el = scrollAreaRef.current;
     if (!el) return;
     const ro = new ResizeObserver(([entry]) => {
       setAreaW(entry.contentRect.width);
-      setAreaH(entry.contentRect.height);
     });
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
 
   const ZOOM_MIN = 0.4, ZOOM_MAX = 1.5, ZOOM_STEP = 0.05;
-  const zoomIn  = () => setZoomLevel((z) => Math.min(+(z + ZOOM_STEP).toFixed(2), ZOOM_MAX));
-  const zoomOut = () => setZoomLevel((z) => Math.max(+(z - ZOOM_STEP).toFixed(2), ZOOM_MIN));
+
+  // Ajusta el zoom para que la ficha quepa en el ANCHO disponible (evita
+  // scroll horizontal). Se recalcula con el resize de la ventana mientras
+  // el usuario no haya tomado control manual del zoom con +/-.
+  useEffect(() => {
+    if (!autoFit) return;
+    if (areaW <= 0) return;
+    const fitByWidth = (areaW - PADDING) / PAGE_W_PX;
+    const fit = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, +fitByWidth.toFixed(2)));
+    setZoomLevel(fit);
+  }, [areaW, autoFit]);
+
+  const zoomIn  = () => { setAutoFit(false); setZoomLevel((z) => Math.min(+(z + ZOOM_STEP).toFixed(2), ZOOM_MAX)); };
+  const zoomOut = () => { setAutoFit(false); setZoomLevel((z) => Math.max(+(z - ZOOM_STEP).toFixed(2), ZOOM_MIN)); };
+  // Vuelve a ajustar el zoom al ancho de pantalla completo
+  const zoomReset = () => setAutoFit(true);
 
   const scaledW = PAGE_W_PX * zoomLevel;
   const scaledH = PAGE_H_PX * zoomLevel;
-
-  const contentW = scaledW + PADDING;
-  const contentH = scaledH + PADDING;
-
-  const offsetX = (areaW > 0 && contentW <= areaW) ? (areaW - scaledW) / 2 : PADDING / 2;
-  const offsetY = (areaH > 0 && contentH <= areaH) ? (areaH - scaledH) / 2 : PADDING / 2;
-
-  const innerW = Math.max(contentW, areaW || contentW);
-  const innerH = Math.max(contentH, areaH || contentH);
 
   const handlePrint = () => {
     const el1 = ref1.current, el2 = ref2.current;
@@ -162,9 +151,6 @@ export function UniversityProfileDashboard({ bannerVisible = false }: Props) {
       }, 2000);
     }, 800);
   };
-
-  // Altura del scroll-area = altura total del wrapper - toolbar
-  const scrollAreaH = desktopH > 0 ? desktopH - TOOLBAR_TOTAL : '100%';
 
   return (
     <>
@@ -247,19 +233,11 @@ export function UniversityProfileDashboard({ bannerVisible = false }: Props) {
 
       {/* ══ DESKTOP ══ */}
       <div
-        ref={wrapperRef}
         className="vista-desktop"
         style={{
           flexDirection: 'column',
           alignItems: 'stretch',
-          /*
-           * La altura se calcula dinámicamente: desde el top del wrapper
-           * hasta el bottom del viewport. Así no importa cuánto mida el Header.
-           * Mientras desktopH no está listo usamos 100vh como fallback seguro.
-           */
-          height: desktopH > 0 ? desktopH : '100vh',
           background: '#FFFFFF',
-          overflow: 'hidden',
         }}
       >
         {/* Toolbar */}
@@ -325,7 +303,11 @@ export function UniversityProfileDashboard({ bannerVisible = false }: Props) {
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <button onClick={zoomOut} style={{ width: 28, height: 28, borderRadius: '50%', border: 'none', fontSize: 18, fontWeight: 'bold', cursor: 'pointer', backgroundColor: 'rgba(255,255,255,0.1)', color: '#ffc000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>−</button>
-            <span style={{ fontSize: 12, fontWeight: 600, color: '#fff', minWidth: 38, textAlign: 'center' }}>{Math.round(zoomLevel * 100)}%</span>
+            <span
+              onClick={zoomReset}
+              title="Ajustar a pantalla completa"
+              style={{ fontSize: 12, fontWeight: 600, color: '#fff', minWidth: 38, textAlign: 'center', cursor: 'pointer', textDecoration: autoFit ? 'none' : 'underline', textDecorationColor: 'rgba(255,192,0,0.6)', textUnderlineOffset: 3 }}
+            >{Math.round(zoomLevel * 100)}%</span>
             <button onClick={zoomIn} style={{ width: 28, height: 28, borderRadius: '50%', border: 'none', fontSize: 18, fontWeight: 'bold', cursor: 'pointer', backgroundColor: 'rgba(255,255,255,0.1)', color: '#ffc000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>+</button>
           </div>
 
@@ -340,48 +322,44 @@ export function UniversityProfileDashboard({ bannerVisible = false }: Props) {
         </div>
 
         {/*
-         * SCROLL AREA
-         * La altura es explícita: desktopH - TOOLBAR_TOTAL
-         * Así el scroll-area tiene un tamaño real y overflow:auto funciona.
+         * CONTENEDOR DE LA FICHA
+         * Ya no tiene alto fijo ni overflow propio: el alto lo define el
+         * contenido (la ficha escalada) y, si no cabe completa en pantalla,
+         * el usuario baja con el scroll normal de la página — como el resto
+         * del sitio — en vez de un scroll encerrado dentro del tablero.
          */}
         <div
           ref={scrollAreaRef}
           className="scroll-area"
           style={{
             width: '100%',
-            height: scrollAreaH,
-            overflow: 'auto',
+            display: 'flex',
+            justifyContent: 'center',
+            padding: `${PADDING / 2}px`,
             background: '#FFFFFF',
-            scrollbarWidth: 'thin',
-            scrollbarColor: '#012657 #f0f4f8',
           }}
         >
-          <div style={{ width: innerW, height: innerH, position: 'relative' }}>
+          <div
+            style={{
+              width: scaledW,
+              height: scaledH,
+              boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+              borderRadius: 2,
+              overflow: 'hidden',
+              flexShrink: 0,
+            }}
+          >
             <div
               style={{
-                position: 'absolute',
-                left: offsetX,
-                top: offsetY,
-                width: scaledW,
-                height: scaledH,
-                flexShrink: 0,
+                transform: `scale(${zoomLevel})`,
+                transformOrigin: 'top left',
+                width: PAGE_W_PX,
+                height: PAGE_H_PX,
               }}
             >
-              <div
-                style={{
-                  transform: `scale(${zoomLevel})`,
-                  transformOrigin: 'top left',
-                  width: PAGE_W_PX,
-                  height: PAGE_H_PX,
-                  boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
-                  borderRadius: 2,
-                  overflow: 'hidden',
-                }}
-              >
-                {currentPage === 1
-                  ? <Page1 innerRef={ref1} centroId={centroSeleccionado} />
-                  : <Page2 innerRef={ref2} centroId={centroSeleccionado} />}
-              </div>
+              {currentPage === 1
+                ? <Page1 innerRef={ref1} centroId={centroSeleccionado} />
+                : <Page2 innerRef={ref2} centroId={centroSeleccionado} />}
             </div>
           </div>
         </div>

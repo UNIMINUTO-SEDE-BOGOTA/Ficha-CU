@@ -18,8 +18,6 @@ const mostrarValor = (valor) => {
 };
  
 export function transformarPage1(apiData) {
-console.log('=== RAW studentSummary ===', JSON.stringify(apiData?.studentSummary));
-  console.log('=== RAW oferta (primeras 5) ===', JSON.stringify(apiData?.oferta?.slice(0,5)));
   // ─────────────────
 
   if (!apiData) return generarEstructurasVacias();
