@@ -113,10 +113,22 @@ const MatCells = ({
   isTotalRow = false,
   isYellow = false,
 }: {
-  d: { proyectado: string; matriculado: string; variacion: string; porcentaje: string; esPositivo: boolean; esExito: boolean };
+  d?: { proyectado: string; matriculado: string; variacion: string; porcentaje: string; esPositivo: boolean; esExito: boolean };
   isTotalRow?: boolean;
   isYellow?: boolean;
 }) => {
+  // Handle undefined data
+  if (!d) {
+    return (
+      <>
+        <td style={isTotalRow ? mcT() : isYellow ? mcY() : mc()}>-</td>
+        <td style={isTotalRow ? mcT() : isYellow ? mcY() : mc()}>-</td>
+        <td style={isTotalRow ? mcT() : isYellow ? mcY() : mc()}>-</td>
+        <td style={isTotalRow ? mcT() : isYellow ? mcY() : mc()}>-</td>
+      </>
+    );
+  }
+
   const colorVar = d.esPositivo ? C.green : C.redTotal;
   const colorPct = parseFloat(d.porcentaje) >= 0 ? C.green : C.redTotal;
   const styleProy = isTotalRow ? mcT() : isYellow ? mcY() : mc();
@@ -304,6 +316,7 @@ export function Page2({ innerRef, centroId = 'centro-engativa' }: Props) {
   const subtitle = `Centro Universitario ${centroNombre} S1/Q2`;
 
   if (loading) return <div>Cargando...</div>;
+  if (!pageData) return <div>No hay datos disponibles</div>;
 
   return (
     <>

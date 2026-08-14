@@ -4,6 +4,10 @@ import { useState, useEffect } from 'react';
 const API_URL = import.meta.env.VITE_API_URL || "https://api-cu-production.up.railway.app";
 const API_KEY = import.meta.env.VITE_API_KEY;
 
+// Debug: Log de configuración
+console.log('[useObservatorio] API_URL:', API_URL);
+console.log('[useObservatorio] API_KEY configured:', !!API_KEY);
+
 const CENTRO_NOMBRES = {
   'centro-engativa':               'Especial Minuto de Dios - Engativá',
   'centro-kennedy':                'Kennedy',
@@ -25,12 +29,6 @@ export function useObservatorio(centroId) {
       return;
     }
 
-    if (!API_KEY) {
-      setError('API Key no configurada');
-      setLoading(false);
-      return;
-    }
-
     let cancelled = false;
 
     const fetchData = async () => {
@@ -40,27 +38,39 @@ export function useObservatorio(centroId) {
 
       try {
         const url = `${API_URL}/api/observatorio/completo/${encodeURIComponent(centroId)}`;
+        console.log('[useObservatorio] Fetching from:', url);
 
-        const response = await fetch(url, {
-          headers: {
-            'X-API-Key':    API_KEY,
-            'Content-Type': 'application/json',
-          },
-        });
+        // Construir headers - API_KEY es opcional
+        const headers = {
+          'Content-Type': 'application/json',
+        };
+        
+        if (API_KEY) {
+          headers['X-API-Key'] = API_KEY;
+        }
+
+        const response = await fetch(url, { headers });
+
+        console.log('[useObservatorio] Response status:', response.status);
 
         if (!response.ok) {
-          throw new Error(`Error ${response.status}: ${response.statusText}`);
+          const errText = await response.text();
+          throw new Error(`Error ${response.status}: ${response.statusText} - ${errText}`);
         }
 
         const result = await response.json();
+        console.log('[useObservatorio] Data received:', !!result);
 
         if (!cancelled) {
           setData(result);
         }
 
       } catch (err) {
+        const errMessage = err instanceof Error ? err.message : 'Error desconocido';
+        console.error('[useObservatorio] Error:', errMessage);
+        
         if (!cancelled) {
-          setError(err instanceof Error ? err.message : 'Error desconocido');
+          setError(errMessage);
         }
       } finally {
         if (!cancelled) {
