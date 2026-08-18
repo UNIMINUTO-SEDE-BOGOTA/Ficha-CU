@@ -1,208 +1,197 @@
 import { motion } from "motion/react";
+import { useState } from "react";
 
 export function Header() {
+  const [infoOpen, setInfoOpen] = useState(false);
   return (
     <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap');
+    <style>{`
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700&display=swap');
 
-        .header-root { font-family: 'DM Sans', sans-serif; }
-        .brand-title  { font-family: 'Playfair Display', serif; }
+  .header-root {
+    font-family: 'DM Sans', sans-serif;
+    width: 100%;
+  }
 
-        .nav-link {
-          position: relative;
-          color: rgba(255,255,255,0.75);
-          font-size: 0.85rem;
-          font-weight: 500;
-          letter-spacing: 0.08em;
-          text-transform: uppercase;
-          text-decoration: none;
-          padding: 4px 0;
-          transition: color 0.3s;
-        }
-        .nav-link::after {
-          content: '';
-          position: absolute;
-          bottom: -2px; left: 0;
-          width: 0; height: 2px;
-          background: #ffc000;
-          transition: width 0.3s ease;
-        }
-        .nav-link:hover            { color: #ffc000; }
-        .nav-link:hover::after     { width: 100%; }
+  /* =========================
+     BOTÓN INFORMACIÓN
+     ========================= */
 
-        .hex-badge {
-          clip-path: polygon(50% 0%, 95% 25%, 95% 75%, 50% 100%, 5% 75%, 5% 25%);
-        }
+  .info-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid rgba(1, 38, 87, 0.12);
+    background: #ffffff;
+    color: #012657;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.25s ease;
+    margin-left: auto;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
 
-        .grid-dot {
-          background-image: radial-gradient(circle, rgba(255,192,0,0.15) 1px, transparent 1px);
-          background-size: 28px 28px;
-        }
+  .info-btn:hover {
+    background: #ffc000;
+    color: #012657;
+    border-color: #ffc000;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(255, 192, 0, 0.35);
+  }
 
-        .stat-card {
-          border: 1px solid rgba(255,255,255,0.1);
-          background: rgba(255,255,255,0.04);
-          backdrop-filter: blur(8px);
-          transition: border-color 0.3s, background 0.3s;
-        }
-        .stat-card:hover {
-          border-color: rgba(255,192,0,0.4);
-          background: rgba(255,192,0,0.06);
-        }
+  .info-btn:active {
+    transform: scale(0.95);
+  }
 
-        .pill-tag {
-          background: rgba(255,192,0,0.12);
-          border: 1px solid rgba(255,192,0,0.3);
-          color: #ffc000;
-          font-size: 0.7rem;
-          letter-spacing: 0.12em;
-          text-transform: uppercase;
-          padding: 3px 10px;
-          border-radius: 999px;
-          display: inline-block;
-          white-space: normal;
-          word-break: break-word;
-          text-align: center;
-        }
+  /* =========================
+     MODAL
+     ========================= */
 
-        .diagonal-stripe {
-          background: repeating-linear-gradient(
-            -45deg,
-            transparent, transparent 4px,
-            rgba(255,192,0,0.06) 4px, rgba(255,192,0,0.06) 8px
-          );
-        }
+  .info-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(6px);
+    animation: fadeIn 0.25s ease;
+  }
 
-        /* ── Hero base (desktop) ── */
-        .hero-section { min-height: 520px; }
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
 
-        .hero-inner {
-          padding: 64px 48px 80px;
-        }
+  .info-modal-content {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 32px;
+    width: 90%;
+    max-width: 700px;
+    max-height: 85vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.25);
+    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
 
-        .hero-flex {
-          display: flex;
-          flex-direction: row;
-          align-items: center;
-          gap: 80px;
-        }
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(40px);
+    }
 
-        .hero-image-wrap {
-          flex-shrink: 0;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 
-        .hero-image-size {
-          width: 220px;
-          height: 220px;
-        }
+  .info-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    padding-bottom: 18px;
+    border-bottom: 3px solid #ffc000;
+  }
 
-        .hero-title {
-          font-size: clamp(2.8rem, 6vw, 4.5rem);
-          color: #ffffff;
-        }
+  .info-modal-title {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 800;
+    color: #012657;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
 
-        .hero-desc {
-          font-size: 1.05rem;
-          max-width: 520px;
-        }
+  .info-close-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 192, 0, 0.15);
+    color: #012657;
+    font-size: 22px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  }
 
-        .hero-subdesc {
-          font-size: 0.9rem;
-          max-width: 480px;
-        }
+  .info-close-btn:hover {
+    background: #ffc000;
+    transform: rotate(90deg);
+  }
 
-        .hero-text-block {
-          display: flex;
-          flex-direction: column;
-          align-items: flex-start;
-          width: 100%;
-        }
+  .info-section {
+    margin-bottom: 24px;
+  }
 
-        .bottom-fade { display: block; }
+  .info-section-title {
+    margin: 0 0 12px;
+    font-size: 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #012657;
+  }
 
-        .nav-brand-text { font-size: 1.15rem; }
-        .nav-brand-sub  { display: block; }
+  .info-section-text {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.8;
+    color: #444;
+  }
 
-        /* ── Tablet / móvil grande ── */
-        @media (max-width: 900px) {
-          .hero-section   { min-height: unset !important; }
-          .hero-inner     { padding: 24px 16px 32px !important; }
+  .info-section-list {
+    margin: 0;
+    padding-left: 20px;
+    font-size: 14px;
+    line-height: 1.9;
+    color: #444;
+  }
 
-          .hero-flex {
-            flex-direction: column !important;
-            gap: 16px !important;
-            align-items: center !important;
-          }
+  .info-section-list li {
+    margin-bottom: 8px;
+  }
 
-          .hero-image-wrap { order: -1; }
+  .info-footer {
+    margin-top: 28px;
+    padding-top: 18px;
+    border-top: 1px solid #e5e7eb;
+    text-align: center;
+    font-size: 12px;
+    color: #777;
+  }
 
-          .hero-image-size {
-            width: 140px !important;
-            height: 140px !important;
-          }
+  /* =========================
+     RESPONSIVE
+     ========================= */
 
-          .orbit-dot {
-            transform-origin: 50% 62px !important;
-          }
+  @media (max-width: 768px) {
+    .info-modal-content {
+      padding: 24px;
+      width: 95%;
+    }
 
-          .hero-title {
-            font-size: 2rem !important;
-            text-align: center;
-          }
-
-          .hero-desc {
-            font-size: 0.9rem !important;
-            text-align: center;
-            max-width: 100% !important;
-          }
-
-          .hero-subdesc {
-            font-size: 0.8rem !important;
-            text-align: center;
-            max-width: 100% !important;
-          }
-
-          .hero-text-block {
-            align-items: center;
-          }
-
-          .bottom-fade    { display: none !important; }
-          .nav-brand-text { font-size: 0.95rem !important; }
-          .nav-brand-sub  { display: none; }
-
-          .nav-hex {
-            width: 38px !important;
-            height: 38px !important;
-          }
-        }
-
-        /* ── Móvil pequeño (< 400px) ── */
-        @media (max-width: 400px) {
-          .hero-inner { padding: 18px 12px 24px !important; }
-
-          .hero-image-size {
-            width: 110px !important;
-            height: 110px !important;
-          }
-
-          .orbit-dot {
-            transform-origin: 50% 47px !important;
-          }
-
-          .hero-title   { font-size: 1.7rem !important; }
-          .hero-desc    { font-size: 0.82rem !important; }
-          .hero-subdesc { font-size: 0.75rem !important; }
-
-          .pill-tag {
-            font-size: 0.6rem !important;
-            letter-spacing: 0.06em !important;
-          }
-        }
-      `}</style>
+    .info-modal-title {
+      font-size: 22px;
+    }
+  }
+`}</style>
 
       <div className="header-root">
 
@@ -211,7 +200,7 @@ export function Header() {
           className="w-full flex items-center px-4 lg:px-10 py-1"
           style={{
             borderBottom: "none",
-            background: "linear-gradient(60deg, #ffc000 0%, #012657 50%, #012657 100%)",
+            background: "#012657",
             backdropFilter: "blur(12px)",
             position: "sticky",
             top: 0,
@@ -223,27 +212,102 @@ export function Header() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <div className="flex items-center gap-2" style={{ minWidth: 0, overflow: "hidden" }}>
+          <div className="flex items-center gap-2" style={{ minWidth: 0, overflow: "hidden", width: "100%" }}>
             <motion.div>
               <div className="flex items-center" style={{ width: "120px", minWidth: "120px" }}>
               <img
-                src="/Logo UNIMINUTO.png"
+                src="/Logo_Unificado.png"
                 alt="Logo"
-                style={{ 
-                  width: "auto", 
-                  height: "100px", 
+                style={{
+                  width: "auto",
+                  height: "100px",
                   objectFit: "contain",
-                  display: "block"
+                  display: "block",
+                  transform: "scale(1.8)",
+                  transformOrigin: "left center",
                 }}
               />
               </div>
             </motion.div>
-            <div style={{ minWidth: 0, overflow: "hidden" }}>
+            <div style={{ minWidth: 0, overflow: "hidden", flex: 1 }}>
               
             </div>
+            
+            {/* Botón de Información */}
+            <button
+              className="info-btn"
+              onClick={() => setInfoOpen(true)}
+              title="Información del Sistema"
+            >
+              ℹ️
+            </button>
           </div>
 
         </motion.nav>
+
+        {/* Modal de Información */}
+        {infoOpen && (
+          <div
+            className="info-modal-backdrop"
+            onClick={() => setInfoOpen(false)}
+          >
+            <div
+              className="info-modal-content"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="info-modal-header">
+                <h2 className="info-modal-title">
+                  ℹ️ Información del Sistema
+                </h2>
+                <button
+                  className="info-close-btn"
+                  onClick={() => setInfoOpen(false)}
+                  title="Cerrar"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="info-section">
+                <h3 className="info-section-title">Ficha Inteligente de Centros Universitarios</h3>
+                <p className="info-section-text">
+                  Sistema integral de visualización estratégica de información institucional diseñado para facilitar el análisis y la toma de decisiones académicas y administrativas en los diferentes centros universitarios.
+                </p>
+              </div>
+
+              <div className="info-section">
+                <h3 className="info-section-title">Funcionalidades Principales</h3>
+                <ul className="info-section-list">
+                  <li>📊 Consolidación de indicadores clave institucionales</li>
+                  <li>📈 Visualización de proyecciones estudiantiles (2026-2030)</li>
+                  <li>🔄 Análisis comparativo entre centros universitarios</li>
+                  <li>📍 Información demográfica y de contexto</li>
+                  <li>📄 Exportación de fichas completas en formato PDF</li>
+                  <li>📱 Interfaz responsive para dispositivos móviles</li>
+                  <li>⚙️ Configuración flexible de centros y vistas</li>
+                </ul>
+              </div>
+
+              <div className="info-section">
+                <h3 className="info-section-title">Centros Disponibles</h3>
+                <ul className="info-section-list">
+                  <li>Especial Minuto de Dios - Engativá</li>
+                  <li>Centro Kennedy</li>
+                  <li>Las Cruces - Santa Fe</li>
+                  <li>Perdomo - Ciudad Bolívar</li>
+                  <li>San Cristóbal Norte - Usaquén</li>
+                </ul>
+              </div>
+
+              <div className="info-footer">
+                <p style={{ margin: 0 }}>
+                  © 2026 - Observatorio de Centros Universitarios<br />
+                  Universidad Minuto de Dios
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
         
       </div>
     </>
