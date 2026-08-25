@@ -139,7 +139,8 @@ export function Page1({ innerRef, centroId = 'centro-engativa' }: Props) {
  
         <div className="w-full flex justify-center -mt-10" style={{ marginBottom: 2 }}>
           <div className="px-8 py-0.5" style={{ backgroundColor: "#D9D9D9", clipPath: "polygon(1% 0%, 100% 0%, 99% 100%, 0% 100%)", boxShadow: "0px 3px 6px rgba(0,0,0,0.15)" }}>
-            <h3 className="text-black font-medium text-[12px] text-center whitespace-nowrap">ESTUDIANTES CENTRO UNIVERSITARIO 2026 S1-Q1</h3>
+            <h3 className="text-black font-medium text-[12px] text-center whitespace-nowrap">ESTUDIANTES CENTRO UNIVERSITARIO 2026 S2-Q2
+</h3>
           </div>
         </div>
  

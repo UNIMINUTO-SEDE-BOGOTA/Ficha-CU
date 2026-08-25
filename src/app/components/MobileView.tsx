@@ -697,7 +697,8 @@ export function MobileContent({ centroId }: MobileContentProps) {
       {/* ══ ESTUDIANTES 2026 S1-Q1 ══ */}
       <Reveal delay={80}>
         <Card mb={10}>
-          <MBanner>ESTUDIANTES CENTRO UNIVERSITARIO 2026 S1-Q1</MBanner>
+          <MBanner>ESTUDIANTES CENTRO UNIVERSITARIO 2026 S2-Q2
+</MBanner>
           <div style={{ display: 'flex', gap: 6, alignItems: 'flex-start' }}>
 
             {/* Tabla izquierda

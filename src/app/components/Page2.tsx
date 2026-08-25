@@ -313,7 +313,7 @@ export function Page2({ innerRef, centroId = 'centro-engativa' }: Props) {
   const visibleT4 = useAnimatedRows(centroId, 7, 70);
 
   const centroNombre = CENTRO_NOMBRES[centroId] || 'Desconocido';
-  const subtitle = `Centro Universitario ${centroNombre} S1/Q2`;
+  const subtitle = `Centro Universitario ${centroNombre} S2/Q2`;
 
   if (loading) return <div>Cargando...</div>;
   if (!pageData) return <div>No hay datos disponibles</div>;
