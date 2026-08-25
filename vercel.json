@@ -1,9 +1,12 @@
 {
-  "version": 2,
   "rewrites": [
     {
-      "source": "/api/:path*",
-      "destination": "https://api-cu.onrender.com/:path*"
+      "source": "/api/proxy/:path*",
+      "destination": "/api/proxy?path=:path*"
+    },
+    {
+      "source": "/((?!api/).*)",
+      "destination": "/index.html"
     }
   ]
 }

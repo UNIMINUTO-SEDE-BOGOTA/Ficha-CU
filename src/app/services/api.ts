@@ -1,18 +1,13 @@
 import axios from 'axios';
 
-// Obtener la URL de la API desde variables de entorno
-const API_URL = import.meta.env.VITE_API_URL || "https://api-cu-production.up.railway.app";
-const API_KEY = import.meta.env.VITE_API_KEY;
-
-// Asegurar que la URL tenga protocolo
-const baseURL = API_URL.startsWith('http') ? API_URL : `https://${API_URL}`;
+// Obtener la URL de la API desde variables de entorno (por defecto usa el proxy serverless seguro de Vercel)
+const API_URL = import.meta.env.VITE_API_URL || '/api/proxy';
 
 // Creamos la instancia de conexión
 const api = axios.create({
-  baseURL: baseURL,
+  baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
-    ...(API_KEY && { 'Authorization': `Bearer ${API_KEY}` })
   }
 });
 

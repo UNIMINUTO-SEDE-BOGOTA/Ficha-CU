@@ -1,12 +1,11 @@
 // hooks/useObservatorio.js
 import { useState, useEffect } from 'react';
 
-const API_URL = import.meta.env.VITE_API_URL || "https://api-cu-production.up.railway.app";
-const API_KEY = import.meta.env.VITE_API_KEY;
+// URL base del API (por defecto usa el proxy serverless seguro de Vercel)
+const API_BASE = import.meta.env.VITE_API_URL || '/api/proxy';
 
 // Debug: Log de configuración
-console.log('[useObservatorio] API_URL:', API_URL);
-console.log('[useObservatorio] API_KEY configured:', !!API_KEY);
+console.log('[useObservatorio] API_BASE:', API_BASE);
 
 const CENTRO_NOMBRES = {
   'centro-engativa':               'Especial Minuto de Dios - Engativá',
@@ -37,19 +36,14 @@ export function useObservatorio(centroId) {
       setError(null);
 
       try {
-        const url = `${API_URL}/api/observatorio/completo/${encodeURIComponent(centroId)}`;
+        const url = `${API_BASE}/observatorio/completo/${encodeURIComponent(centroId)}`;
         console.log('[useObservatorio] Fetching from:', url);
 
-        // Construir headers - API_KEY es opcional
-        const headers = {
-          'Content-Type': 'application/json',
-        };
-        
-        if (API_KEY) {
-          headers['X-API-Key'] = API_KEY;
-        }
-
-        const response = await fetch(url, { headers });
+        const response = await fetch(url, {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
 
         console.log('[useObservatorio] Response status:', response.status);
 
