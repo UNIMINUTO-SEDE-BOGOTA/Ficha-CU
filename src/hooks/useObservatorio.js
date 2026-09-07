@@ -1,8 +1,13 @@
 // hooks/useObservatorio.js
 import { useState, useEffect } from 'react';
 
-// URL base del API (por defecto usa el proxy serverless seguro de Vercel)
-const API_BASE = import.meta.env.VITE_API_URL || '/api/proxy';
+// URL base del API (por defecto usa el proxy seguro)
+const rawApiBase = (import.meta.env.VITE_API_URL || '/api/proxy').replace(/\/+$/, '');
+const API_BASE = (rawApiBase.startsWith('http') && !rawApiBase.includes('/api'))
+  ? `${rawApiBase}/api/proxy`
+  : rawApiBase;
+
+const API_KEY = import.meta.env.VITE_API_KEY;
 
 // Debug: Log de configuración
 console.log('[useObservatorio] API_BASE:', API_BASE);
@@ -39,11 +44,14 @@ export function useObservatorio(centroId) {
         const url = `${API_BASE}/observatorio/completo/${encodeURIComponent(centroId)}`;
         console.log('[useObservatorio] Fetching from:', url);
 
-        const response = await fetch(url, {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
+        const headers = {
+          'Content-Type': 'application/json',
+        };
+        if (API_KEY) {
+          headers['X-API-Key'] = API_KEY;
+        }
+
+        const response = await fetch(url, { headers });
 
         console.log('[useObservatorio] Response status:', response.status);
 

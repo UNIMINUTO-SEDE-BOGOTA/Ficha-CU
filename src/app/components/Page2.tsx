@@ -603,7 +603,6 @@ export function Page2({ innerRef, centroId = 'centro-engativa' }: Props) {
               </table>
             </div>
           </div>
-
           {/* Panel 2: Deserción */}
           <div
             key={`desercion-${centroId}`}
@@ -617,6 +616,8 @@ export function Page2({ innerRef, centroId = 'centro-engativa' }: Props) {
                   const num = Number(val);
                   return isNaN(num) ? 0 : num;
                 };
+                console.log(JSON.stringify(pageData?.graficaDesercion, null, 2));
+
                 const presRaw = (pageData?.graficaDesercion?.presencial || []).map((v: any) => toNumber(v));
                 const distRaw = (pageData?.graficaDesercion?.distancia  || []).map((v: any) => toNumber(v));
                 const pres = presRaw.length >= 5 ? presRaw.slice(0,5) : [...presRaw, ...Array(5 - presRaw.length).fill(0)];

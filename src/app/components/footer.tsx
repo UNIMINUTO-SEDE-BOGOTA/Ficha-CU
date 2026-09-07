@@ -62,7 +62,7 @@ export function Footer() {
             </p>
 
             <p className="footer-text">
-              Universidad <span className="footer-accent">Minuto de Dios</span>
+              Corporación Universitaria <span className="footer-accent">Minuto de Dios</span>
             </p>
           </div>
 

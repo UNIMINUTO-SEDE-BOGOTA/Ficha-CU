@@ -221,16 +221,21 @@ const getDesercionPorcentaje = (modalidad) =>
         String(d.año) === String(año) &&
         String(d.modalidad ?? "").trim().toLowerCase() === modalidad.toLowerCase()
     );
+
     if (!item) return 0;
-    // Convertir a número, manejando coma decimal
-    const valStr = String(item.porcentaje).replace(',', '.').trim();
+
+    const valStr = String(item.desercion_porcentaje)
+      .replace(",", ".")
+      .trim();
+
     const num = parseFloat(valStr);
+
     return isNaN(num) ? 0 : num;
   });
 
 const graficaDesercion = {
   presencial: getDesercionPorcentaje("Presencial"),
-  distancia:  getDesercionPorcentaje("Distancia"),
+  distancia: getDesercionPorcentaje("Distancia"),
 };
 
   // ── GRÁFICA 3: Líneas por Nivel de Formación ─────────────────────────────
