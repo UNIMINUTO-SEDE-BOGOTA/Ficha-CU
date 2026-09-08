@@ -313,8 +313,12 @@ export function Page2({ innerRef, centroId = 'sede-bogota' }: Props) {
   const visibleT3 = useAnimatedRows(centroId, 7, 60);
   const visibleT4 = useAnimatedRows(centroId, 7, 70);
 
+
+  const isSedeBogota = centroId === 'sede-bogota';
   const centroNombre = CENTRO_NOMBRES[centroId] || 'Desconocido';
-  const subtitle = `Centro Universitario ${centroNombre} S2/Q2`;
+  const subtitle = isSedeBogota 
+    ? 'Sede Bogotá S2/Q2' 
+    : `Centro Universitario ${centroNombre} S2/Q2`;
 
   if (loading) return <div>Cargando...</div>;
   if (!pageData) return <div>No hay datos disponibles</div>;
@@ -609,7 +613,7 @@ export function Page2({ innerRef, centroId = 'sede-bogota' }: Props) {
             key={`desercion-${centroId}`}
             style={{ width: "35%", display: "flex", flexDirection: "column", minWidth: 0, animation: "slideInLeft 0.5s ease forwards" }}
           >
-            <Banner text="Proyección Deserción por Centro Universitario" />
+            <Banner text={isSedeBogota ? 'Proyección Deserción por Sede Bogotá' : 'Proyección Deserción por Centro Universitario'} />
             <div style={{ flex: 1, width: "100%", overflow: "hidden" }}>
               {(() => {
                 const toNumber = (val: any) => {
@@ -683,7 +687,7 @@ export function Page2({ innerRef, centroId = 'sede-bogota' }: Props) {
             key={`lineas-${centroId}`}
             style={{ flex: 1.5, display: "flex", flexDirection: "column", background: "white", minWidth: 0, animation: "slideInLeft 0.6s ease forwards" }}
           >
-            <Banner text="Proyección estudiantes por modalidad" />
+            <Banner text="Proyección estudiantes por Modalidad" />
             <div style={{ flex: 1, width: "100%", overflow: "hidden", padding: "8px 12px 4px" }}>
               <AreaChartPanel centroId={centroId} graficaLineas={pageData?.graficaLineas} />
             </div>

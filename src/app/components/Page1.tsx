@@ -46,6 +46,7 @@ interface Props {
 }
  
 export function Page1({ innerRef, centroId = 'sede-bogota' }: Props) {
+  const isSedeBogota = centroId === 'sede-bogota';
   const { data, loading, centroNombre } = useObservatorio(centroId);
   const pageData = transformarPage1(data);
 
@@ -65,8 +66,7 @@ export function Page1({ innerRef, centroId = 'sede-bogota' }: Props) {
   // const financialRows = pageData.financialRows;
  
   const años = ['2024 LB', '2025', '2026', '2027', '2028', '2029', '2030 ']; // Coincide con ANIOS
-  const subtitle = `Centro Universitario ${centroNombre}`;
-  const mapaSrc = MAPA_IMAGENES[centroId] || '/mapa-engativa.png';
+  const subtitle = isSedeBogota ? 'Sede Bogotá' : `Centro Universitario ${centroNombre}`;  const mapaSrc = MAPA_IMAGENES[centroId] || '/mapa-engativa.png';
   const contextoSrc = CONTEXTO_IMAGENES[centroId] || '/contexto-cu.png';
   const ebitdaSrc = EBITDA_IMAGENES[centroId] || '/ebitda_engativa.png';
   const liderNombre = NOMBRE_LIDER[centroId] || "";
@@ -91,7 +91,7 @@ export function Page1({ innerRef, centroId = 'sede-bogota' }: Props) {
         </div>
  
         <div className="mt-2">
-          <GrayBanner text="PROYECCIÓN INDICADORES CENTRO UNIVERSITARIO" />
+          <GrayBanner text={isSedeBogota ? "PROYECCIÓN INDICADORES SEDE BOGOTÁ" : "PROYECCIÓN INDICADORES CENTRO UNIVERSITARIO"} />
         </div>
  
         <div className="border shadow-sm mt-0.5">
@@ -135,9 +135,15 @@ export function Page1({ innerRef, centroId = 'sede-bogota' }: Props) {
       <div className="flex flex-col h-full bg-white pl-3" style={{ width: "50%" }}>
         <SectionHeader showFecha subtitle={subtitle} />
  
-        <h2 className="text-[13px] font-semibold text-gray-800 text-center -mt-1 mb-0">Ficha Centro Universitario</h2>
+        <h2 className="text-[13px] font-semibold text-gray-800 text-center -mt-1 mb-0">
+          {isSedeBogota ? 'Ficha - Sede Bogotá' : 'Ficha Centro Universitario'}
+        </h2>
         <p className="text-[10px] text-gray-700 text-center" style={{ marginBottom: 0, lineHeight: 1 }}>
-          <span className="font-semibold">Líder:</span> {liderNombre}
+          {isSedeBogota ? (
+            <span className="font-semibold">Rectoría Bogotá</span>
+          ) : (
+            <><span className="font-semibold">Líder:</span> {liderNombre}</>
+          )}
         </p>
         
         <div className="w-full flex justify-center items-center -mt-10" style={{ height: "80mm" }}>
@@ -146,8 +152,11 @@ export function Page1({ innerRef, centroId = 'sede-bogota' }: Props) {
  
         <div className="w-full flex justify-center -mt-10" style={{ marginBottom: 2 }}>
           <div className="px-8 py-0.5" style={{ backgroundColor: "#D9D9D9", clipPath: "polygon(1% 0%, 100% 0%, 99% 100%, 0% 100%)", boxShadow: "0px 3px 6px rgba(0,0,0,0.15)" }}>
-            <h3 className="text-black font-medium text-[12px] text-center whitespace-nowrap">ESTUDIANTES CENTRO UNIVERSITARIO 2026 S2-Q2
-</h3>
+            <h3 className="text-black font-medium text-[12px] text-center whitespace-nowrap">
+              {isSedeBogota 
+                ? 'ESTUDIANTES SEDE BOGOTÁ 2026 S2-Q2' 
+                : 'ESTUDIANTES CENTRO UNIVERSITARIO 2026 S2-Q2'}
+            </h3>
           </div>
         </div>
  
@@ -205,8 +214,12 @@ export function Page1({ innerRef, centroId = 'sede-bogota' }: Props) {
  
         <div className="w-full flex justify-center mt-1">
           <div className="px-8 py-0.5" style={{ backgroundColor: "#D9D9D9", clipPath: "polygon(1% 0%, 100% 0%, 99% 100%, 0% 100%)", boxShadow: "0px 3px 6px rgba(0,0,0,0.15)" }}>
-            <h3 className="text-black font-medium text-[12px] text-center whitespace-nowrap">CONTEXTO CENTRO UNIVERSITARIO</h3>
-          </div>
+            <h3 className="text-black font-medium text-[12px] text-center whitespace-nowrap">
+              {isSedeBogota 
+                ? 'CONTEXTO EXTERNO BOGOTÁ' 
+                : 'CONTEXTO CENTRO UNIVERSITARIO'}
+            </h3>          
+        </div>
         </div>
  
         <div className="w-full flex-1 mt-0.5 flex items-start justify-center overflow-hidden">
