@@ -5,12 +5,12 @@ import { MobileContent } from './MobileView';
 import { BLUE, BLUE_LIGHT, BLUE_MED } from './MobileView';
 
 const CENTROS = [
+  { id: 'sede-bogota',                   nombre: 'Sede Bogotá' },
   { id: 'centro-engativa',               nombre: 'Especial Minuto de Dios - Engativá' },
   { id: 'centro-kennedy',                nombre: 'Kennedy' },
   { id: 'centro-santa-fe-las-cruces',    nombre: 'Las Cruces - Santa Fe' },
   { id: 'centro-perdomo-ciudad-bolivar', nombre: 'Perdomo - Ciudad Bolívar' },
   { id: 'centro-san-cristobal-usaquen',  nombre: 'San Cristóbal Norte - Usaquén' },
-  { id: 'sede-bogota',                   nombre: 'Sede Bogotá' },
 ];
 
 const TOTAL_PAGES = 2;

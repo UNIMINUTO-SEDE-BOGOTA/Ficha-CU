@@ -304,7 +304,7 @@ function AreaChartPanel({ centroId, graficaLineas }: { centroId: string; grafica
 // ============================================================================
 interface Props { innerRef?: React.Ref<HTMLDivElement>; centroId?: string; }
 
-export function Page2({ innerRef, centroId = 'centro-engativa' }: Props) {
+export function Page2({ innerRef, centroId = 'sede-bogota' }: Props) {
   const { data, loading } = useObservatorio(centroId);
   const pageData = transformarPage2(data);
 

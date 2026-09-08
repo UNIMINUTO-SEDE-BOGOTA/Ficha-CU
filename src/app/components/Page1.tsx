@@ -45,7 +45,7 @@ interface Props {
   centroId?: string;
 }
  
-export function Page1({ innerRef, centroId = 'centro-engativa' }: Props) {
+export function Page1({ innerRef, centroId = 'sede-bogota' }: Props) {
   const { data, loading, centroNombre } = useObservatorio(centroId);
   const pageData = transformarPage1(data);
 
@@ -141,7 +141,7 @@ export function Page1({ innerRef, centroId = 'centro-engativa' }: Props) {
         </p>
         
         <div className="w-full flex justify-center items-center -mt-10" style={{ height: "80mm" }}>
-          <img src={mapaSrc} style={{ height: "100%", maxWidth: "85%", objectFit: "contain" }} />
+          <img src={mapaSrc} style={{ height: "80%", maxWidth: "35%", objectFit: "contain" }} />
         </div>
  
         <div className="w-full flex justify-center -mt-10" style={{ marginBottom: 2 }}>
