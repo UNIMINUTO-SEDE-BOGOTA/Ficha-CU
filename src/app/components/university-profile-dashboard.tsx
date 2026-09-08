@@ -10,6 +10,7 @@ const CENTROS = [
   { id: 'centro-santa-fe-las-cruces',    nombre: 'Las Cruces - Santa Fe' },
   { id: 'centro-perdomo-ciudad-bolivar', nombre: 'Perdomo - Ciudad Bolívar' },
   { id: 'centro-san-cristobal-usaquen',  nombre: 'San Cristóbal Norte - Usaquén' },
+  { id: 'sede-bogota',                   nombre: 'Sede Bogotá' },
 ];
 
 const TOTAL_PAGES = 2;

@@ -6,6 +6,7 @@ import { transformarPage1 } from '../../models/proyeccionPage1Model';
  
 // Mapeo de imágenes (ajusta las rutas según tu proyecto)
 const MAPA_IMAGENES: Record<string, string> = {
+  'sede-bogota': '/bogota.png',
   'centro-engativa': '/engativa.png',
   'centro-kennedy': '/Kennedy.png',
   'centro-santa-fe-las-cruces': '/cruces.png',
@@ -14,6 +15,7 @@ const MAPA_IMAGENES: Record<string, string> = {
 };
  
 const CONTEXTO_IMAGENES: Record<string, string> = {
+  'sede-bogota': '/contexto-bogota.png',
   'centro-engativa': '/contexto-engativa.png',
   'centro-kennedy': '/contexto-kennedy.png',
   'centro-santa-fe-las-cruces': '/contexto-cruces.png',
@@ -22,6 +24,7 @@ const CONTEXTO_IMAGENES: Record<string, string> = {
 };
  
 const EBITDA_IMAGENES: Record<string, string> = {
+  'sede-bogota': '/ebitda_bogota.png',
   'centro-engativa': '/ebitda_engativa.png',
   'centro-kennedy': '/ebitda_kennedy.png',
   'centro-santa-fe-las-cruces': '/ebitda_cruces.png',
@@ -29,6 +32,7 @@ const EBITDA_IMAGENES: Record<string, string> = {
   'centro-san-cristobal-usaquen': '/ebitda_usaquen.png',
 };
 const NOMBRE_LIDER: Record<string, string> = {
+  'sede-bogota': "",
   'centro-engativa': "",
   'centro-kennedy': "Edgar Germán Martínez",
   'centro-santa-fe-las-cruces': "Liliana Milena Castro Bastidas",
@@ -44,6 +48,9 @@ interface Props {
 export function Page1({ innerRef, centroId = 'centro-engativa' }: Props) {
   const { data, loading, centroNombre } = useObservatorio(centroId);
   const pageData = transformarPage1(data);
+
+  console.log('Data received:'); 
+  console.log('Page1 - pageData:', pageData); // Agrega este log para depuración
  
  
   // Función para formatear números con separador de miles (puntos)

@@ -25,6 +25,7 @@ export const P = '3px 5px';
 // MAPA DE LÍDERES
 // ─────────────────────────────────────────────
 const NOMBRE_LIDER: Record<string, string> = {
+  'sede-bogota':                    '',
   'centro-engativa':               '',
   'centro-kennedy':                'Edgar Germán Martínez',
   'centro-santa-fe-las-cruces':    'Liliana Milena Castro Bastidas',
@@ -36,6 +37,7 @@ const NOMBRE_LIDER: Record<string, string> = {
 // MAPAS DE IMÁGENES
 // ─────────────────────────────────────────────
 const MAPA_IMAGENES: Record<string, string> = {
+  'sede-bogota':                    '/bogota.png',
   'centro-engativa':               '/engativa.png',
   'centro-kennedy':                '/Kennedy.png',
   'centro-santa-fe-las-cruces':    '/cruces.png',
@@ -43,6 +45,7 @@ const MAPA_IMAGENES: Record<string, string> = {
   'centro-san-cristobal-usaquen':  '/sancristobal.png',
 };
 const CONTEXTO_IMAGENES: Record<string, string> = {
+  'sede-bogota':                    '/contexto-bogota.png',
   'centro-engativa':               '/contexto-engativa.png',
   'centro-kennedy':                '/contexto-kennedy.png',
   'centro-santa-fe-las-cruces':    '/contexto-cruces.png',
@@ -50,6 +53,7 @@ const CONTEXTO_IMAGENES: Record<string, string> = {
   'centro-san-cristobal-usaquen':  '/contexto-sancristobal.png',
 };
 const EBITDA_IMAGENES: Record<string, string> = {
+  'sede-bogota':                    '/ebitda_bogota.png',
   'centro-engativa':               '/ebitda_engativa.png',
   'centro-kennedy':                '/ebitda_kennedy.png',
   'centro-santa-fe-las-cruces':    '/ebitda_cruces.png',

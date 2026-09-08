@@ -33,6 +33,7 @@ const PAD = "0px 1px";
 const YEARS = ["2026", "2027", "2028", "2029", "2030"];
 
 const CENTRO_NOMBRES: Record<string, string> = {
+  'sede-bogota':                    'Sede Bogotá',
   'centro-engativa':               'Especial Minuto de Dios - Engativá',
   'centro-kennedy':                'Kennedy',
   'centro-santa-fe-las-cruces':    'Las Cruces - Santa Fe',
