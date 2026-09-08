@@ -620,7 +620,8 @@ function LineasChart({ data }: { data: any }) {
 // ─────────────────────────────────────────────
 interface MobileContentProps { centroId: string; }
 
-export function MobileContent({ centroId }: MobileContentProps) {
+export function MobileContent({ centroId = 'sede-bogota' }: MobileContentProps) {
+  const isSedeBogota = centroId === 'sede-bogota';
   const { data, loading, centroNombre } = useObservatorio(centroId);
   const p1 = transformarPage1(data);
   const p2 = transformarPage2(data);
@@ -643,7 +644,8 @@ export function MobileContent({ centroId }: MobileContentProps) {
   const mapaSrc     = MAPA_IMAGENES[centroId]     || '/engativa.png';
   const contextoSrc = CONTEXTO_IMAGENES[centroId] || '/contexto-engativa.png';
   const ebitdaSrc   = EBITDA_IMAGENES[centroId]   || '/ebitda_engativa.png';
-  const subtitle    = `Centro Universitario ${centroNombre}`;
+  const subtitle    = isSedeBogota ? 'Sede Bogotá' : `Centro Universitario ${centroNombre}`;
+  const subtitlePage2 = isSedeBogota ? 'Sede Bogotá S2/Q2' : `Centro Universitario ${centroNombre} S2/Q2`;
   const lider       = NOMBRE_LIDER[centroId] || '';
 
   const FullTable = ({ children, style = {} }: { children: React.ReactNode; style?: React.CSSProperties }) => (
@@ -674,18 +676,21 @@ export function MobileContent({ centroId }: MobileContentProps) {
             <div style={{ flex: 1, margin: '0 8px', overflow: 'hidden' }}>
               <div style={{ backgroundColor: BLUE_LIGHT, clipPath: 'polygon(2% 0%,100% 0%,98% 100%,0% 100%)', padding: '4px 12px', textAlign: 'center' }}>
                 <span style={{ fontSize: 10, fontWeight: 600, color: BLUE, textAlign: 'center', lineHeight: 1.4 }}>
-                  Centro Universitario<br />
-                  {centroNombre}
+                  {isSedeBogota ? 'Sede Bogotá' : (<>Centro Universitario<br />{centroNombre}</>)}
                 </span>
               </div>
             </div>
             <img src="/Logo_Acreditacion.png" alt="Acreditación" style={{ height: 30, objectFit: 'contain' }} />
           </div>
           <p style={{ textAlign: 'center', fontWeight: 700, fontSize: 12, color: '#222', margin: '8px 0 1px' }}>
-            Ficha Centro Universitario
+            {isSedeBogota ? 'Ficha - Sede Bogotá' : 'Ficha Centro Universitario'}
           </p>
           <p style={{ textAlign: 'center', fontSize: 10, color: '#555', margin: 0 }}>
-            Líder: <strong style={{ color: BLUE }}>{lider}</strong>
+            {isSedeBogota ? (
+              <span style={{ fontWeight: 600 }}>Rectoría Bogotá</span>
+            ) : (
+              <>Líder: <strong style={{ color: BLUE }}>{lider}</strong></>
+            )}
           </p>
         </Card>
       </Reveal>
@@ -701,8 +706,11 @@ export function MobileContent({ centroId }: MobileContentProps) {
       {/* ══ ESTUDIANTES 2026 S1-Q1 ══ */}
       <Reveal delay={80}>
         <Card mb={10}>
-          <MBanner>ESTUDIANTES CENTRO UNIVERSITARIO 2026 S2-Q2
-</MBanner>
+          <MBanner>
+            {isSedeBogota
+              ? 'ESTUDIANTES SEDE BOGOTÁ 2026 S2-Q2'
+              : 'ESTUDIANTES CENTRO UNIVERSITARIO 2026 S2-Q2'}
+          </MBanner>
           <div style={{ display: 'flex', gap: 6, alignItems: 'flex-start' }}>
 
             {/* Tabla izquierda
@@ -810,7 +818,11 @@ export function MobileContent({ centroId }: MobileContentProps) {
       {/* ══ CONTEXTO ══ */}
       <Reveal delay={80}>
         <Card mb={10}>
-          <MBanner>CONTEXTO CENTRO UNIVERSITARIO</MBanner>
+          <MBanner>
+            {isSedeBogota
+              ? 'CONTEXTO EXTERNO BOGOTÁ'
+              : 'CONTEXTO CENTRO UNIVERSITARIO'}
+          </MBanner>
           <img src={contextoSrc} alt="Contexto"
             style={{ width: '100%', objectFit: 'contain', display: 'block', maxHeight: 270 }} />
         </Card>
@@ -828,7 +840,11 @@ export function MobileContent({ centroId }: MobileContentProps) {
 {p1.indicatorsRows.length > 0 && (
   <Reveal delay={60}>
     <Card mb={10}>
-      <MBanner>PROYECCIÓN INDICADORES CENTRO UNIVERSITARIO</MBanner>
+      <MBanner>
+        {isSedeBogota
+          ? 'PROYECCIÓN INDICADORES SEDE BOGOTÁ'
+          : 'PROYECCIÓN INDICADORES CENTRO UNIVERSITARIO'}
+      </MBanner>
       <StickyScrollTable>
         <thead>
           <tr>
@@ -906,7 +922,7 @@ export function MobileContent({ centroId }: MobileContentProps) {
             <img src="/Logo UNIMINUTO.png" alt="Logo" style={{ height: 36, objectFit: 'contain' }} />
             <div style={{ flex: 1, margin: '0 8px', overflow: 'hidden' }}>
               <div style={{ backgroundColor: BLUE_LIGHT, clipPath: 'polygon(2% 0%,100% 0%,98% 100%,0% 100%)', padding: '4px 12px', textAlign: 'center' }}>
-                <span style={{ fontSize: 10, fontWeight: 600, color: BLUE, whiteSpace: 'nowrap' }}>{subtitle}</span>
+                <span style={{ fontSize: 10, fontWeight: 600, color: BLUE, whiteSpace: 'nowrap' }}>{subtitlePage2}</span>
               </div>
             </div>
             <img src="/Logo_Acreditacion.png" alt="Acreditación" style={{ height: 30, objectFit: 'contain' }} />
@@ -1187,7 +1203,11 @@ export function MobileContent({ centroId }: MobileContentProps) {
       {p2?.graficaDesercion && (
         <Reveal delay={60}>
           <Card mb={10}>
-            <MBanner>Proyección Deserción por Centro Universitario</MBanner>
+            <MBanner>
+              {isSedeBogota
+                ? 'Proyección Deserción por Sede Bogotá'
+                : 'Proyección Deserción por Centro Universitario'}
+            </MBanner>
             <DesercionChart data={p2.graficaDesercion} />
           </Card>
         </Reveal>
@@ -1197,7 +1217,7 @@ export function MobileContent({ centroId }: MobileContentProps) {
       {p2?.graficaLineas && (
         <Reveal delay={60}>
           <Card mb={10}>
-            <MBanner>Proyección estudiantes por modalidad S1-Q1</MBanner>
+            <MBanner>Proyección estudiantes por Modalidad</MBanner>
             <LineasChart data={p2.graficaLineas} />
           </Card>
         </Reveal>
