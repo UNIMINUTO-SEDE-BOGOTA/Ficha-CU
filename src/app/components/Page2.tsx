@@ -569,11 +569,11 @@ export function Page2({ innerRef, centroId = 'centro-engativa' }: Props) {
                   </tr>
                   <tr>
                     <td style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, padding: "1px 2px", paddingLeft: "8px" }}>Presencial</td>
-                    {pageData?.graficaOferta?.pregradoSemestral?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}
+                    {pageData?.graficaOferta?.presencial_pregrado?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}
                   </tr>
                   <tr>
                     <td style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, padding: "1px 2px", paddingLeft: "8px" }}>Distancia</td>
-                    {pageData?.graficaOferta?.pregradoCuatrimestral?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}
+                    {pageData?.graficaOferta?.distancia_pregrado?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}
                   </tr>
                   <tr>
                     <td style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, fontWeight: 700, padding: "1px 2px", backgroundColor: C.peachy, color: C.black }}>2.Posgrado</td>
@@ -581,11 +581,11 @@ export function Page2({ innerRef, centroId = 'centro-engativa' }: Props) {
                   </tr>
                   <tr>
                     <td style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, padding: "1px 2px", paddingLeft: "8px" }}>Presencial</td>
-                    {pageData?.graficaOferta?.posgradoSemestral?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}
+                    {pageData?.graficaOferta?.presencial_posgrado?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}
                   </tr>
                   <tr>
                     <td style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, padding: "1px 2px", paddingLeft: "8px" }}>Distancia</td>
-                    {pageData?.graficaOferta?.posgradoCuatrimestral?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}
+                    {pageData?.graficaOferta?.distancia_posgrado?.map((v,i) => <td key={i} style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, padding: "1px 2px", textAlign: "center" }}>{v}</td>)}
                   </tr>
                   <tr>
                     <td style={{ border: "1px solid #e0e0e0", fontSize: FONT.oferta, fontWeight: 700, padding: "1px 2px", backgroundColor: C.purple, color: C.black }}>Total</td>

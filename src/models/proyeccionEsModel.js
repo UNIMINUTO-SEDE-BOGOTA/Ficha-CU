@@ -200,16 +200,23 @@ const getComp2026 = (nivel = null, modalidad = null) => ({
     });
 
   const graficaOferta = {
-    pregrado:              ofertaPorAnio({ nivel_academico: "Pregrado" }),
+    pregrado:              ofertaPorAnio({ nivel_academico: "Pregrado" }), // <----- THIS
     pregradoSemestral:     ofertaPorAnio({ nivel_academico: "Pregrado", periodicidad: "Semestral"     }),
     pregradoCuatrimestral: ofertaPorAnio({ nivel_academico: "Pregrado", periodicidad: "Cuatrimestral" }),
-    posgrado:              ofertaPorAnio({ nivel_academico: "Posgrado" }),
+    posgrado:              ofertaPorAnio({ nivel_academico: "Posgrado" }), // <----- THIS
     posgradoSemestral:     ofertaPorAnio({ nivel_academico: "Posgrado", periodicidad: "Semestral"     }),
     posgradoCuatrimestral: ofertaPorAnio({ nivel_academico: "Posgrado", periodicidad: "Cuatrimestral" }),
-    total:                 ofertaPorAnio({}),
-    presencial:            ofertaPorAnio({ modalidad: "Presencial" }),
-    distancia:             ofertaPorAnio({ modalidad: "Distancia"  }),
-    totalModalidad:        ofertaPorAnio({}),
+
+    presencial_pregrado:            ofertaPorAnio({ nivel_academico: "Pregrado" , modalidad: "Presencial" }),
+    presencial_posgrado:            ofertaPorAnio({ nivel_academico: "Posgrado" , modalidad: "Presencial" }),
+    distancia_pregrado:             ofertaPorAnio({ nivel_academico: "Pregrado" , modalidad: "Distancia"  }),
+    distancia_posgrado:             ofertaPorAnio({ nivel_academico: "Posgrado" , modalidad: "Distancia"  }),
+
+    // No se usa:
+    // total:                 ofertaPorAnio({}), 
+    // presencial:            ofertaPorAnio({ modalidad: "Presencial" }),
+    // distancia:             ofertaPorAnio({ modalidad: "Distancia"  }),
+    // // totalModalidad:        ofertaPorAnio({}),
   };
 
   // ── GRÁFICA 2: Deserción ──────────────────────────────────────────────────
