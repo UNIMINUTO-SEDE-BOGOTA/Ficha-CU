@@ -3,6 +3,8 @@ import React from 'react';
 import { GrayBanner, SectionHeader } from './shared';
 import { useObservatorio } from '../../hooks/useObservatorio';
 import { transformarPage1 } from '../../models/proyeccionPage1Model';
+import { useExcelIndicators } from './excel_temporal';
+
  
 // Mapeo de imágenes (ajusta las rutas según tu proyecto)
 const MAPA_IMAGENES: Record<string, string> = {
@@ -49,7 +51,9 @@ export function Page1({ innerRef, centroId = 'sede-bogota' }: Props) {
   const isSedeBogota = centroId === 'sede-bogota';
   const { data, loading, centroNombre } = useObservatorio(centroId);
   const pageData = transformarPage1(data);
-
+  // Temporal
+  const excel_indicators = useExcelIndicators(centroId);
+  
   console.log('Data received:'); 
   console.log('Page1 - pageData:', pageData); // Agrega este log para depuración
  
@@ -61,7 +65,11 @@ export function Page1({ innerRef, centroId = 'sede-bogota' }: Props) {
   };
  
   const studentSummary = pageData.studentSummary;
-  const indicatorsRows = pageData.indicatorsRows;
+  const indicatorsRows = excel_indicators.indicatorsRows.length > 0 ? excel_indicators.indicatorsRows : pageData.indicatorsRows;
+
+// Comentado el endpoint ya que no se va a traer data de indicadores todavia de la DB
+// const indicatorsRows = pageData.indicatorsRows;
+
   // Si necesitas mostrar financialRows, puedes agregarlos en otra sección
   // const financialRows = pageData.financialRows;
  

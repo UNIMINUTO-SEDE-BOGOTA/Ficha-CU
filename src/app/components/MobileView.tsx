@@ -3,6 +3,7 @@ import { useObservatorio } from '../../hooks/useObservatorio';
 import { transformarPage1 } from '../../models/proyeccionPage1Model';
 import { transformarPage2 } from '../../models/proyeccionEsModel';
 import { useAnimatedRows } from '../../hooks/useAnimatedRows';
+import { useExcelIndicators } from './excel_temporal';
 
 // ─────────────────────────────────────────────
 // CONSTANTES DE COLOR
@@ -625,8 +626,12 @@ export function MobileContent({ centroId = 'sede-bogota' }: MobileContentProps) 
   const { data, loading, centroNombre } = useObservatorio(centroId);
   const p1 = transformarPage1(data);
   const p2 = transformarPage2(data);
+  const excel_indicators = useExcelIndicators(centroId);
+  const indicatorsRows = excel_indicators.indicatorsRows.length > 0
+    ? excel_indicators.indicatorsRows
+    : p1.indicatorsRows;
 
-  const visibleIndicators = useAnimatedRows(centroId, p1.indicatorsRows.length, 80);
+  const visibleIndicators = useAnimatedRows(centroId, indicatorsRows.length, 80);
   const visibleStudents   = useAnimatedRows(centroId, 3, 100);
   const visibleT1         = useAnimatedRows(centroId, 7, 70);
   const visibleT2         = useAnimatedRows(centroId, 3, 80);
@@ -837,7 +842,7 @@ export function MobileContent({ centroId = 'sede-bogota' }: MobileContentProps) 
       </Reveal>
 
       {/* ══ INDICADORES ══ */}
-{p1.indicatorsRows.length > 0 && (
+{indicatorsRows.length > 0 && (
   <Reveal delay={60}>
     <Card mb={10}>
       <MBanner>
@@ -877,7 +882,7 @@ export function MobileContent({ centroId = 'sede-bogota' }: MobileContentProps) 
           </tr>
         </thead>
         <tbody>
-          {p1.indicatorsRows.map((row, i) => (
+          {indicatorsRows.map((row, i) => (
             <tr key={i} className={visibleIndicators[i] ? 'row-animated' : 'row-hidden'}>
               {/* Columna sticky con nombre completo */}
               <td style={{
