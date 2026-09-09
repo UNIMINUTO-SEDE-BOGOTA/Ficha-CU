@@ -66,7 +66,9 @@ export function Page1({ innerRef, centroId = 'sede-bogota' }: Props) {
   // const financialRows = pageData.financialRows;
  
   const años = ['2024 LB', '2025', '2026', '2027', '2028', '2029', '2030 ']; // Coincide con ANIOS
-  const subtitle = isSedeBogota ? 'Sede Bogotá' : `Centro Universitario ${centroNombre}`;  const mapaSrc = MAPA_IMAGENES[centroId] || '/mapa-engativa.png';
+  const subtitle = isSedeBogota ? 'Sede Bogotá' : `Centro Universitario ${centroNombre}`;  
+  const mapasrcSede = 'bogota.png';
+  const mapaSrc = MAPA_IMAGENES[centroId] || '/mapa-engativa.png';
   const contextoSrc = CONTEXTO_IMAGENES[centroId] || '/contexto-cu.png';
   const ebitdaSrc = EBITDA_IMAGENES[centroId] || '/ebitda_engativa.png';
   const liderNombre = NOMBRE_LIDER[centroId] || "";
@@ -147,9 +149,16 @@ export function Page1({ innerRef, centroId = 'sede-bogota' }: Props) {
         </p>
         
         <div className="w-full flex justify-center items-center -mt-10" style={{ height: "80mm" }}>
-          <img src={mapaSrc} style={{ height: "80%", maxWidth: "35%", objectFit: "contain" }} />
+          <img 
+            src={isSedeBogota ? mapasrcSede : mapaSrc} 
+            style={
+              isSedeBogota 
+                ? { height: "80%", maxWidth: "35%", objectFit: "contain" } 
+                : { height: "100%", maxWidth: "80%", objectFit: "contain" }  
+            } 
+          />
         </div>
- 
+
         <div className="w-full flex justify-center -mt-10" style={{ marginBottom: 2 }}>
           <div className="px-8 py-0.5" style={{ backgroundColor: "#D9D9D9", clipPath: "polygon(1% 0%, 100% 0%, 99% 100%, 0% 100%)", boxShadow: "0px 3px 6px rgba(0,0,0,0.15)" }}>
             <h3 className="text-black font-medium text-[12px] text-center whitespace-nowrap">

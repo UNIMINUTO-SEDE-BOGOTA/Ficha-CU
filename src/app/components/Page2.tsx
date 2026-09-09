@@ -86,8 +86,27 @@ const tableStyle: React.CSSProperties = { width: "95%", borderCollapse: "collaps
 const rowSpanStyle: React.CSSProperties = { border: "1px solid #e0e0e0", fontSize: FONT.data, fontWeight: 700, padding: PAD, verticalAlign: "middle", whiteSpace: "nowrap" };
 
 const Banner = ({ text }: { text: string }) => (
-  <div style={{ backgroundColor: C.grayBanner, clipPath: "polygon(1% 0%, 100% 0%, 99% 100%, 0% 100%)", padding: "1px 60px", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", height: "10px", width: "fit-content", alignSelf: "center" }}>
-    <span style={{ fontSize: FONT.banner, fontWeight: 600, fontFamily: "Inter, sans-serif", lineHeight: 1 }}>{text}</span>
+  <div style={{ 
+      backgroundColor: C.grayBanner, 
+      clipPath: "polygon(1% 0%, 100% 0%, 99% 100%, 0% 100%)", 
+      padding: "8px 40px", 
+      flexShrink: 0, 
+      display: "flex", 
+      alignItems: "center", 
+      justifyContent: "center", 
+      height: "30px", 
+      width: "fit-content", 
+      alignSelf: "center",
+      whiteSpace: "nowrap" 
+  }}>
+    <span style={{ 
+        fontSize: FONT.banner, 
+        fontWeight: 600, 
+        fontFamily: "Inter, sans-serif", 
+        lineHeight: 1 
+    }}>
+      {text}
+    </span>
   </div>
 );
 
