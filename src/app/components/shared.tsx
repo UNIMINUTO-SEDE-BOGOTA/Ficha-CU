@@ -43,7 +43,7 @@ export const SectionHeader = ({
 }) => (
   <div className="flex flex-col mb-2 w-full">
     <div className="flex justify-between items-center px-4 py-2 w-full">
-      <img src="/Logo UNIMINUTO.png" alt="Logo UNIMINUTO" className="h-16 w-auto object-contain" />
+      <img src="/Logo UNIMINUTO.png" alt="Logo UNIMINUTO" className="h-10 w-auto object-contain" />
       {showFecha && (
         <div className="flex flex-col items-center text-center">
           <p className="text-gray-400 text-[10px] leading-tight">Fecha de corte:</p>

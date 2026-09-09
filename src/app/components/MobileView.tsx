@@ -3,7 +3,7 @@ import { useObservatorio } from '../../hooks/useObservatorio';
 import { transformarPage1 } from '../../models/proyeccionPage1Model';
 import { transformarPage2 } from '../../models/proyeccionEsModel';
 import { useAnimatedRows } from '../../hooks/useAnimatedRows';
-import { useExcelIndicators } from './excel_temporal';
+import { useExcelIndicators, ANIOS_ENCABEZADOS } from './excel_temporal';
 
 // ─────────────────────────────────────────────
 // CONSTANTES DE COLOR
@@ -645,7 +645,7 @@ export function MobileContent({ centroId = 'sede-bogota' }: MobileContentProps) 
     hombres: '-', mujeres: '-',
   };
 
-  const años6 = ['2024 LB', '2025', '2026', '2027', '2028', '2029', '2030 '];
+  const años6 = ANIOS_ENCABEZADOS;
   const mapaSrc     = MAPA_IMAGENES[centroId]     || '/engativa.png';
   const contextoSrc = CONTEXTO_IMAGENES[centroId] || '/contexto-engativa.png';
   const ebitdaSrc   = EBITDA_IMAGENES[centroId]   || '/ebitda_engativa.png';

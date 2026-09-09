@@ -3,7 +3,7 @@ import React from 'react';
 import { GrayBanner, SectionHeader } from './shared';
 import { useObservatorio } from '../../hooks/useObservatorio';
 import { transformarPage1 } from '../../models/proyeccionPage1Model';
-import { useExcelIndicators } from './excel_temporal';
+import { useExcelIndicators, ANIOS_ENCABEZADOS } from './excel_temporal';
 
  
 // Mapeo de imágenes (ajusta las rutas según tu proyecto)
@@ -73,7 +73,7 @@ export function Page1({ innerRef, centroId = 'sede-bogota' }: Props) {
   // Si necesitas mostrar financialRows, puedes agregarlos en otra sección
   // const financialRows = pageData.financialRows;
  
-  const años = ['2024 LB', '2025', '2026', '2027', '2028', '2029', '2030 ']; // Coincide con ANIOS
+  const años = ANIOS_ENCABEZADOS;
   const subtitle = isSedeBogota ? 'Sede Bogotá' : `Centro Universitario ${centroNombre}`;  
   const mapasrcSede = 'bogota.png';
   const mapaSrc = MAPA_IMAGENES[centroId] || '/mapa-engativa.png';
@@ -139,8 +139,14 @@ export function Page1({ innerRef, centroId = 'sede-bogota' }: Props) {
             </tbody>
           </table>
         </div>
+        <br></br>
+        <div className="flex flex-col items-center text-center">
+          <p className="text-gray-400 text-[10px] leading-tight">Fecha de corte de Indicadores:</p>
+          <p className="text-gray-600 font-medium text-[10px] leading-tight">9 de Septiembre del 2026</p>
       </div>
- 
+      </div>
+
+      
       {/* ── DERECHA ── */}
       <div className="flex flex-col h-full bg-white pl-3" style={{ width: "50%" }}>
         <SectionHeader showFecha subtitle={subtitle} />

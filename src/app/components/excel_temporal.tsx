@@ -13,7 +13,54 @@ export const CENTRO_TO_NIVEL: Record<string, string> = {
   'centro-san-cristobal-usaquen':  'San Cristóbal Norte - Usaquén',
 };
 
-const ANIOS_COLS = ['Linea Base', '2025', '2026', '2027', '2028', '2029', '2030'];
+export const ANIOS_ENCABEZADOS = ['2025 LB', '2026', '2027', '2028', '2029', '2030'];
+
+const COLUMNAS_CONFIG = [
+  {
+    header: '2025 LB',
+    extraer: (row: Record<string, any>) => {
+      const k = Object.keys(row).find((key) =>
+        key.replace(/\s+/g, '').toLowerCase().includes('2025lineabase')
+      );
+      return k ? row[k] : undefined;
+    },
+  },
+  {
+    header: '2026',
+    extraer: (row: Record<string, any>) => {
+      const k = Object.keys(row).find((key) => key.trim() === '2026');
+      return k ? row[k] : undefined;
+    },
+  },
+  {
+    header: '2027',
+    extraer: (row: Record<string, any>) => {
+      const k = Object.keys(row).find((key) => key.trim() === '2027');
+      return k ? row[k] : undefined;
+    },
+  },
+  {
+    header: '2028',
+    extraer: (row: Record<string, any>) => {
+      const k = Object.keys(row).find((key) => key.trim() === '2028');
+      return k ? row[k] : undefined;
+    },
+  },
+  {
+    header: '2029',
+    extraer: (row: Record<string, any>) => {
+      const k = Object.keys(row).find((key) => key.trim() === '2029');
+      return k ? row[k] : undefined;
+    },
+  },
+  {
+    header: '2030',
+    extraer: (row: Record<string, any>) => {
+      const k = Object.keys(row).find((key) => key.trim() === '2030');
+      return k ? row[k] : undefined;
+    },
+  },
+];
 
 // ─────────────────────────────────────────────
 // FORMATEO DINÁMICO DE CADA CELDA
@@ -36,7 +83,7 @@ function formatCell(indicador: string, valor: any, colIdx: number): string {
     return str.replace(/\s+/g, ' ');
   }
 
-  // Ceros en línea base de indicadores que no aplican en 2024
+  // Ceros en línea base de indicadores que no aplican
   if (num === 0) {
     if (colIdx === 0 && [
       'Tasa de Conversión', 'Educación Continua', 'EBITDA',
@@ -50,11 +97,11 @@ function formatCell(indicador: string, valor: any, colIdx: number): string {
   const pctIndicators = [
     'Contratación Profesores', 'Escalafón', 'Profesores Doctorado',
     'Índice H', 'Tasa de Conversión', 'Deserción Presencial',
-    'Deserción Distancia', 'EBITDA'
+    'Deserción Distancia', 'EBITDA', 'Diversificación de Ingresos'
   ];
   if (pctIndicators.includes(indicador)) {
     if (num === 0) return '-';
-    const pct = num <= 1 ? num * 100 : num;
+    const pct = Math.abs(num) <= 1 ? num * 100 : num;
     const rounded = Math.round(pct * 10) / 10;
     return (rounded % 1 === 0 ? rounded.toFixed(0) : rounded.toFixed(1)) + '%';
   }
@@ -92,15 +139,8 @@ export function procesarMetasDesdeWorkbook(workbook: XLSX.WorkBook, centroId: st
   return rows.map((r) => {
     const ind = String(r['Nombre Corto'] || r.Indicador || '').trim();
 
-    // Normalizar claves para eliminar espacios y espacios no rompibles (\u00A0)
-    const normalizedRow: Record<string, any> = {};
-    for (const [k, v] of Object.entries(r)) {
-      normalizedRow[k.trim().replace(/\s+/g, '')] = v;
-    }
-
-    const values = ANIOS_COLS.map((colKey, idx) => {
-      const cleanedKey = colKey.replace(/\s+/g, '');
-      const rawVal = normalizedRow[cleanedKey];
+    const values = COLUMNAS_CONFIG.map((col, idx) => {
+      const rawVal = col.extraer(r);
       return formatCell(ind, rawVal, idx);
     });
 
