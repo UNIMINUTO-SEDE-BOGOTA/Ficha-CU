@@ -177,8 +177,8 @@ export function Page1({ innerRef, centroId = 'sede-bogota' }: Props) {
           <div className="px-8 py-0.5" style={{ backgroundColor: "#D9D9D9", clipPath: "polygon(1% 0%, 100% 0%, 99% 100%, 0% 100%)", boxShadow: "0px 3px 6px rgba(0,0,0,0.15)" }}>
             <h3 className="text-black font-medium text-[12px] text-center whitespace-nowrap">
               {isSedeBogota 
-                ? 'ESTUDIANTES SEDE BOGOTÁ 2026 S2-Q2' 
-                : 'ESTUDIANTES CENTRO UNIVERSITARIO 2026 S2-Q2'}
+                ? 'ESTUDIANTES SEDE BOGOTÁ 2026 S2-Q3' 
+                : 'ESTUDIANTES CENTRO UNIVERSITARIO 2026 S2-Q3'}
             </h3>
           </div>
         </div>

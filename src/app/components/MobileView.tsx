@@ -650,7 +650,7 @@ export function MobileContent({ centroId = 'sede-bogota' }: MobileContentProps) 
   const contextoSrc = CONTEXTO_IMAGENES[centroId] || '/contexto-engativa.png';
   const ebitdaSrc   = EBITDA_IMAGENES[centroId]   || '/ebitda_engativa.png';
   const subtitle    = isSedeBogota ? 'Sede Bogotá' : `Centro Universitario ${centroNombre}`;
-  const subtitlePage2 = isSedeBogota ? 'Sede Bogotá S2/Q2' : `Centro Universitario ${centroNombre} S2/Q2`;
+  const subtitlePage2 = isSedeBogota ? 'Sede Bogotá S2/Q3' : `Centro Universitario ${centroNombre} S2/Q3`;
   const lider       = NOMBRE_LIDER[centroId] || '';
 
   const FullTable = ({ children, style = {} }: { children: React.ReactNode; style?: React.CSSProperties }) => (
@@ -713,8 +713,8 @@ export function MobileContent({ centroId = 'sede-bogota' }: MobileContentProps) 
         <Card mb={10}>
           <MBanner>
             {isSedeBogota
-              ? 'ESTUDIANTES SEDE BOGOTÁ 2026 S2-Q2'
-              : 'ESTUDIANTES CENTRO UNIVERSITARIO 2026 S2-Q2'}
+              ? 'ESTUDIANTES SEDE BOGOTÁ 2026 S2-Q3'
+              : 'ESTUDIANTES CENTRO UNIVERSITARIO 2026 S2-Q3'}
           </MBanner>
           <div style={{ display: 'flex', gap: 6, alignItems: 'flex-start' }}>
 

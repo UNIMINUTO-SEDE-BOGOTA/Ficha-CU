@@ -336,8 +336,8 @@ export function Page2({ innerRef, centroId = 'sede-bogota' }: Props) {
   const isSedeBogota = centroId === 'sede-bogota';
   const centroNombre = CENTRO_NOMBRES[centroId] || 'Desconocido';
   const subtitle = isSedeBogota 
-    ? 'Sede Bogotá S2/Q2' 
-    : `Centro Universitario ${centroNombre} S2/Q2`;
+    ? 'Sede Bogotá S2/Q3' 
+    : `Centro Universitario ${centroNombre} S2/Q3`;
 
   if (loading) return <div>Cargando...</div>;
   if (!pageData) return <div>No hay datos disponibles</div>;
