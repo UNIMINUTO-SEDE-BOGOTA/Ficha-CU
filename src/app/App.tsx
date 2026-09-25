@@ -1,9 +1,9 @@
 // App.tsx
 import { useState, useEffect } from 'react'
-import { Header } from './components/header'
+// import { Header } from './components/header'
 import { DashboardGrid } from './components/dashboard-grid'
 import { InstallPWA } from './components/InstallPWA'
-import { Footer } from './components/footer'
+// import { Footer } from './components/footer'
 
 export default function App() {
   const [bannerVisible, setBannerVisible] = useState(false)
@@ -36,7 +36,7 @@ export default function App() {
         transition: 'margin-bottom 0.3s ease',
       }}
     >
-      {/* HEADER */}
+      {/* HEADER
       <div
         style={{
           background:
@@ -44,7 +44,7 @@ export default function App() {
         }}
       >
         <Header />
-      </div>
+      </div> */}
 
       {/* CONTENIDO */}
       <main
@@ -56,8 +56,8 @@ export default function App() {
         <DashboardGrid bannerVisible={bannerVisible} />
       </main>
 
-      {/* FOOTER */}
-      <Footer />
+      {/* FOOTER
+      <Footer /> */}
 
       {/* INSTALACIÓN PWA */}
       <InstallPWA onBannerChange={setBannerVisible} />
