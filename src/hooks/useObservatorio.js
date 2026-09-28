@@ -8,8 +8,6 @@ const API_BASE = (rawApiBase.startsWith('http') && !rawApiBase.includes('/api'))
   ? `${rawApiBase}/api/proxy`
   : rawApiBase;
 
-const API_KEY = import.meta.env.VITE_API_KEY;
-
 const CENTROS_SEDE_BOGOTA = [
   'centro-engativa',
   'centro-kennedy',
@@ -41,10 +39,9 @@ async function consultarCentro(centroId) {
 
   const solicitud = (async () => {
     const url = `${API_BASE}/observatorio/completo/${encodeURIComponent(centroId)}`;
-    const headers = { 'Content-Type': 'application/json' };
-    if (API_KEY) headers['X-API-Key'] = API_KEY;
-
-    const response = await fetch(url, { headers });
+    const response = await fetch(url, {
+      headers: { 'Content-Type': 'application/json' },
+    });
     if (!response.ok) {
       const errText = await response.text();
       throw new Error(`Error ${response.status}: ${response.statusText} - ${errText}`);

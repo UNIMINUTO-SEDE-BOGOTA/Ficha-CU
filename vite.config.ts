@@ -22,7 +22,7 @@ const forceIndexLowercase = () => ({
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
-  const backendTarget = env.BACKEND_URL || 'https://ficha-cu-two.vercel.app'
+  const backendTarget = env.PRIMARY_BACKEND_URL || env.BACKEND_URL || 'https://api-cu.onrender.com'
 
   return {
   plugins: [
