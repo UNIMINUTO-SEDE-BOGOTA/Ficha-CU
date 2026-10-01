@@ -23,3 +23,23 @@ No se debe configurar `VITE_API_KEY`: cualquier variable `VITE_*` puede quedar e
 - `X-Backend-Used` y `X-Circuit-State` dan diagnóstico sin revelar secretos.
 
 El estado reside en memoria por instancia serverless y puede reiniciarse con un cold start; es una optimización *best-effort*, no un estado global distribuido.
+
+## Consulta consolidada de Sede Bogotá
+
+El frontend solicita Sede Bogotá una sola vez mediante
+`GET /api/proxy/observatorio/sede-bogota`. El backend devuelve los cinco centros
+en el campo `centros`; el navegador conserva la consolidación visual existente,
+pero ya no abre cinco solicitudes simultáneas.
+
+Un `503` indica que la caché compartida todavía no está inicializada o no está
+disponible. El frontend muestra el error y no inicia reintentos automáticos. La
+actualización se realiza exclusivamente por el endpoint administrativo del
+backend; sus credenciales y las de Redis nunca se exponen al navegador.
+
+## Desarrollo local
+
+El frontend sigue solicitando `/api/proxy/...`, pero el proxy de desarrollo de
+Vite reescribe esa ruta a `/api/...` antes de enviarla al backend configurado en
+`PRIMARY_BACKEND_URL`. El backend local no necesita implementar una ruta
+`/api/proxy`. Vite también inyecta la cabecera `X-API-Key` usando
+`API_KEY_SECRET`; la clave no debe configurarse con prefijo `VITE_`.

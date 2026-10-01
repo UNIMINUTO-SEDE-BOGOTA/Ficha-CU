@@ -113,11 +113,18 @@ export default defineConfig(({ mode }) => {
         target: backendTarget,
         changeOrigin: true,
         secure: false,
+        headers: env.API_KEY_SECRET
+          ? { 'X-API-Key': env.API_KEY_SECRET }
+          : undefined,
+        rewrite: (requestPath) => requestPath.replace(/^\/api\/proxy/, '/api'),
       },
       '/api': {
         target: backendTarget,
         changeOrigin: true,
         secure: false,
+        headers: env.API_KEY_SECRET
+          ? { 'X-API-Key': env.API_KEY_SECRET }
+          : undefined,
       },
     },
   },
@@ -127,11 +134,18 @@ export default defineConfig(({ mode }) => {
         target: backendTarget,
         changeOrigin: true,
         secure: false,
+        headers: env.API_KEY_SECRET
+          ? { 'X-API-Key': env.API_KEY_SECRET }
+          : undefined,
+        rewrite: (requestPath) => requestPath.replace(/^\/api\/proxy/, '/api'),
       },
       '/api': {
         target: backendTarget,
         changeOrigin: true,
         secure: false,
+        headers: env.API_KEY_SECRET
+          ? { 'X-API-Key': env.API_KEY_SECRET }
+          : undefined,
       },
     },
   },
